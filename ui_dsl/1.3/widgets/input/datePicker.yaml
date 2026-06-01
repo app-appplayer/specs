@@ -1,0 +1,13 @@
+type: datePicker
+category: input
+profile: Core
+description: |
+  Standalone date picker surface. Shared rows per §2.6.0; `value` is an ISO date string.
+properties:
+  firstDate:
+    type: "string"
+    description: "Earliest allowed date."
+  lastDate:
+    type: "string"
+    description: "Latest allowed date."
+# examples migrated verbatim from prose JSON fences.

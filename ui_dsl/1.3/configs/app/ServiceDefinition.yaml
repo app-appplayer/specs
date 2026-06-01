@@ -1,0 +1,40 @@
+name: ServiceDefinition
+description: |
+  Background service launched at app init per docs/01_Core_Concepts.md §1.2.1. Currently a thin shape — implementations should prefer the richer ChannelDefinition (§8.6) for stream-style services.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "kind": {
+        "enum": [
+          "polling",
+          "subscription"
+        ]
+      },
+      "interval": {
+        "type": "number",
+        "minimum": 0
+      },
+      "tool": {
+        "type": "string"
+      },
+      "params": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "binding": {
+        "type": "string"
+      },
+      "onMessage": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onError": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "autoStart": {
+        "type": "boolean",
+        "default": true
+      }
+    },
+    "additionalProperties": true
+  }

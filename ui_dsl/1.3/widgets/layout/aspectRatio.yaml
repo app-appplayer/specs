@@ -1,0 +1,15 @@
+type: aspectRatio
+category: layout
+profile: Core
+description: |
+  Sizes the child to a specific aspect ratio.
+properties:
+  aspectRatio:
+    type: "number"
+    default: 1.0
+    description: "Width-to-height ratio (e.g., `1.5` for 3:2). Defaults to `1.0` (square) when omitted."
+  child:
+    type: "Widget"
+    required: true
+    description: "Child widget."
+# examples migrated verbatim from prose JSON fences.

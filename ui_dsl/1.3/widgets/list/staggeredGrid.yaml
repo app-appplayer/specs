@@ -1,0 +1,61 @@
+type: staggeredGrid
+category: list
+profile: Core
+since: v1.3
+description: |
+  Pinterest-style masonry layout — items keep their intrinsic height
+  and are packed by column without uniform row alignment. Use for
+  album / book / portfolio shelves where covers have different
+  aspect ratios. Distinct from `grid` (uniform row alignment) and
+  `carousel` (single-axis scrolling).
+properties:
+  items:
+    type: binding
+    description: Array source. Required when `children` is omitted.
+  itemTemplate:
+    type: Widget
+    description: Template rendered per bound item. Required with `items`.
+  children:
+    type: "Widget[]"
+    description: Static cells. Mutually exclusive with `items` + `itemTemplate`.
+  columns:
+    type: "number | object"
+    required: true
+    description: Column count; may use responsive `{default, sm, md, lg}`.
+  mainAxisSpacing:
+    type: number
+    default: 0
+    description: Gap along the scroll axis (between consecutive items in a column).
+  crossAxisSpacing:
+    type: number
+    default: 0
+    description: Gap across the scroll axis (between columns).
+  padding:
+    type: EdgeInsets
+    description: Inner padding around the grid.
+  scrollDirection:
+    type: string
+    enum: [vertical, horizontal]
+    default: "\"vertical\""
+    description: Scroll axis.
+examples:
+  - name: album_shelf
+    dsl: |
+      {
+        "type": "staggeredGrid",
+        "items": "{{albums}}",
+        "columns": { "default": 2, "md": 3, "lg": 4 },
+        "mainAxisSpacing": 12,
+        "crossAxisSpacing": 12,
+        "padding": { "all": 16 },
+        "itemTemplate": {
+          "type": "card",
+          "child": {
+            "type": "linear", "direction": "vertical",
+            "children": [
+              { "type": "image", "src": "{{item.cover}}", "fit": "cover" },
+              { "type": "text",  "text": "{{item.title}}" }
+            ]
+          }
+        }
+      }

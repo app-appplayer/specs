@@ -1,0 +1,17 @@
+type: fractionallySized
+category: layout
+profile: Core
+description: |
+  Sizes the child as a fraction of the parent.
+properties:
+  widthFactor:
+    type: "number"
+    description: "Width fraction in `0.0..1.0`."
+  heightFactor:
+    type: "number"
+    description: "Height fraction in `0.0..1.0`."
+  child:
+    type: "Widget"
+    required: true
+    description: "Child widget."
+# examples migrated verbatim from prose JSON fences.

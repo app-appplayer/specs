@@ -1,0 +1,145 @@
+name: Color
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "seed": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "primary": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onPrimary": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "primaryContainer": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onPrimaryContainer": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "secondary": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onSecondary": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "secondaryContainer": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onSecondaryContainer": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "tertiary": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onTertiary": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "tertiaryContainer": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onTertiaryContainer": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "error": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onError": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "errorContainer": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onErrorContainer": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "surface": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onSurface": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "surfaceVariant": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onSurfaceVariant": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "surfaceTint": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "background": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onBackground": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "outline": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "outlineVariant": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "inverseSurface": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "inverseOnSurface": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "inversePrimary": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "scrim": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "shadow": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "success": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onSuccess": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "warning": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onWarning": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "info": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "onInfo": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "stateLayer": {
+        "type": "object",
+        "properties": {
+          "hover": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "focus": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "pressed": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "disabled": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false
+  }

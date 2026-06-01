@@ -1,0 +1,27 @@
+type: dragTarget
+category: interaction
+profile: Core
+description: |
+  Drop area that accepts dragged data.
+properties:
+  canDrop:
+    type: "binding"
+    description: "Expression controlling acceptance."
+  builder:
+    type: "Widget"
+    description: "Widget rendered as the drop surface. Required when `child`/`children` are omitted."
+    aliases:
+      - child
+  children:
+    type: "Widget[]"
+    description: "Multiple widgets; runtime wraps them in a linear column. Mutually exclusive with `builder`/`child`."
+  onDrop:
+    type: "Action"
+    description: "Fired on successful drop; `{{event.data}}` is the payload."
+  onDragEnter:
+    type: "Action"
+    description: "Fired when a draggable enters."
+  onDragLeave:
+    type: "Action"
+    description: "Fired when a draggable leaves."
+# examples migrated verbatim from prose JSON fences.

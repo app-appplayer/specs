@@ -1,0 +1,73 @@
+type: alertDialog
+category: dialog
+profile: Core
+since: v1.0
+aliases: [alert]
+description: |
+  Modal alert with an optional title, an optional body (string or widget),
+  and a list of labeled action buttons. Dispatched via the `dialog` action
+  (`{ "type": "dialog", "dialog": { "type": "alertDialog", ... } }`). The
+  runtime renders it as a `Dialog` surface scoped to the current navigator
+  (not the root navigator), so tapping an action pops only the dialog.
+
+properties:
+  title:
+    type: string
+    description: Dialog title shown at the top.
+  content:
+    type: "string | Widget"
+    description: Dialog body. When a string, rendered as a single `Text`. When a widget, rendered as-is.
+  dismissible:
+    type: boolean
+    default: true
+    description: Whether tapping outside the dialog closes it.
+  onClose:
+    type: Action
+    description: "Fired when the dialog is dismissed without one of `actions[].onTap` being selected (e.g., outside-tap when `dismissible: true`, escape key)."
+  actions:
+    type: "array<object{ label: string, variant: string, primary: boolean, onTap: Action }>"
+    description: |
+      Action buttons rendered in the dialog footer. Each entry:
+        - `label` (required): button text.
+        - `variant`: one of `text` / `elevated` / `outlined` / `filled`; default `text`.
+        - `primary`: highlights the button as the default action.
+        - `onTap`: the action fired on press. The runtime pops the dialog
+          BEFORE executing `onTap`, so handlers that trigger state changes or
+          navigation do not race with the dialog dismissal.
+
+children:
+  kind: none
+
+examples:
+  # Examples describe the `alertDialog` widget *value* as consumed by the
+  # `dialog` action (`{type: dialog, dialog: <example>}`). At the schema
+  # layer we validate just this inner value.
+  - name: basic_confirm
+    description: Cancel / Confirm pair with a string body.
+    dsl: |
+      {
+        "type": "alertDialog",
+        "title": "Delete item",
+        "content": "This cannot be undone.",
+        "actions": [
+          { "label": "Cancel", "variant": "text" },
+          { "label": "Delete", "variant": "filled", "primary": true }
+        ]
+      }
+  - name: legacy_short_name
+    description: "Legacy `type: alert` accepted as alias for `alertDialog`."
+    dsl: |
+      { "type": "alert", "title": "Info", "content": "OK?" }
+  - name: unknown_variant_is_ok_for_now
+    description: Phase 1 does not enforce `variant` enum on action entries; nested shape is permissive.
+    dsl: |
+      {
+        "type": "alertDialog",
+        "actions": [ { "label": "Close", "variant": "ghost" } ]
+      }
+  - name: wrong_type
+    description: Root `type` must be `alertDialog` or alias.
+    dsl: |
+      { "type": "warning" }
+    expect: validation_error
+    error_path: "#/oneOf"

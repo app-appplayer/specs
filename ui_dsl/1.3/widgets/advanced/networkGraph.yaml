@@ -1,0 +1,17 @@
+type: networkGraph
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Network topology graph. Same node/edge model as `graph`, with topology-oriented defaults (hierarchical layout, directed edges).
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "networkGraph",
+        "nodes": "{{graphNodes}}",
+        "edges": "{{graphEdges}}",
+        "layout": "hierarchical",
+        "directed": true
+      }

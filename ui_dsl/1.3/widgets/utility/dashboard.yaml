@@ -1,0 +1,17 @@
+type: dashboard
+category: utility
+profile: Core
+since: v1.3
+description: |
+  Renders a compact dashboard tile — the widget equivalent of the `ApplicationDefinition.dashboard` field (see [`11_Bundle_Metadata.md`](11_Bundle_Metadata.md) §11). Used to embed a dashboard-mode tile inside a page (launcher / app grid scenarios).
+properties:
+  content:
+    type: "Widget"
+    description: "Dashboard tile content tree. When omitted the tile renders empty (fallback)."
+  refreshInterval:
+    type: "number"
+    description: "Auto-refresh period in milliseconds. Omit for static tiles."
+  onTap:
+    type: "Action"
+    description: "Fired when the tile is tapped (commonly wired to `openApp` — see [`04_Actions.md`](04_Actions.md) §4.3)."
+# examples migrated verbatim from prose JSON fences.

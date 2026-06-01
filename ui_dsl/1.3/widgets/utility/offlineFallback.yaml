@@ -1,0 +1,29 @@
+type: offlineFallback
+category: utility
+profile: Core
+description: |
+  Swaps between an online widget and an offline fallback based on connectivity tracked by the runtime. Connectivity state may be pinned by an `isOnline` binding for tests.
+properties:
+  online:
+    type: "Widget"
+    description: "Rendered while connectivity is available."
+  offline:
+    type: "Widget"
+    description: "Rendered while offline."
+  message:
+    type: "string"
+    description: "Message shown inside the offline state."
+  icon:
+    type: "string"
+    description: "Icon rendered in the default offline state."
+  showRetry:
+    type: "boolean"
+    default: true
+    description: "Whether to show a retry affordance."
+  onRetry:
+    type: "Action"
+    description: "Fired when the user taps retry."
+  isOnline:
+    type: "boolean | binding"
+    description: "Explicit connectivity override."
+# examples migrated verbatim from prose JSON fences.

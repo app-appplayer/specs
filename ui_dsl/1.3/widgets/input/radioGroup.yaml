@@ -1,0 +1,28 @@
+type: radioGroup
+category: input
+profile: Core
+description: |
+  Single-selection radio group. Shared rows per §2.6.0.
+properties:
+  options:
+    type: "Option[]"
+    required: true
+    description: "`{ value, label }` entries."
+    aliases:
+      - items
+  orientation:
+    type: "string"
+    default: "\"vertical\""
+    description: "`vertical` or `horizontal`."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "radioGroup",
+        "binding": "settings.language",
+        "options": [
+          { "value": "en", "label": "English" },
+          { "value": "es", "label": "Español" }
+        ]
+      }

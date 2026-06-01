@@ -1,0 +1,38 @@
+type: image
+category: display
+profile: Core
+description: |
+  Displays an image from a URL, bundle, or client resource.
+properties:
+  src:
+    type: "string"
+    required: true
+    description: "Image URL, `bundle://...`, or `client://...`."
+    aliases:
+      - source
+      - backgroundImage
+  width:
+    type: "number"
+    description: "Width in logical pixels."
+  height:
+    type: "number"
+    description: "Height in logical pixels."
+  fit:
+    type: "string"
+    default: "\"contain\""
+    description: "`cover`, `contain`, `fill`, `none`, `scaleDown`, `fitHeight`, `fitWidth`."
+  alignment:
+    type: Alignment
+    default: "\"center\""
+    description: "Alignment within bounds."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "image",
+        "src": "https://example.com/image.png",
+        "width": 200,
+        "height": 150,
+        "fit": "cover"
+      }

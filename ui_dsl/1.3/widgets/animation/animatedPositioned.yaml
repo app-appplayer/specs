@@ -1,0 +1,59 @@
+type: animatedPositioned
+category: animation
+profile: Core
+since: v1.3
+description: |
+  Implicitly animates a child's edge offsets inside a `stack`. Same
+  contract as `positioned` (top/right/bottom/left/width/height) but
+  changes are tweened. Only valid as a `stack` child.
+properties:
+  top:
+    type: Dimension
+    description: Distance from the parent stack's top edge.
+  right:
+    type: Dimension
+    description: Distance from the parent stack's right edge.
+  bottom:
+    type: Dimension
+    description: Distance from the parent stack's bottom edge.
+  left:
+    type: Dimension
+    description: Distance from the parent stack's left edge.
+  width:
+    type: Dimension
+    description: Animated width.
+  height:
+    type: Dimension
+    description: Animated height.
+  duration:
+    type: Dimension
+    default: 300
+    description: Animation duration in milliseconds.
+  curve:
+    type: AnimationCurve
+    default: "\"easeInOut\""
+    description: Easing curve.
+  onEnd:
+    type: Action
+    description: Fires when the animation completes.
+  child:
+    type: Widget
+    required: true
+    description: Positioned child widget.
+examples:
+  - name: floating_button_settle
+    dsl: |
+      {
+        "type": "stack",
+        "children": [
+          { "type": "image", "src": "{{cover}}" },
+          {
+            "type": "animatedPositioned",
+            "right": 16,
+            "bottom": "{{loaded ? 16 : -56}}",
+            "duration": 400,
+            "curve": "emphasized",
+            "child": { "type": "iconButton", "icon": "favorite" }
+          }
+        ]
+      }

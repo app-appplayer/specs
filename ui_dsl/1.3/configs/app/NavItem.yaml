@@ -1,0 +1,38 @@
+name: NavItem
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "label": {
+        "type": "string"
+      },
+      "route": {
+        "type": "string",
+        "pattern": "^/"
+      },
+      "icon": {
+        "type": "string"
+      },
+      "badge": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      },
+      "children": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/NavItem"
+        }
+      },
+      "onTap": {
+        "$ref": "#/$defs/Action"
+      },
+      "style": {
+        "$ref": "#/$defs/NavigationStyle",
+        "description": "Per-item overrides layered on top of NavigationConfig.style."
+      }
+    },
+    "additionalProperties": true
+  }

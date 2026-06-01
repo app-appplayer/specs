@@ -1,0 +1,36 @@
+type: draggable
+category: interaction
+profile: Core
+description: |
+  Drag source widget that produces drag data and feedback visuals.
+properties:
+  data:
+    type: "any | binding"
+    required: true
+    description: "Payload emitted on drop."
+  feedback:
+    type: "Widget"
+    description: "Widget shown while dragging."
+  childWhenDragging:
+    type: "Widget"
+    description: "Replacement for the source while dragging."
+  child:
+    type: "Widget"
+    required: true
+    description: "Source widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "draggable",
+        "data": "{{item.id}}",
+        "feedback": {
+          "type": "card",
+          "child": { "type": "text", "text": "{{item.name}}" }
+        },
+        "child": {
+          "type": "listItem",
+          "title": "{{item.name}}"
+        }
+      }

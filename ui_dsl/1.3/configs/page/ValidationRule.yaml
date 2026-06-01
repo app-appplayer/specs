@@ -1,0 +1,25 @@
+name: ValidationRule
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "field": {
+        "type": "string"
+      },
+      "type": {
+        "type": "string"
+      },
+      "value": {},
+      "message": {
+        "type": "string"
+      },
+      "trigger": {
+        "enum": [
+          "change",
+          "blur",
+          "submit"
+        ]
+      }
+    },
+    "additionalProperties": true
+  }

@@ -1,0 +1,22 @@
+name: DensityValue
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "vertical": {
+        "type": "number",
+        "minimum": -4,
+        "maximum": 4
+      },
+      "horizontal": {
+        "type": "number",
+        "minimum": -4,
+        "maximum": 4
+      }
+    },
+    "required": [
+      "vertical",
+      "horizontal"
+    ],
+    "additionalProperties": false
+  }

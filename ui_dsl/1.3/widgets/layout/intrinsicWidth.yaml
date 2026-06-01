@@ -1,0 +1,11 @@
+type: intrinsicWidth
+category: layout
+profile: Core
+description: |
+  Constrains a child to the intrinsic width required by its content.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Child widget."
+# examples migrated verbatim from prose JSON fences.

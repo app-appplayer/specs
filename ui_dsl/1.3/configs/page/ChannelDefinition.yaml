@@ -1,0 +1,45 @@
+name: ChannelDefinition
+description: |
+  Long-lived bidirectional stream per docs/08_Client_Extensions.md §8.6.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "description": "Channel type — `client.watchFile`, `client.watchDirectory`, `client.systemMonitor`, `client.poll`, `client.websocket` per §8.6.2."
+      },
+      "url": {
+        "type": "string"
+      },
+      "tool": {
+        "type": "string"
+      },
+      "params": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "binding": {
+        "type": "string"
+      },
+      "lifecycle": {
+        "$ref": "#/$defs/ChannelLifecycle"
+      },
+      "onMessage": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onConnect": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onDisconnect": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onError": {
+        "$ref": "#/$defs/ActionOrList"
+      }
+    },
+    "required": [
+      "type"
+    ],
+    "additionalProperties": true
+  }

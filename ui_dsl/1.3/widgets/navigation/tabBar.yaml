@@ -1,0 +1,34 @@
+type: tabBar
+category: navigation
+profile: Core
+description: |
+  Horizontal tab selector. Each tab's text field is `label`.
+properties:
+  selectedIndex:
+    type: "number | binding"
+    default: 0
+    description: "Currently selected index. Defaults to 0 when omitted."
+  tabs:
+    type: "Tab[]"
+    required: true
+    description: "`{ label, icon? }` entries."
+  onChange:
+    type: "Action"
+    description: "Fired when selection changes."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "tabBar",
+        "selectedIndex": "{{activeTab}}",
+        "tabs": [
+          { "label": "Overview" },
+          { "label": "Activity" },
+          { "label": "Settings" }
+        ],
+        "onChange": {
+          "type": "state", "action": "set",
+          "binding": "activeTab", "value": "{{event.index}}"
+        }
+      }

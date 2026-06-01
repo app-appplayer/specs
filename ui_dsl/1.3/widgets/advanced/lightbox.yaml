@@ -1,0 +1,54 @@
+type: lightbox
+category: advanced
+profile: Core
+since: v1.3
+description: |
+  Full-screen modal image viewer with pinch-zoom and swipe-between-
+  images. Used as a tap target on a thumbnail image — opening the
+  lightbox transitions the thumbnail into the full-screen view.
+  Pairs naturally with `hero` for the cover-to-detail morph.
+properties:
+  images:
+    type: "array<AssetRef>"
+    required: true
+    description: Image asset list. Each entry is an AssetRef.
+  initialIndex:
+    type: number
+    default: 0
+    description: Index of the image shown first.
+  allowZoom:
+    type: boolean
+    default: "true"
+    description: Enable pinch-zoom (and double-tap-to-zoom). When false the lightbox shows the image at fit-bounds only.
+  maxZoom:
+    type: number
+    default: 4.0
+    description: Maximum zoom factor (1.0 = fit-bounds).
+  allowSwipe:
+    type: boolean
+    default: "true"
+    description: Enable swipe-between-images. When false the lightbox shows only `images[initialIndex]`.
+  backgroundColor:
+    type: Color
+    default: "\"#FF000000\""
+    description: Backdrop color behind the image (typically black or theme.scrim).
+  onIndexChanged:
+    type: Action
+    description: Fires when the user swipes to a new image. `event.index` carries the new index.
+  onClose:
+    type: Action
+    description: Fires when the user dismisses the lightbox.
+examples:
+  - name: gallery
+    dsl: |
+      {
+        "type": "lightbox",
+        "images": "{{photos}}",
+        "initialIndex": "{{tappedIndex}}",
+        "allowZoom": true,
+        "maxZoom": 6,
+        "onClose": {
+          "type": "state", "action": "set",
+          "binding": "lightboxOpen", "value": false
+        }
+      }

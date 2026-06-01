@@ -1,0 +1,46 @@
+type: list
+category: list
+profile: Core
+aliases:
+  - listView
+  - listview
+description: |
+  Scrollable linear collection rendered from an array binding.
+properties:
+  items:
+    type: "binding"
+    description: "Array source. Required when `children` is omitted (dynamic list)."
+  itemTemplate:
+    type: "Widget"
+    description: "Template rendered per bound item. Required with `items`. Iteration variables `item`, `index`, `isFirst`, `isLast`, `isEven`, `isOdd` are in scope."
+  children:
+    type: "Widget[]"
+    description: "Static list of widgets. Mutually exclusive with `items` + `itemTemplate`."
+  spacing:
+    type: "number"
+    default: 0
+    description: "Gap between items."
+  orientation:
+    type: "string"
+    default: "\"vertical\""
+    description: "`vertical` or `horizontal`."
+  emptyMessage:
+    type: "string"
+    description: "Displayed when the list is empty."
+  itemExtent:
+    type: "number"
+    description: "Fixed item size for performance."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "list",
+        "items": "{{users}}",
+        "spacing": 8,
+        "itemTemplate": {
+          "type": "listItem",
+          "title": "{{item.name}}",
+          "subtitle": "{{item.email}}"
+        }
+      }

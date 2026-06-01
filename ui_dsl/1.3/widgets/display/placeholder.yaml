@@ -1,0 +1,22 @@
+type: placeholder
+category: display
+profile: Core
+description: |
+  Empty placeholder widget with optional dimensions and color.
+properties:
+  fallbackWidth:
+    type: "number"
+    description: "Width when unconstrained."
+  fallbackHeight:
+    type: "number"
+    description: "Height when unconstrained."
+  color:
+    type: "string"
+    description: "Fill color."
+  strokeWidth:
+    type: "number"
+    description: "Line stroke width."
+  child:
+    type: "Widget"
+    description: "Optional child."
+# examples migrated verbatim from prose JSON fences.

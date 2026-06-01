@@ -1,0 +1,18 @@
+type: checkbox
+category: input
+profile: Core
+description: |
+  Boolean checkbox. Shared rows per §2.6.0; `value` is `boolean`.
+properties:
+  label:
+    type: "string"
+    description: "Optional label."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "checkbox",
+        "label": "Receive notifications",
+        "binding": "settings.notifications"
+      }

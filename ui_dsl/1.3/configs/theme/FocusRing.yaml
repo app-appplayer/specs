@@ -1,0 +1,20 @@
+name: FocusRing
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "color": {
+        "$ref": "#/$defs/ColorValue"
+      },
+      "width": {
+        "type": "number"
+      },
+      "offset": {
+        "type": "number"
+      },
+      "radius": {
+        "type": "number"
+      }
+    },
+    "additionalProperties": false
+  }

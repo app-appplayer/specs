@@ -1,0 +1,27 @@
+type: dateField
+category: input
+profile: Core
+description: |
+  Date input with calendar/text entry modes. Shared rows per §2.6.0; `value` is an ISO date string.
+properties:
+  label:
+    type: "string"
+    description: "Field label."
+  format:
+    type: "string"
+    default: "\"yyyy-MM-dd\""
+    description: "Display format."
+  firstDate:
+    type: "string"
+    description: "Earliest allowed date (ISO)."
+  lastDate:
+    type: "string"
+    description: "Latest allowed date (ISO)."
+  mode:
+    type: "string"
+    default: "\"calendar\""
+    description: "`calendar`, `input`, `both`."
+  locale:
+    type: "string"
+    description: "Locale identifier."
+# examples migrated verbatim from prose JSON fences.

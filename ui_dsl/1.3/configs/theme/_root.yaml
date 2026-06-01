@@ -1,0 +1,74 @@
+name: theme.root
+description: |
+  Theme tokens per docs/05_Theme.md. M3 naming + DTCG-friendly + shadcn-style semantic. No legacy aliases.
+definition:
+  {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://specs.makemind.com/mcp_ui_dsl/1.3/theme.schema.json",
+    "title": "MCP UI DSL 1.3 — Theme",
+    "type": "object",
+    "properties": {
+      "mode": {
+        "enum": [
+          "light",
+          "dark",
+          "system"
+        ],
+        "default": "system"
+      },
+      "color": {
+        "$ref": "#/$defs/Color"
+      },
+      "typography": {
+        "$ref": "#/$defs/Typography"
+      },
+      "spacing": {
+        "$ref": "#/$defs/Spacing"
+      },
+      "shape": {
+        "$ref": "#/$defs/Shape"
+      },
+      "elevation": {
+        "$ref": "#/$defs/Elevation"
+      },
+      "motion": {
+        "$ref": "#/$defs/Motion"
+      },
+      "density": {
+        "$ref": "#/$defs/Density"
+      },
+      "breakpoints": {
+        "$ref": "#/$defs/Breakpoints"
+      },
+      "border": {
+        "$ref": "#/$defs/Border"
+      },
+      "opacity": {
+        "$ref": "#/$defs/Opacity"
+      },
+      "focusRing": {
+        "$ref": "#/$defs/FocusRing"
+      },
+      "zIndex": {
+        "$ref": "#/$defs/ZIndex"
+      },
+      "component": {
+        "$ref": "#/$defs/Component"
+      },
+      "preset": {
+        "$ref": "#/$defs/ThemePreset",
+        "description": "Curated theme bundle applied as the base. Other top-level fields layer overrides on top."
+      },
+      "fonts": {
+        "$ref": "#/$defs/FontRegistry",
+        "description": "Font asset registration (variable-axis tunings + per-weight files + fallbacks)."
+      },
+      "light": {
+        "$ref": "#"
+      },
+      "dark": {
+        "$ref": "#"
+      }
+    },
+    "additionalProperties": false
+  }

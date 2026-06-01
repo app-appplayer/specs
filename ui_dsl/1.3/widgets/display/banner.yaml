@@ -1,0 +1,36 @@
+type: banner
+category: display
+profile: Core
+description: |
+  Persistent message banner at the top of a section or page.
+properties:
+  message:
+    type: "string"
+    required: true
+    description: "Banner text."
+  severity:
+    type: "string"
+    default: "\"info\""
+    description: "`info`, `success`, `warning`, `error`."
+  actions:
+    type: "BannerAction[]"
+    description: "Action buttons `{ label, onTap }`."
+  onClose:
+    type: Action
+    description: "Fired when the banner is dismissed (close-button tap or programmatic hide)."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "banner",
+        "message": "Your trial expires in 3 days",
+        "severity": "warning",
+        "actions": [
+          { "label": "Upgrade",
+            "onTap": { "type": "navigation", "action": "push", "route": "/pricing" } },
+          { "label": "Dismiss",
+            "onTap": { "type": "state", "action": "set",
+                       "binding": "showBanner", "value": false } }
+        ]
+      }

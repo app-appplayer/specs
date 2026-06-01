@@ -1,0 +1,51 @@
+type: button
+category: input
+profile: Core
+description: |
+  Interactive button. The canonical label field is `label`.
+properties:
+  label:
+    type: "string"
+    required: true
+    description: "Button text."
+    aliases:
+      - text
+  variant:
+    type: "string"
+    default: "\"elevated\""
+    description: "`elevated`, `filled`, `outlined`, `text`, `icon`."
+    aliases:
+      - style
+  elevation:
+    type: ["string", "number"]
+    description: |
+      Shadow elevation. Accepts either a numeric dp value or an M3
+      elevation token shorthand (`level0` … `level5`) that resolves
+      through `theme.elevation.<token>.shadow`. Honored only by the
+      `elevated` variant; ignored by `filled`/`outlined`/`text`/`icon`.
+  icon:
+    type: "string"
+    description: "Optional leading icon name."
+  enabled:
+    type: "boolean"
+    default: true
+    description: "Whether the button is interactive."
+  onTap:
+    type: "Action"
+    description: "Tap handler."
+  onDoubleTap:
+    type: "Action"
+    description: "Double-tap handler."
+  onLongPress:
+    type: "Action"
+    description: "Long-press handler."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "button",
+        "label": "Submit",
+        "variant": "elevated",
+        "onTap": { "type": "tool", "tool": "submitForm" }
+      }

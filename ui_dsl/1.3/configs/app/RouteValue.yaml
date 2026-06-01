@@ -1,0 +1,45 @@
+name: RouteValue
+description: |
+  Route target. Three accepted forms:
+
+  1. **Inline page** — full PageDefinition object embedded in the
+     routes map.
+  2. **`ui://` URI** — string reference to a page resource served by
+     the host (`ui://catalog/book/details`).
+  3. **Transition wrapper** — `{page, transition}` object that
+     attaches a `RouteTransition` to either of the above. Use when
+     a route should always animate with a specific style (e.g.,
+     book chapter routes use `slide`, modal pages use
+     `fadeThrough`). Authors who want to override per-call can
+     still pass `transition` on the `navigate` action.
+definition:
+  {
+    "oneOf": [
+      {
+        "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.3/page.schema.json"
+      },
+      {
+        "type": "string",
+        "pattern": "^ui://"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "page": {
+            "oneOf": [
+              {
+                "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.3/page.schema.json"
+              },
+              {
+                "type": "string",
+                "pattern": "^ui://"
+              }
+            ]
+          },
+          "transition": { "$ref": "#/$defs/RouteTransition" }
+        },
+        "required": ["page"],
+        "additionalProperties": false
+      }
+    ]
+  }

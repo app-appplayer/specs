@@ -1,0 +1,36 @@
+type: drawer
+category: navigation
+profile: Core
+description: |
+  Side navigation drawer. Each item's text field is `label`.
+properties:
+  items:
+    type: "DrawerItem[]"
+    description: "`{ icon, label, route? }` entries. Required when `children` is omitted."
+  children:
+    type: "Widget[]"
+    description: "Custom drawer body widgets. Mutually exclusive with `items`."
+  header:
+    type: "Widget"
+    description: "Drawer header widget."
+  onSelect:
+    type: "Action"
+    description: "Fired when an item is selected."
+  onClose:
+    type: "Action"
+    description: "Fired when the drawer is dismissed (modal: scrim tap or escape; permanent: not fired)."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "drawer",
+        "items": [
+          { "icon": "dashboard", "label": "Dashboard", "route": "/dashboard" },
+          { "icon": "settings",  "label": "Settings",  "route": "/settings" },
+          { "icon": "person",    "label": "Profile",   "route": "/profile" }
+        ],
+        "onSelect": {
+          "type": "navigation", "action": "push", "route": "{{event.route}}"
+        }
+      }

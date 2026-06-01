@@ -1,0 +1,11 @@
+type: timePicker
+category: input
+profile: Core
+description: |
+  Standalone time picker surface. Shared rows per §2.6.0; `value` is a time string.
+properties:
+  use24HourFormat:
+    type: "boolean"
+    default: false
+    description: "24-hour clock."
+# examples migrated verbatim from prose JSON fences.

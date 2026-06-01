@@ -1,0 +1,67 @@
+type: kenBurnsImage
+category: display
+profile: Core
+since: v1.3
+description: |
+  Image with an automatic slow zoom-and-pan animation (the "Ken
+  Burns effect"). Used for cinematic stills in book chapter
+  openings, landing pages, and slideshow frames. The image holds
+  intrinsic resolution and is animated within fit-bounds — no
+  cropping outside the rendered rectangle.
+properties:
+  src:
+    type: AssetRef
+    required: true
+    description: Image source.
+  duration:
+    type: Dimension
+    default: 8000
+    description: Total animation duration in milliseconds.
+  intensity:
+    type: number
+    default: 0.15
+    description: |
+      Zoom amount. The image zooms from 1.0 to (1.0 + `intensity`)
+      across `duration`. Practical range: `0.05` (subtle) ..
+      `0.30` (dramatic).
+  startAlignment:
+    type: Alignment
+    default: "\"topStart\""
+    description: Pan start position within the rendered bounds.
+  endAlignment:
+    type: Alignment
+    default: "\"bottomEnd\""
+    description: Pan end position within the rendered bounds.
+  loop:
+    type: boolean
+    default: "true"
+    description: When true the animation reverses and replays continuously; when false it stops at the end position.
+  curve:
+    type: AnimationCurve
+    default: "\"linear\""
+    description: Easing curve over the zoom/pan progression.
+  width:
+    type: Dimension
+    description: Render width.
+  height:
+    type: Dimension
+    description: Render height.
+  fit:
+    type: string
+    enum: [cover, contain, fill, fitWidth, fitHeight]
+    default: "\"cover\""
+    description: How the image scales to its render bounds before the Ken Burns animation overlays.
+examples:
+  - name: chapter_opener
+    dsl: |
+      {
+        "type": "kenBurnsImage",
+        "src": "{{chapter.cover}}",
+        "duration": 12000,
+        "intensity": 0.2,
+        "startAlignment": "topStart",
+        "endAlignment": "bottomEnd",
+        "loop": true,
+        "width": 800,
+        "height": 400
+      }

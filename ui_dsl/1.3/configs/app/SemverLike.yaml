@@ -1,0 +1,8 @@
+name: SemverLike
+description: |
+  Two- or three-part version. `1.3` and `1.3.0` are both accepted; comparison uses major.minor only.
+definition:
+  {
+    "type": "string",
+    "pattern": "^[0-9]+(\\.[0-9]+){0,2}(-[0-9A-Za-z.-]+)?$"
+  }

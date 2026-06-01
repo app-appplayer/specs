@@ -1,0 +1,60 @@
+type: lazy
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Defer rendering of an expensive subtree until it enters the viewport (or until explicitly loaded). `lazy` belongs to the Utility group in [`02_Widgets.md`](02_Widgets.md) and is listed here because its schema pairs conceptually with the heavy Advanced widgets above.
+properties:
+  placeholder:
+    type: "Widget"
+    default: null
+    description: "Rendered while `content` is not yet materialized"
+  content:
+    type: "Widget | object"
+    description: "Inline widget, or `{ source: \"ui://...\" }` to fetch a remote page fragment. Required when `children` is omitted."
+  children:
+    type: "Widget[]"
+    description: "Multiple deferred widgets; runtime wraps them in a linear column."
+  trigger:
+    type: "string"
+    enum: ["visible", "immediate", "manual"]
+    default: "visible"
+    description: "`visible` renders when the widget becomes visible to the user (typically scrolled into view); `immediate` renders on mount; `manual` renders when a `load()` signal is received."
+  onLoad:
+    type: "Action"
+    default: null
+    description: "Fired after `content` is materialized"
+  onError:
+    type: "Action"
+    default: null
+    description: "Fired if `content` fetch fails; `event.error`"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "lazy",
+        "placeholder": {
+          "type": "box",
+          "height": 200,
+          "child": { "type": "progressBar" }
+        },
+        "content": {
+          "source": "ui://pages/heavy-component"
+        }
+      }
+  - name: prose_example_1
+    dsl: |
+      {
+        "type": "lazy",
+        "placeholder": {
+          "type": "box",
+          "height": 120,
+          "child": { "type": "text", "text": "Loading chart…" }
+        },
+        "content": {
+          "type": "chart",
+          "chartType": "line",
+          "data": "{{salesData}}"
+        }
+      }

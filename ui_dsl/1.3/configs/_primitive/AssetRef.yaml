@@ -1,0 +1,31 @@
+name: AssetRef
+description: |
+  Reference to an asset (image, font, audio, video, SVG, …). Five
+  scheme prefixes are accepted, picked by the runtime to dispatch
+  the right loader:
+
+  - `bundle://<path>` — asset packaged inside the active bundle.
+  - `https://<url>` / `http://<url>` — fetched over the network and
+    cached on first render.
+  - `data:<mime>;base64,<payload>` (or `data:<mime>,<urlencoded>`) —
+    inline bytes carried in the DSL itself.
+  - `assets/<path>` — Flutter-style local asset path declared in the
+    consumer app's pubspec asset list (used by host integrations that
+    ship icon SVGs alongside the runtime).
+  - `client://<channel>/<id>` — resource served by the client / host
+    process via an MCP client-extension channel.
+
+  Used cross-schema by `app` (splash · publisher logos · font
+  assets), `page`/widgets (image · icon · BackgroundImage · video
+  src), and `theme` (font asset registration). Lives under
+  `configs/_primitive/` for that reason.
+definition:
+  {
+    "oneOf": [
+      {
+        "type": "string",
+        "pattern": "^(bundle://|https?://|data:|assets/|client://)"
+      },
+      { "$ref": "#/$defs/Binding" }
+    ]
+  }

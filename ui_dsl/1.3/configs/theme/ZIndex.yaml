@@ -1,0 +1,37 @@
+name: ZIndex
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "base": {
+        "type": "integer"
+      },
+      "dropdown": {
+        "type": "integer"
+      },
+      "sticky": {
+        "type": "integer"
+      },
+      "overlay": {
+        "type": "integer"
+      },
+      "modal": {
+        "type": "integer"
+      },
+      "popover": {
+        "type": "integer"
+      },
+      "tooltip": {
+        "type": "integer"
+      },
+      "toast": {
+        "type": "integer"
+      },
+      "system": {
+        "type": "integer"
+      }
+    },
+    "additionalProperties": {
+      "type": "integer"
+    }
+  }

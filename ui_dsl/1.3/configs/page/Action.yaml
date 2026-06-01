@@ -1,0 +1,16 @@
+name: Action
+description: |
+  Action per docs/04_Actions.md. Discriminator `type`; per-type fields validated by widgets.schema.json's Action def.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "type"
+    ],
+    "additionalProperties": true
+  }

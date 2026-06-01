@@ -1,0 +1,37 @@
+type: bottomNavigation
+category: navigation
+profile: Core
+aliases:
+  - bottomNav
+  - bottomnavigationbar
+description: |
+  Bottom navigation bar. Each item's text field is `label`.
+properties:
+  selectedIndex:
+    type: "number | binding"
+    default: 0
+    description: "Currently selected index. Defaults to 0 when omitted."
+  items:
+    type: "NavItem[]"
+    required: true
+    description: "`{ icon, label, route? }` entries."
+  onChange:
+    type: "Action"
+    description: "Fired when selection changes."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "bottomNavigation",
+        "selectedIndex": "{{currentTab}}",
+        "items": [
+          { "icon": "home",     "label": "Home" },
+          { "icon": "search",   "label": "Search" },
+          { "icon": "person",   "label": "Profile" }
+        ],
+        "onChange": {
+          "type": "state", "action": "set",
+          "binding": "currentTab", "value": "{{event.index}}"
+        }
+      }

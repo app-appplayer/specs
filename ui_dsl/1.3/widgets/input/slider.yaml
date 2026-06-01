@@ -1,0 +1,31 @@
+type: slider
+category: input
+profile: Core
+description: |
+  Continuous single-value selection. Shared rows per §2.6.0; `value` is `number`.
+properties:
+  value:
+    type: "number"
+    description: "Current numeric value (overrides shared contract to register `values` legacy alias)."
+    aliases:
+      - values
+  min:
+    type: "number"
+    default: 0
+    description: "Minimum value."
+  max:
+    type: "number"
+    default: 1
+    description: "Maximum value."
+  divisions:
+    type: "number"
+    description: "Number of discrete steps."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "slider",
+        "binding": "settings.volume",
+        "min": 0, "max": 100, "divisions": 10
+      }

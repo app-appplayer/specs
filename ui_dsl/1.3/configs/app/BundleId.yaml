@@ -1,0 +1,8 @@
+name: BundleId
+description: |
+  Reverse-DNS bundle identifier (e.g. `com.example.taskflow`).
+definition:
+  {
+    "type": "string",
+    "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+  }

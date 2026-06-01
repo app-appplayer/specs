@@ -1,0 +1,76 @@
+type: gauge
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Radial gauge for a value within a range.
+properties:
+  value:
+    type: "number"
+    required: true
+    description: "Current value"
+  min:
+    type: "number"
+    default: 0
+    description: "Range minimum"
+  max:
+    type: "number"
+    default: 100
+    description: "Range maximum"
+  segments:
+    type: "`Segment[]`"
+    default: null
+    description: "Color segments with `from`, `to`, `color`"
+  size:
+    type: "number"
+    default: 200
+    description: "Diameter (logical px)"
+  strokeWidth:
+    type: "number"
+    default: 20
+    description: "Arc thickness"
+  backgroundColor:
+    type: "string"
+    default: "#E0E0E0"
+    description: "Track color"
+  valueColor:
+    type: "string"
+    default: "theme primary"
+    description: "Value arc color (when no segments)"
+  showLabel:
+    type: "boolean"
+    default: true
+    description: "Show numeric label"
+  labelFormat:
+    type: "string"
+    default: "{value}"
+    description: "Label format pattern"
+  startAngle:
+    type: "number"
+    default: 135
+    description: "Start angle in degrees"
+  sweepAngle:
+    type: "number"
+    default: 270
+    description: "Sweep span in degrees"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "gauge",
+        "value": 72,
+        "min": 0,
+        "max": 100,
+        "segments": [
+          { "from": 0, "to": 30, "color": "#F44336" },
+          { "from": 30, "to": 70, "color": "#FF9800" },
+          { "from": 70, "to": 100, "color": "#4CAF50" }
+        ],
+        "size": 200,
+        "strokeWidth": 20,
+        "showLabel": true,
+        "labelFormat": "{value}%",
+        "startAngle": 135,
+        "sweepAngle": 270
+      }

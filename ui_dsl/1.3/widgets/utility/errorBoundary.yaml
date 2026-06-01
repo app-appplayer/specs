@@ -1,0 +1,17 @@
+type: errorBoundary
+category: utility
+profile: Core
+description: |
+  Catches render and build errors thrown by descendants and displays a fallback UI. See [`06_Runtime_Contract.md`](06_Runtime_Contract.md) for the exact recovery lifecycle.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Protected subtree."
+  fallback:
+    type: "Widget"
+    description: "UI shown when `child` throws. Defaults to a generic error indicator."
+  onError:
+    type: "Action"
+    description: "Fired with `{{event.error}}` / `{{event.stack}}` when the boundary captures an exception."
+# examples migrated verbatim from prose JSON fences.

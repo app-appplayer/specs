@@ -1,0 +1,24 @@
+name: Density
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "comfortable": {
+        "$ref": "#/$defs/DensityValue"
+      },
+      "standard": {
+        "$ref": "#/$defs/DensityValue"
+      },
+      "compact": {
+        "$ref": "#/$defs/DensityValue"
+      },
+      "active": {
+        "enum": [
+          "comfortable",
+          "standard",
+          "compact"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }

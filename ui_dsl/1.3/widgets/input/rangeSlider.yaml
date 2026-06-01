@@ -1,0 +1,18 @@
+type: rangeSlider
+category: input
+profile: Core
+description: |
+  Range selection with two thumbs. Shared rows per §2.6.0; `value` is an object `{ start, end }`.
+properties:
+  min:
+    type: "number"
+    default: 0
+    description: "Minimum value."
+  max:
+    type: "number"
+    default: 1
+    description: "Maximum value."
+  divisions:
+    type: "number"
+    description: "Number of discrete steps."
+# examples migrated verbatim from prose JSON fences.

@@ -1,0 +1,31 @@
+type: stack
+category: layout
+profile: Core
+description: |
+  Overlapping children. Non-positioned children align per `alignment`; positioned children use explicit offsets (see `positioned`).
+properties:
+  alignment:
+    type: Alignment
+    default: "\"topStart\""
+    description: Alignment of non-positioned children.
+  fit:
+    type: "string"
+    default: "\"loose\""
+    description: "Sizing of non-positioned children: `loose`, `expand`, `passthrough`."
+  children:
+    type: "Widget[]"
+    required: true
+    description: "Stacked children (rendered in order; later children render on top)."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "stack",
+        "alignment": "topStart",
+        "children": [
+          { "type": "image", "src": "bundle://hero.png" },
+          { "type": "positioned", "top": 8, "right": 8,
+            "child": { "type": "badge", "label": "NEW" } }
+        ]
+      }

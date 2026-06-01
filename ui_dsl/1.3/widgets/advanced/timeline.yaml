@@ -1,0 +1,52 @@
+type: timeline
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Chronological timeline of events.
+properties:
+  items:
+    type: "`TimelineItem[]`"
+    required: true
+    description: "Timeline entries"
+  items[].title:
+    type: "string"
+    required: true
+    description: "Entry title"
+  items[].subtitle:
+    type: "string"
+    default: null
+    description: "Secondary text"
+  items[].icon:
+    type: "string"
+    default: null
+    description: "Icon name"
+  items[].time:
+    type: "string"
+    default: null
+    description: "Event time (ISO 8601)."
+  items[].color:
+    type: "string"
+    default: "theme"
+    description: "Marker color"
+  orientation:
+    type: "string"
+    enum: ["vertical", "horizontal"]
+    default: "vertical"
+    description: "Layout axis."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "timeline",
+        "orientation": "vertical",
+        "items": [
+          { "title": "Order Placed", "subtitle": "Your order has been confirmed",
+            "icon": "shopping_cart", "time": "2025-01-15T09:00:00Z" },
+          { "title": "Processing", "subtitle": "Preparing your order",
+            "icon": "inventory", "time": "2025-01-15T10:30:00Z" },
+          { "title": "Shipped", "subtitle": "On its way",
+            "icon": "local_shipping", "time": "2025-01-15T14:00:00Z" }
+        ]
+      }

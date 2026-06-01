@@ -1,0 +1,22 @@
+type: timeField
+category: input
+profile: Core
+description: |
+  Time input. Shared rows per §2.6.0; `value` is a time string (e.g., `"14:30"`).
+properties:
+  label:
+    type: "string"
+    description: "Field label."
+  format:
+    type: "string"
+    default: "\"HH:mm\""
+    description: "Display format."
+  use24HourFormat:
+    type: "boolean"
+    default: true
+    description: "24-hour clock."
+  mode:
+    type: "string"
+    default: "\"spinner\""
+    description: "`spinner`, `input`, `dial`."
+# examples migrated verbatim from prose JSON fences.

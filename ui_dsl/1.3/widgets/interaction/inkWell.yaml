@@ -1,0 +1,20 @@
+type: inkWell
+category: interaction
+profile: Core
+description: |
+  Material-style touch feedback with ripple effect.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Tappable widget."
+  borderRadius:
+    type: "number"
+    description: "Ripple clip radius."
+  onTap:
+    type: "Action"
+    description: "Tap handler."
+  onLongPress:
+    type: "Action"
+    description: "Long-press handler."
+# examples migrated verbatim from prose JSON fences.

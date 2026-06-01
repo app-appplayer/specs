@@ -1,0 +1,15 @@
+type: spacer
+category: layout
+profile: Core
+description: |
+  Flexible empty space inside a `linear` parent.
+properties:
+  flex:
+    type: "number"
+    default: 1
+    description: "Proportion of available space to occupy."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      { "type": "spacer", "flex": 1 }

@@ -1,0 +1,57 @@
+type: imageFilter
+category: display
+profile: Core
+since: v1.3
+description: |
+  Wraps a child with a colour / blur filter. Distinct from
+  `BoxDecoration.image.colorFilter` (which colours an image
+  background) — `imageFilter` filters the entire rendered subtree.
+  Use for sepia/grayscale book pages, blur-on-hover thumbnails,
+  saturation-bumped hero shots.
+properties:
+  filter:
+    type: string
+    enum: [sepia, grayscale, blur, saturation, brightness, contrast, invert]
+    required: true
+    description: |
+      Filter kind:
+      - `sepia` — warm-tone tint mimicking aged photograph.
+      - `grayscale` — desaturate to luminance.
+      - `blur` — Gaussian blur (sigma controlled by `intensity`).
+      - `saturation` — multiply chroma by `intensity` (0 = grayscale, 1 = unchanged, >1 = pop).
+      - `brightness` — multiply luminance.
+      - `contrast` — increase / decrease contrast.
+      - `invert` — colour invert (negative).
+  intensity:
+    type: number
+    default: 1.0
+    description: |
+      Filter strength. Range and default depend on `filter`:
+      - `sepia` / `grayscale` / `invert` — `0.0` (off) .. `1.0` (full). Default `1.0`.
+      - `blur` — sigma in pixels (`0.0` off, typical 4..16).
+      - `saturation` / `brightness` / `contrast` — multiplier (`1.0` unchanged).
+  child:
+    type: Widget
+    required: true
+    description: Filtered subtree.
+examples:
+  - name: sepia_book_page
+    dsl: |
+      {
+        "type": "imageFilter",
+        "filter": "sepia",
+        "intensity": 0.7,
+        "child": {
+          "type": "image",
+          "src": "{{chapter.illustration}}",
+          "fit": "cover"
+        }
+      }
+  - name: blur_on_inactive
+    dsl: |
+      {
+        "type": "imageFilter",
+        "filter": "blur",
+        "intensity": "{{active ? 0 : 8}}",
+        "child": { "type": "image", "src": "{{cover}}" }
+      }

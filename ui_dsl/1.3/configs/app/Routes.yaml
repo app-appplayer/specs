@@ -1,0 +1,13 @@
+name: Routes
+description: |
+  Map of route path (`/path`, `/users/:id`) to inline PageDefinition or `ui://` URI.
+definition:
+  {
+    "type": "object",
+    "propertyNames": {
+      "pattern": "^/"
+    },
+    "additionalProperties": {
+      "$ref": "#/$defs/RouteValue"
+    }
+  }

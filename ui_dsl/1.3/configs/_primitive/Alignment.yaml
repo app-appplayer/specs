@@ -1,0 +1,49 @@
+name: Alignment
+description: |
+  2D alignment within a rectangle. Token names are **directional**
+  (RTL-aware) per Material 3:
+
+  - `topStart` — top corner on the leading edge (top-left in LTR,
+    top-right in RTL).
+  - `topEnd` — top corner on the trailing edge.
+  - `centerStart` / `centerEnd`, `bottomStart` / `bottomEnd` — same
+    convention on the middle / bottom rows.
+  - `topCenter`, `center`, `bottomCenter` — neutral on the cross
+    axis.
+
+  Object form `{x, y}` is a numeric pair where each axis runs from
+  -1 (start) through 0 (center) to 1 (end). The numeric form
+  supports any point inside or outside the rectangle.
+
+  Cross-schema canonical for any "2D rectangle alignment" use —
+  child placement (`box.alignment`, `align.alignment`,
+  `stack.alignment`), gradient endpoints (`Gradient.begin/end`),
+  image fit (`BackgroundImage.alignment`).
+definition:
+  {
+    "oneOf": [
+      {
+        "enum": [
+          "topStart",
+          "topCenter",
+          "topEnd",
+          "centerStart",
+          "center",
+          "centerEnd",
+          "bottomStart",
+          "bottomCenter",
+          "bottomEnd"
+        ]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "x": { "type": "number", "minimum": -1, "maximum": 1 },
+          "y": { "type": "number", "minimum": -1, "maximum": 1 }
+        },
+        "required": ["x", "y"],
+        "additionalProperties": false
+      },
+      { "$ref": "#/$defs/Binding" }
+    ]
+  }

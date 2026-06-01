@@ -1,0 +1,48 @@
+type: heatmap
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Two-dimensional heatmap visualization.
+properties:
+  data:
+    type: "array | binding"
+    required: true
+    description: "2D numeric array (rows × columns). Literal array or binding."
+  columnLabels:
+    type: "string[]"
+    default: null
+    description: "Horizontal axis labels"
+  rowLabels:
+    type: "string[]"
+    default: null
+    description: "Vertical axis labels"
+  cellSize:
+    type: "number"
+    default: 40
+    description: "Cell size (logical px)"
+  colorRange:
+    type: "`{ low, high }`"
+    default: "{ \"#E3F2FD\", \"#1565C0\" }"
+    description: "Hex gradient endpoints"
+  showValues:
+    type: "boolean"
+    default: false
+    description: "Render numeric value inside each cell"
+  onCellTap:
+    type: "Action"
+    default: null
+    description: "Fired on cell tap; `event.row`, `event.column`, `event.value`"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "heatmap",
+        "data": "{{heatmapData}}",
+        "columnLabels": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+        "rowLabels": ["Morning", "Afternoon", "Evening"],
+        "cellSize": 40,
+        "colorRange": { "low": "#E3F2FD", "high": "#1565C0" },
+        "showValues": true
+      }

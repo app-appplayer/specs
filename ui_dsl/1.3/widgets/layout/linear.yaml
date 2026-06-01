@@ -1,0 +1,72 @@
+type: linear
+category: layout
+profile: Core
+aliases:
+  - row
+  - column
+description: |
+  Linear (flex) layout along a single axis. Replaces separate `row` / `column` widgets — use `direction: "horizontal"` or `direction: "vertical"`.
+
+  Main-axis sizing: when at least one child is `expanded` / `flexible` / `spacer` (or carries a `flex` value), `linear` expands to fill the available main-axis space so those children can distribute the remainder; otherwise it shrink-wraps its children. Authors can override this with the explicit `mainAxisSize` property.
+properties:
+  mainAxisSize:
+    type: "string"
+    enum: ["min", "max"]
+    description: "`max` fills the parent along `direction`; `min` shrink-wraps. Defaults to `max` when a flex child (`expanded`/`flexible`/`spacer`) is present, otherwise `min`."
+  direction:
+    type: "string"
+    required: true
+    default: "\"vertical\""
+    description: "`\"horizontal\"` or `\"vertical\"`."
+    aliases:
+      - orientation
+      - scrollDirection
+  alignment:
+    type: "string"
+    default: "\"start\""
+    description: "Cross-axis alignment: `start`, `center`, `end`, `stretch`."
+    aliases:
+      - crossAxisAlignment
+  distribution:
+    type: "string"
+    default: "\"start\""
+    description: "Main-axis distribution: `start`, `center`, `end`, `spaceBetween`, `spaceAround`, `spaceEvenly`."
+    aliases:
+      - mainAxisAlignment
+  spacing:
+    type: "number"
+    default: 0
+    description: "Gap between children in logical pixels."
+    aliases:
+      - gap
+      - itemSpacing
+  children:
+    type: "Widget[]"
+    required: true
+    description: "Child widgets arranged along `direction`."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "linear",
+        "direction": "vertical",
+        "alignment": "center",
+        "distribution": "start",
+        "spacing": 12,
+        "children": [
+          { "type": "text", "text": "Title" },
+          { "type": "text", "text": "Subtitle" }
+        ]
+      }
+  - name: prose_example_1
+    dsl: |
+      {
+        "type": "linear",
+        "direction": "horizontal",
+        "distribution": "spaceBetween",
+        "children": [
+          { "type": "text", "text": "Left" },
+          { "type": "text", "text": "Right" }
+        ]
+      }

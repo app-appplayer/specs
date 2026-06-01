@@ -1,0 +1,26 @@
+type: tabBarView
+category: navigation
+profile: Core
+description: |
+  Content area that displays widgets corresponding to the currently selected tab.
+properties:
+  selectedIndex:
+    type: "number | binding"
+    description: "Displayed index (usually bound to the same state as a `tabBar`)."
+  children:
+    type: "Widget[]"
+    required: true
+    description: "One child per tab."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "tabBarView",
+        "selectedIndex": "{{activeTab}}",
+        "children": [
+          { "type": "text", "text": "Overview content" },
+          { "type": "text", "text": "Activity content" },
+          { "type": "text", "text": "Settings content" }
+        ]
+      }

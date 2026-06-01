@@ -1,0 +1,30 @@
+name: ValidationConfig
+description: |
+  Form validation per page. Shape A (object keyed by field) or Shape B (rule list).
+definition:
+  {
+    "oneOf": [
+      {
+        "type": "object",
+        "additionalProperties": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ValidationRule"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ValidationRule"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/ValidationRule"
+        }
+      }
+    ]
+  }

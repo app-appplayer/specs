@@ -1,0 +1,34 @@
+type: snackBar
+category: dialog
+profile: Core
+description: |
+  Transient notification at the bottom of the screen.
+properties:
+  content:
+    type: "string"
+    required: true
+    description: "Message text."
+  duration:
+    type: "number"
+    default: 4000
+    description: "Display duration in milliseconds."
+  action:
+    type: "SnackBarAction"
+    description: "`{ label, onTap }` optional action."
+  onClose:
+    type: Action
+    description: "Fired when the snackbar is dismissed (timeout, swipe-away, or `action.onTap` complete)."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "snackBar",
+        "content": "Item deleted successfully",
+        "duration": 4000,
+        "action": {
+          "label": "Undo",
+          "onTap": { "type": "tool", "tool": "undoDelete",
+                     "params": { "id": "{{deletedItemId}}" } }
+        }
+      }

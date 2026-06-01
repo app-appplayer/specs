@@ -1,0 +1,27 @@
+type: scrollBar
+category: scroll
+profile: Core
+description: |
+  Wraps a scrollable child with a visible scroll bar.
+
+  The runtime MUST provide a shared scroll controller to both the scroll bar and its scrollable child. When `thumbVisibility` or `trackVisibility` is `true`, the controller is required to drive the visibility; omitting it is a runtime error. Authors SHOULD NOT manage the controller manually — the runtime injects it transparently so the child scrollable (`scrollView`, `singleChildScrollView`, `list`, `grid`, `pageView`) binds to the same position.
+properties:
+  thumbVisibility:
+    type: "boolean"
+    description: "Whether the scroll thumb is always visible."
+  trackVisibility:
+    type: "boolean"
+    description: "Whether the scroll track is always visible."
+  thickness:
+    type: "number"
+    description: "Scroll bar thickness."
+  radius:
+    type: "number"
+    description: "Scroll bar corner radius."
+  child:
+    type: "Widget"
+    description: "Scrollable child. Required when `children` is omitted."
+  children:
+    type: "Widget[]"
+    description: "Multiple widgets; runtime wraps them in a linear column. Mutually exclusive with `child`."
+# examples migrated verbatim from prose JSON fences.

@@ -1,0 +1,34 @@
+name: BoxDecoration
+description: |
+  Visual decoration for a box. `color` and `gradient` are mutually
+  exclusive — when both are present `gradient` wins. `image` paints
+  beneath the gradient/color (background image layer). `border`,
+  `borderRadius`, and `boxShadow` apply on top of the fill. `shape`
+  toggles between rectangle (default) and circle (uses the box's
+  shorter side as diameter; ignores `borderRadius`). `backdropBlur`
+  applies a Gaussian blur to whatever is behind the box (for frosted-
+  glass overlays); the value is the blur sigma.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "color": { "type": "string" },
+      "gradient": { "$ref": "#/$defs/Gradient" },
+      "image": { "$ref": "#/$defs/BackgroundImage" },
+      "border": { "$ref": "#/$defs/BoxBorder" },
+      "borderRadius": { "$ref": "#/$defs/BorderRadius" },
+      "boxShadow": {
+        "type": "array",
+        "items": { "$ref": "#/$defs/BoxShadow" }
+      },
+      "shape": {
+        "enum": ["rectangle", "circle"],
+        "default": "rectangle"
+      },
+      "backdropBlur": {
+        "type": "number",
+        "minimum": 0
+      }
+    },
+    "additionalProperties": false
+  }

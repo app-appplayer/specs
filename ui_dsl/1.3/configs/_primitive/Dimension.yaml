@@ -1,0 +1,22 @@
+name: Dimension
+description: |
+  Numeric size — accepts a plain `number` (logical pixels) OR the
+  legacy MCP UI DSL v1.0 `{value, unit}` object form. The `unit`
+  field is informational; the runtime treats every dimension as
+  logical pixels.
+definition:
+  {
+    "oneOf": [
+      { "type": "number" },
+      {
+        "type": "object",
+        "properties": {
+          "value": { "type": "number" },
+          "unit": { "type": "string" }
+        },
+        "required": ["value"],
+        "additionalProperties": false
+      },
+      { "$ref": "#/$defs/Binding" }
+    ]
+  }

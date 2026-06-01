@@ -1,0 +1,16 @@
+type: safeArea
+category: layout
+profile: Core
+description: |
+  Insets children so they avoid system UI overlaps (notch, status bar, home indicator).
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Child widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      { "type": "safeArea", "top": true, "bottom": true,
+        "child": { "type": "text", "text": "Safe content" } }

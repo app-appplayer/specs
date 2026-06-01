@@ -1,0 +1,22 @@
+name: BoxBorder
+description: |
+  Border around a box. Either a single uniform side applied to all four
+  edges, or per-side overrides. Per-side keys (`top` / `bottom` /
+  `left` / `right`) take precedence over `all`.
+definition:
+  {
+    "oneOf": [
+      { "$ref": "#/$defs/BorderSide" },
+      {
+        "type": "object",
+        "properties": {
+          "top": { "$ref": "#/$defs/BorderSide" },
+          "bottom": { "$ref": "#/$defs/BorderSide" },
+          "left": { "$ref": "#/$defs/BorderSide" },
+          "right": { "$ref": "#/$defs/BorderSide" },
+          "all": { "$ref": "#/$defs/BorderSide" }
+        },
+        "additionalProperties": false
+      }
+    ]
+  }

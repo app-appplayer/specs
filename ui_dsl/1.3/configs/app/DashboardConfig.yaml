@@ -1,0 +1,23 @@
+name: DashboardConfig
+description: |
+  Compact rendering entry point per docs/11_Bundle_Metadata.md §11.9.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "content": {
+        "$ref": "#/$defs/Widget"
+      },
+      "refreshInterval": {
+        "type": "number",
+        "minimum": 0
+      },
+      "onTap": {
+        "$ref": "#/$defs/Action"
+      }
+    },
+    "required": [
+      "content"
+    ],
+    "additionalProperties": false
+  }

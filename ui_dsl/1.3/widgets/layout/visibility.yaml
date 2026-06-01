@@ -1,0 +1,37 @@
+type: visibility
+category: layout
+profile: Core
+description: |
+  Shows or hides a child with optional state preservation and replacement content.
+properties:
+  visible:
+    type: "boolean | binding"
+    default: true
+    description: "Whether the child is visible. Defaults to `true` when omitted."
+  maintainSize:
+    type: "boolean"
+    default: false
+    description: "Keep space allocated when hidden."
+  maintainState:
+    type: "boolean"
+    default: false
+    description: "Preserve `child` state when hidden. Does not affect `replacement`, which is built fresh each time it is shown."
+  replacement:
+    type: "Widget"
+    description: "Widget shown in place of `child` when `visible` is `false`. When absent, the child is simply hidden in-place (respecting `maintainSize` / `maintainState`)."
+  child:
+    type: "Widget"
+    description: "Primary widget. Required when `children` is omitted."
+  children:
+    type: "Widget[]"
+    description: "Multiple widgets; runtime wraps them in a linear column. Mutually exclusive with `child`."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "visibility",
+        "visible": "{{showControls}}",
+        "maintainState": true,
+        "child": { "type": "button", "label": "Hide me" }
+      }

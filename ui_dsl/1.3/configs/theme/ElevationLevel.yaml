@@ -1,0 +1,21 @@
+name: ElevationLevel
+definition:
+  {
+    "oneOf": [
+      {
+        "type": "number"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "shadow": {
+            "type": "number"
+          },
+          "tint": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      }
+    ]
+  }

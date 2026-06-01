@@ -1,0 +1,81 @@
+type: chart
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Data visualization widget with multiple chart types.
+properties:
+  chartType:
+    type: "string"
+    enum: ["line", "bar", "pie", "donut", "scatter", "area", "radar", "polar", "bubble"]
+    required: true
+    description: "Chart visualization style."
+  data:
+    type: "object | array"
+    required: true
+    description: "Canonical `{ labels: string[], datasets: Dataset[] }`, or legacy `[{label, value}]` array form."
+  data.datasets[].label:
+    type: "string"
+    default: null
+    description: "Dataset label shown in legend"
+  data.datasets[].data:
+    type: "number[]"
+    required: true
+    description: "Data points"
+  data.datasets[].borderColor:
+    type: "string"
+    default: "theme"
+    description: "Line/border color"
+  data.datasets[].backgroundColor:
+    type: "string"
+    default: "theme"
+    description: "Fill color"
+  options:
+    type: "object"
+    default: "{}"
+    description: "Rendering options"
+  options.responsive:
+    type: "boolean"
+    default: true
+    description: "Resize with container"
+  options.animation.duration:
+    type: "number"
+    default: 1000
+    description: "Animation duration (ms)"
+  options.legend.position:
+    type: "string"
+    enum: ["top", "bottom", "left", "right", "none"]
+    default: "top"
+    description: "Legend placement."
+  width:
+    type: "number"
+    default: null
+    description: "Fixed width (logical pixels)"
+  height:
+    type: "number"
+    default: null
+    description: "Fixed height (logical pixels)"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "chart",
+        "chartType": "line",
+        "data": {
+          "labels": ["Jan", "Feb", "Mar", "Apr"],
+          "datasets": [
+            {
+              "label": "Sales",
+              "data": [100, 200, 150, 300],
+              "borderColor": "#2196F3",
+              "backgroundColor": "rgba(33, 150, 243, 0.2)"
+            }
+          ]
+        },
+        "options": {
+          "responsive": true,
+          "animation": { "duration": 1000 },
+          "legend": { "position": "top" }
+        }
+      }

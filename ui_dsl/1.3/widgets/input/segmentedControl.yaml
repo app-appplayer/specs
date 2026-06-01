@@ -1,0 +1,28 @@
+type: segmentedControl
+category: input
+profile: Core
+description: |
+  Segmented selection, styled as tabs or buttons. Shared rows per §2.6.0.
+properties:
+  options:
+    type: "Option[]"
+    required: true
+    description: "`{ value, label, icon? }` entries."
+    aliases:
+      - segments
+  variant:
+    type: "string"
+    default: "\"segmented\""
+    description: "`segmented`, `tabs`, `buttons`."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "segmentedControl",
+        "binding": "viewMode",
+        "options": [
+          { "value": "list", "label": "List", "icon": "list" },
+          { "value": "grid", "label": "Grid", "icon": "grid_view" }
+        ]
+      }

@@ -1,0 +1,82 @@
+type: codeEditor
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Syntax-highlighted code editor.
+properties:
+  code:
+    type: "string | binding"
+    required: true
+    description: "Code content — literal string or binding."
+  language:
+    type: "string"
+    enum: ["plaintext", "javascript", "typescript", "dart", "python", "java", "kotlin", "swift", "go", "rust", "c", "cpp", "csharp", "ruby", "php", "sql", "json", "yaml", "xml", "html", "css", "markdown", "shell"]
+    default: "plaintext"
+    description: "Syntax highlighting language."
+  theme:
+    type: "string"
+    enum: ["vsLight", "vsDark", "monokai", "solarizedLight", "solarizedDark", "github", "dracula"]
+    default: "vsLight"
+    description: "Editor color theme."
+  readOnly:
+    type: "boolean"
+    default: false
+    description: "Disable editing (syntax highlighting still applies)"
+  showLineNumbers:
+    type: "boolean"
+    default: true
+    description: "Show gutter line numbers"
+  fontSize:
+    type: "number"
+    default: null
+    description: "Font size (logical px)"
+  lineHeight:
+    type: "number"
+    default: null
+    description: "Line height multiplier"
+  tabSize:
+    type: "number"
+    default: 2
+    description: "Tab width in spaces"
+  width:
+    type: "number"
+    default: null
+    description: "Widget width"
+  height:
+    type: "number"
+    default: null
+    description: "Widget height"
+  backgroundColor:
+    type: "string"
+    default: null
+    description: "Override theme background"
+  textColor:
+    type: "string"
+    default: null
+    description: "Override theme default text color"
+  onChange:
+    type: "Action"
+    default: null
+    description: "Fired on code change; `event.value` is current code"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "codeEditor",
+        "code": "{{sourceCode}}",
+        "language": "javascript",
+        "theme": "vsDark",
+        "readOnly": false,
+        "showLineNumbers": true,
+        "fontSize": 14,
+        "lineHeight": 1.5,
+        "tabSize": 2,
+        "width": 600,
+        "height": 400,
+        "onChange": {
+          "type": "state", "action": "set",
+          "binding": "sourceCode", "value": "{{event.value}}"
+        }
+      }

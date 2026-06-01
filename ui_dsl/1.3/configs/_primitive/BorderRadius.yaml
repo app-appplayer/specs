@@ -1,0 +1,35 @@
+name: BorderRadius
+description: |
+  Per-corner radius value. A bare number applies uniformly to all
+  four corners; the object form lets each corner take an independent
+  radius. `all` is a shorthand for setting every corner at once and
+  is overridden by individual corner keys.
+
+  Corner names are **directional** (RTL-aware) per Material 3:
+
+  - `topStart` — top corner on the leading edge (top-left in LTR,
+    top-right in RTL).
+  - `topEnd` — top corner on the trailing edge.
+  - `bottomStart` / `bottomEnd` — same convention on the bottom row.
+
+  This is the cross-schema canonical for any "per-corner radius"
+  shape — referenced by `theme.Shape` (M3 shape token sizes) and by
+  the `BoxDecoration.borderRadius` widget property.
+definition:
+  {
+    "oneOf": [
+      { "type": "number", "minimum": 0 },
+      {
+        "type": "object",
+        "properties": {
+          "topStart": { "type": "number", "minimum": 0 },
+          "topEnd": { "type": "number", "minimum": 0 },
+          "bottomStart": { "type": "number", "minimum": 0 },
+          "bottomEnd": { "type": "number", "minimum": 0 },
+          "all": { "type": "number", "minimum": 0 }
+        },
+        "additionalProperties": false
+      },
+      { "$ref": "#/$defs/Binding" }
+    ]
+  }

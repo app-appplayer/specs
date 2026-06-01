@@ -1,0 +1,34 @@
+type: navigationRail
+category: navigation
+profile: Core
+description: |
+  Vertical navigation rail for tablet/desktop layouts. Each item's text field is `label`.
+properties:
+  selectedIndex:
+    type: "number | binding"
+    description: "Currently selected item."
+  items:
+    type: "NavItem[]"
+    required: true
+    description: "`{ icon, label, route? }` entries."
+    aliases:
+      - destinations
+  onChange:
+    type: "Action"
+    description: "Fired when selection changes."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "navigationRail",
+        "selectedIndex": "{{selectedNavIndex}}",
+        "items": [
+          { "icon": "dashboard", "label": "Dashboard", "route": "/dashboard" },
+          { "icon": "people",    "label": "Users",     "route": "/users" },
+          { "icon": "settings",  "label": "Settings",  "route": "/settings" }
+        ],
+        "onChange": {
+          "type": "navigation", "action": "push", "route": "{{event.route}}"
+        }
+      }

@@ -1,0 +1,19 @@
+type: lottieAnimation
+category: animation
+profile: Core
+description: |
+  Embedded Lottie/JSON animation playback.
+properties:
+  src:
+    type: "string"
+    required: true
+    description: "Animation source (`bundle://`, `client://`, URL)."
+  autoPlay:
+    type: "boolean"
+    default: true
+    description: "Play on mount."
+  loop:
+    type: "boolean"
+    default: true
+    description: "Loop playback."
+# examples migrated verbatim from prose JSON fences.

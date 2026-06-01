@@ -1,0 +1,8 @@
+name: ChannelMap
+definition:
+  {
+    "type": "object",
+    "additionalProperties": {
+      "$ref": "#/$defs/ChannelDefinition"
+    }
+  }

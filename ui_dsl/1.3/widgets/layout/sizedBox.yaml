@@ -1,0 +1,20 @@
+type: sizedBox
+category: layout
+profile: Core
+description: |
+  Fixed-size box. Commonly used as a spacer with an explicit size.
+properties:
+  width:
+    type: "number"
+    description: "Width in logical pixels."
+  height:
+    type: "number"
+    description: "Height in logical pixels."
+  child:
+    type: "Widget"
+    description: "Optional child."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      { "type": "sizedBox", "height": 24 }

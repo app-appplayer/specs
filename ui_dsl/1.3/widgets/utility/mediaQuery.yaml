@@ -1,0 +1,22 @@
+type: mediaQuery
+category: utility
+profile: Core
+description: |
+  Responsive widget that inspects the current layout context and picks a child based on media-query conditions. Supports a `then`/`else` expression form and a `breakpoints` map form. The binding engine exposes `{{media.width}}`, `{{media.height}}`, `{{media.orientation}}` inside `condition`.
+properties:
+  condition:
+    type: "object | binding"
+    description: "Boolean expression (string) or constraint object like `{minWidth, maxWidth}`; selects `then` when truthy."
+  then:
+    type: "Widget"
+    description: "Rendered when `condition` is truthy."
+  else:
+    type: "Widget"
+    description: "Rendered when `condition` is falsy. Legacy alias: `orElse`."
+  breakpoints:
+    type: "object"
+    description: "Map of breakpoint name → Widget (e.g., `{ \"sm\": ..., \"md\": ... }`)."
+  defaultChild:
+    type: "Widget"
+    description: "Rendered when no breakpoint matches."
+# examples migrated verbatim from prose JSON fences.

@@ -1,0 +1,23 @@
+type: flow
+category: utility
+profile: Core
+description: |
+  Lightweight flowing layout that places each child along the main axis with fixed `spacing`, falling back to a new run when space is exhausted. A simpler alternative to `wrap` (§2.4.11) for spacer-style chains.
+properties:
+  children:
+    type: "Widget[]"
+    required: true
+    description: "Flow children."
+  direction:
+    type: "string"
+    default: "\"horizontal\""
+    description: "`horizontal` or `vertical`."
+  spacing:
+    type: "number"
+    default: 8
+    description: "Gap between children in logical pixels."
+  alignment:
+    type: "string"
+    default: "\"start\""
+    description: "`start`, `center`, `end`."
+# examples migrated verbatim from prose JSON fences.

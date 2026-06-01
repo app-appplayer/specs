@@ -1,0 +1,35 @@
+type: singleChildScrollView
+category: scroll
+profile: Core
+description: |
+  Lightweight scrollable wrapper for a single child.
+properties:
+  direction:
+    type: "string"
+    default: "\"vertical\""
+    description: "Scroll direction."
+  padding:
+    type: "EdgeInsets"
+    description: "Inner padding."
+  child:
+    type: "Widget"
+    description: "Scrolled content. Required when `children` is omitted."
+  children:
+    type: "Widget[]"
+    description: "Multiple widgets; runtime wraps them in a linear column along `direction`. Mutually exclusive with `child`."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "singleChildScrollView",
+        "direction": "vertical",
+        "padding": { "all": 16 },
+        "child": {
+          "type": "linear", "direction": "vertical",
+          "children": [
+            { "type": "text", "text": "First section" },
+            { "type": "text", "text": "Second section" }
+          ]
+        }
+      }

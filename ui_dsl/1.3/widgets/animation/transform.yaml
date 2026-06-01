@@ -1,0 +1,53 @@
+type: transform
+category: animation
+profile: Core
+since: v1.3
+description: |
+  Geometric transformation (rotate, scale, translate) applied to a child.
+properties:
+  rotate:
+    type: "number"
+    default: 0
+    description: "Rotation in radians."
+  scale:
+    type: "number | object"
+    default: 1
+    description: "Uniform scale, or `{ x, y }` non-uniform scale."
+  translate:
+    type: "object"
+    description: "`{ x, y }` offset in logical pixels."
+  origin:
+    type: "object"
+    default: "{ \"x\": 0.5, \"y\": 0.5 }"
+    description: "Transform origin as fraction."
+  animated:
+    type: "boolean"
+    default: false
+    description: "Animate transform changes."
+  duration:
+    type: "number"
+    default: 300
+    description: "Animation duration in milliseconds."
+  curve:
+    type: "string"
+    default: "\"easeInOut\""
+    description: "Animation curve."
+  child:
+    type: "Widget"
+    required: true
+    description: "Child widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "transform",
+        "rotate": "{{local.isFlipped ? 3.14 : 0}}",
+        "scale": "{{local.isHovered ? 1.05 : 1.0}}",
+        "animated": true,
+        "duration": 300,
+        "child": {
+          "type": "card",
+          "child": { "type": "text", "text": "{{title}}" }
+        }
+      }

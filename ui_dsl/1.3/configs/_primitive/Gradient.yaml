@@ -1,0 +1,46 @@
+name: Gradient
+description: |
+  Multi-stop gradient fill. Selected by `type`:
+
+  - `linear` — straight axis from `begin` (default `centerLeft`) to
+    `end` (default `centerRight`).
+  - `radial` — circular gradient out from `center` (default `center`)
+    to `radius` (default `0.5`, expressed as a fraction of the
+    bounding rectangle's longest side).
+  - `sweep` — angular gradient around `center`, swept from
+    `startAngle` (default `0`) to `endAngle` (default `2π`) in
+    radians.
+
+  `colors` lists at least two color values; `stops` (optional) places
+  each color at a position in `[0, 1]`. `tileMode` controls behaviour
+  past the gradient extents.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "type": {
+        "enum": ["linear", "radial", "sweep"]
+      },
+      "colors": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 2
+      },
+      "stops": {
+        "type": "array",
+        "items": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "begin": { "$ref": "#/$defs/Alignment" },
+      "end": { "$ref": "#/$defs/Alignment" },
+      "center": { "$ref": "#/$defs/Alignment" },
+      "radius": { "type": "number", "minimum": 0 },
+      "startAngle": { "type": "number" },
+      "endAngle": { "type": "number" },
+      "tileMode": {
+        "enum": ["clamp", "repeated", "mirror"],
+        "default": "clamp"
+      }
+    },
+    "required": ["type", "colors"],
+    "additionalProperties": false
+  }

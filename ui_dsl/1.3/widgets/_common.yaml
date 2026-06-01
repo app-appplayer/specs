@@ -1,0 +1,29 @@
+# Widget common properties — applied to every widget def by codegen.
+#
+# Source of truth for the "common widget property" rows in
+# `02_Widgets.md` §2.2 and `01_Core_Concepts.md` §1.4.1. The two
+# codegens (`tools/spec_codegen/bin/spec_codegen.dart` for the
+# machine schema + `tools/spec_codegen/bin/generator_codegen.dart`
+# for the typed builders) load this file at startup and merge every
+# property below into each widget's properties block. A widget that
+# declares a same-named property in its own yaml wins — common is
+# only the universal fallback.
+#
+# File prefix `_` keeps the codegens' main iteration from treating
+# this as a widget yaml (no `type:` discriminator).
+
+properties:
+  click:
+    type: Action
+    description: |
+      Action fired when the widget is tapped. Runtime wraps the widget
+      in a gesture surface and dispatches the action on tap. Widget-local
+      activation surfaces (`button.onTap`, `iconButton.onTap`,
+      `richText.spans[].onTap`, …) remain canonical for those widgets and
+      are NOT replaced by `click`; `click` is the universal fallback for
+      widgets that have no dedicated activation slot.
+  tooltip:
+    type: string
+    description: |
+      Hover / long-press tooltip text. Runtime wraps the widget in a
+      `Tooltip` surface.

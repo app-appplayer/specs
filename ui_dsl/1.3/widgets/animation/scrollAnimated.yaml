@@ -1,0 +1,51 @@
+type: scrollAnimated
+category: animation
+profile: Core
+since: v1.3
+description: |
+  Animation driven by scroll position rather than time. Wraps a
+  child and reads from an ancestor scroll view's offset. Each
+  `binding` maps a scroll-offset window to a property tween — when
+  scroll passes through `[fromOffset, toOffset]` the property
+  interpolates between `fromValue` and `toValue` linearly (or via
+  `curve`).
+
+  Common uses: parallax masthead (image translates 50% scroll
+  speed), reveal-on-scroll (fade in as element enters viewport),
+  shrinking title (font scales as user scrolls down).
+properties:
+  bindings:
+    type: array<object>
+    required: true
+    description: |
+      Per-property scroll bindings. Each entry is
+      `{property, fromOffset, toOffset, fromValue, toValue, curve?}`:
+      - `property` — `opacity` / `scale` / `translateX` /
+        `translateY` / `rotate`. Other properties may be wired by
+        runtime extensions.
+      - `fromOffset` / `toOffset` — scroll-position window in
+        logical pixels.
+      - `fromValue` / `toValue` — interpolated target values for the
+        property at the window endpoints.
+      - `curve` — optional easing across the window. Defaults to
+        `linear`.
+  child:
+    type: Widget
+    required: true
+    description: Animated subtree.
+examples:
+  - name: parallax_masthead
+    dsl: |
+      {
+        "type": "scrollAnimated",
+        "bindings": [
+          {
+            "property": "translateY",
+            "fromOffset": 0,
+            "toOffset": 240,
+            "fromValue": 0,
+            "toValue": -120
+          }
+        ],
+        "child": { "type": "image", "src": "{{cover}}", "fit": "cover" }
+      }

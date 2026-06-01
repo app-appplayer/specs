@@ -1,0 +1,73 @@
+type: terminal
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  ANSI-capable terminal emulator.
+properties:
+  lines:
+    type: "binding"
+    default: null
+    description: "Output lines array (ANSI-escaped strings accepted)"
+  prompt:
+    type: "string"
+    default: "$"
+    description: "Input prompt prefix"
+  showInput:
+    type: "boolean"
+    default: true
+    description: "Render an input line"
+  maxLines:
+    type: "number"
+    default: null
+    description: "Scrollback retention cap"
+  width:
+    type: "number"
+    default: null
+    description: "Widget width"
+  height:
+    type: "number"
+    default: null
+    description: "Widget height"
+  fontSize:
+    type: "number"
+    default: null
+    description: "Font size (logical px)"
+  backgroundColor:
+    type: "string"
+    default: null
+    description: "Terminal background"
+  textColor:
+    type: "string"
+    default: null
+    description: "Default text color"
+  promptColor:
+    type: "string"
+    default: null
+    description: "Prompt color"
+  onCommand:
+    type: "Action"
+    default: null
+    description: "Fired on Enter; `event.value` is the submitted command"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "terminal",
+        "lines": "{{terminalHistory}}",
+        "prompt": "$ ",
+        "showInput": true,
+        "maxLines": 1000,
+        "width": 600,
+        "height": 400,
+        "fontSize": 14,
+        "backgroundColor": "#1E1E1E",
+        "textColor": "#D4D4D4",
+        "promptColor": "#4EC9B0",
+        "onCommand": {
+          "type": "tool",
+          "tool": "executeCommand",
+          "params": { "command": "{{event.value}}" }
+        }
+      }

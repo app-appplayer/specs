@@ -1,0 +1,11 @@
+type: clipOval
+category: utility
+profile: Core
+description: |
+  Clips a child to an oval.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Clipped child."
+# examples migrated verbatim from prose JSON fences.

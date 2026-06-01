@@ -1,0 +1,19 @@
+type: limitedBox
+category: utility
+profile: Core
+description: |
+  Limits a child's size only when it would otherwise be unbounded.
+properties:
+  maxWidth:
+    type: "number"
+    default: "double.infinity"
+    description: "Upper bound when width is unbounded."
+  maxHeight:
+    type: "number"
+    default: "double.infinity"
+    description: "Upper bound when height is unbounded."
+  child:
+    type: "Widget"
+    required: true
+    description: "Bounded child."
+# examples migrated verbatim from prose JSON fences.
