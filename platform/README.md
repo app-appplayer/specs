@@ -23,6 +23,9 @@ The composition model of every package, tool, bundle, and UI in the MakeMind fra
 | [`1.0/08-extension.md`](1.0/08-extension.md) | the standard to follow when building a new instance |
 | [`1.0/09-instances.md`](1.0/09-instances.md) | current instance matrix + potential instances |
 | [`1.0/10-agent-scoping.md`](1.0/10-agent-scoping.md) | per-agent capability scoping |
+| [`1.0/11-io-devices.md`](1.0/11-io-devices.md) | io device-driver model (sibling adapters · fixed `io.*` surface · policy gating) |
+| [`1.0/12-flowbrain-runtime.md`](1.0/12-flowbrain-runtime.md) | FlowBrain runtime wiring (4-axis ask composition · work-time gate · review) |
+| [`1.0/13-datastores.md`](1.0/13-datastores.md) | datastore data interface (`fs.*`/`db.*` · sibling DB adapters · internal policy · separate layer from io) |
 
 ## Related specifications
 
