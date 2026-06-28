@@ -220,7 +220,7 @@ The capability already stands as layers:
    - capability examples = two shapes. **shape A** (the package holds its own MCP surface — `mcp_form` · `mcp_io`[`IoTools.tools`+`call`]): map declared tools as-is. **shape B** (runtime only — `mcp_ingest` pipeline · `mcp_browser` 9 ops · `mcp_channel` `ChannelPort`(`channel.send`) · `mcp_canvas` CDL↔JSON(`canvas.*`) · `mcp_analysis` `AnalysisPort`(`analysis.*`) · kernel-canonical `KvStoragePortAdapter`(`kv.*`) · **`mcp_client` itself**): wrap operations per verb. External MCP connection is separated by its own contract (see "External MCP Servers — Two Modes" below).
    - same self-contained contract as `recipes/claude_code/` (`publish_to: none` · the brain_kernel main lib·barrel·pubspec unmodified · the capability dependency only in the reference pubspec).
    - the real host brings this *pattern* into its own core wiring. A bespoke tool (not a package) is also fed to the same function by directly constructing a `CapabilityTool`.
-   - a Flutter-bound capability (`appplayer_secure` — secure storage) is a **separate recipe `recipes/secure_capability/`** (flutter dep, separate from the pure-Dart `capability_tools`) — wrapping facades such as `secure.seal`/`secure.open`. Same `registerCapabilityTools` pattern, Flutter house.
+   - a Flutter-bound capability (`appplayer_secure` — secure storage) is a **separate recipe `recipes/secure_capability/`** (flutter dep, separate from the pure-Dart `capability_tools`) — `secure.*` (at-rest seal/open, facade wrap) · `secret.*` (keyed credential vault, `SecureStorage` wrap) · the credential migration core (`CredentialMigrator`, passphrase). Same `registerCapabilityTools` pattern, Flutter house. Detail = "secret capability — credential vault + asset convention" below.
 
    → brain_kernel core = capability-agnostic (the reference is a sibling folder). host/AppPlayer core = free to adopt.
 
@@ -237,6 +237,7 @@ The capability already stands as layers:
 | form | adoptable | adoptable | adoptable | adopted |
 | ingest | adoptable | adoptable | adoptable | adopted |
 | secure | adoptable | adoptable | optional | adopted |
+| secret | adoptable | adoptable | optional | adopted (asset credential vault) |
 | channel | adoptable | adoptable | adoptable | adopted (mcp_channel) |
 | io | adoptable | adoptable | adoptable | adopted (mcp_io) |
 | canvas | adoptable | adoptable | adoptable | optional (mcp_canvas) |
@@ -248,6 +249,10 @@ adoption = the host adds the capability package dependency + tool-pack registrat
 #### The device adapter of the io capability
 
 The `io` capability surface (`io.*`) is fixed, and device behavior enters as a **driver (adapter) = sibling `mcp_io_*` packages** (core unmodified · 0 new verbs). The **complete definition of** the 2 registration lifecycles (boot vs on-connect) · per-driver platform gating · Studio↔AppPlayer shared wiring · per-driver security (process sandbox / connection ACL) **= `11-io-devices.md`** (canon). Consumers follow it. Shared-wiring implementation = `recipes/io_drivers/`.
+
+#### secret capability — credential vault + asset convention
+
+`secret.*` (keyed credential vault, no plaintext get) · the `asset` fact convention (`category:"asset"` + `credentialRef` indirection, secret body never in a bundle/fact) · passphrase credential migration (`CredentialMigrator`) — the **complete definition = `14-asset-credentials.md`** (canon). Consumers follow it. Registration is path 3 + the single reference `recipes/secure_capability/`, the same as io · datastore.
 
 ### Anti-Patterns
 

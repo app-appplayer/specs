@@ -26,6 +26,7 @@ The composition model of every package, tool, bundle, and UI in the MakeMind fra
 | [`1.0/11-io-devices.md`](1.0/11-io-devices.md) | io device-driver model (sibling adapters · fixed `io.*` surface · policy gating) |
 | [`1.0/12-flowbrain-runtime.md`](1.0/12-flowbrain-runtime.md) | FlowBrain runtime wiring (4-axis ask composition · work-time gate · review) |
 | [`1.0/13-datastores.md`](1.0/13-datastores.md) | datastore data interface (`fs.*`/`db.*` · sibling DB adapters · internal policy · separate layer from io) |
+| [`1.0/14-asset-credentials.md`](1.0/14-asset-credentials.md) | assets & credentials (`asset` fact convention · `secret.*` keyed vault · `credentialRef` indirection · passphrase migration) |
 
 ## Related specifications
 
