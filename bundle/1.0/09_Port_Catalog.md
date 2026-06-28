@@ -53,6 +53,7 @@ barrel file's section headers.
 | `AssetPort` | `asset_port.dart` | Binary / large-blob storage. |
 | `ContextBundlePort` | `context_bundle_port.dart` | Composing context bundles for LLM calls. |
 | `CollectionStoragePort` | `knowledge_ports.dart` | Generic typed collection store. |
+| `DatasourceAdapter` (+ `FsAdapter` / `DbAdapter`) | `datastore_port.dart` | `fs.*` / `db.*` data-interface adapter contracts (datastore capability — platform spec `13-datastores`; impls in the `mcp_datastore*` packages). |
 
 ### 9.1.3 Profile / Decision Ports
 

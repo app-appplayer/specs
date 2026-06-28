@@ -34,6 +34,7 @@ Reference, in the `mcp_bundle` package: `lib/src/models/`.
 | 17 | `requires` | [`02_Manifest.md`](02_Manifest.md) §2.7 + [§3.14](#314-requiressection) | `requires` |
 | 18 | `factGraphSchema` | [§3.15](#315-factgraphschema) | `factGraphSchema` |
 | 19 | `factGraphSection` | [§3.16](#316-factgraphsection) | `factGraphSection` |
+| 20 | `behavior` | [§3.18](#318-behaviorsection) | `behavior` |
 
 (Note: `requires` is also documented as a manifest field in §2.7 of
 the manifest doc — both views describe the same shape.)
@@ -458,3 +459,55 @@ A section MAY reference ids declared in another section:
 Unresolved references produce **warnings** at validation time. The
 host MAY refuse activation when a wiring slot references a missing
 tool — see [`06_Wiring.md`](06_Wiring.md) §6.7.
+
+
+## 3.18 `BehaviorSection`
+
+Reference: `models/behavior_section.dart`.
+
+Declarative **behavior definitions** — an ordered list of guarded steps the host
+execution engine runs. Distinct from `agents[*].behavior` (`AgentBehaviorConfig`
+— an agent's runtime knobs: turn limit, timeout); a `BehaviorSection` is a
+serializable step graph, not runtime config.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `schemaVersion` | string | Default `"1.0.0"`. |
+| `definitions` | `BehaviorDefinition[]` | The behavior definitions. |
+
+| Field on `BehaviorDefinition` | Description |
+|-------------------------------|-------------|
+| `id`, `name` | **Required** identity. |
+| `description` | Optional. |
+| `steps` | `BehaviorStepDef[]` — the ordered steps. |
+| `metadata` | Free-form. |
+
+| Field on `BehaviorStepDef` | Description |
+|----------------------------|-------------|
+| `id` | **Required** — unique within the definition. |
+| `do` | Optional action invocation map (`{tool, args}` \| `{skill, inputs}` \| `{kind, ref, args}`); the host engine interprets it. Absent = a guard-only step. |
+| `when` | Optional guard expression over run state. Absent → always proceed. |
+| `then` | Map of the stringified guard result → outcome (`proceed`, `skip`, `wait`, `stop`, `goto:<id>`, or a host-registered outcome). `""` is the default route. |
+| `dependsOn` | Step ids that must complete before this one. |
+| `onFailure` | Step id to jump to when the action fails. Absent → the run fails. |
+
+The host kernel maps these to its execution engine; this section is the
+**serializable carrier only**, omitted when null so existing bundles round-trip
+byte-identical.
+
+```json
+"behavior": {
+  "schemaVersion": "1.0.0",
+  "definitions": [
+    {
+      "id": "deploy-flow",
+      "name": "Deploy Flow",
+      "steps": [
+        { "id": "build", "do": { "tool": "ci.build", "args": {} }, "then": { "": "proceed" } },
+        { "id": "test", "do": { "skill": "run-tests" }, "dependsOn": ["build"], "onFailure": "rollback" },
+        { "id": "ship", "when": "test.passed", "do": { "tool": "ci.deploy" }, "dependsOn": ["test"] }
+      ]
+    }
+  ]
+}
+```

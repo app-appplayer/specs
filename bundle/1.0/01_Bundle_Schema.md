@@ -24,6 +24,7 @@ Reference, in the `mcp_bundle` package: `lib/src/models/bundle.dart`.
 | `profiles` | [`ProfilesSection`](03_Sections.md#38-profilessection) | MAY | — | Profile definitions (system-prompt building blocks). |
 | `philosophy` | [`PhilosophySection`](03_Sections.md#39-philosophysection) | MAY | — | Guiding principles + examples. |
 | `agents` | [`AgentsSection`](03_Sections.md#310-agentssection) | MAY | — | Agent definitions (4-axis bindings + runtime config). |
+| `behavior` | [`BehaviorSection`](03_Sections.md#318-behaviorsection) | MAY | — | Declarative behavior definitions — ordered `do`/`when`/`then` steps the host execution engine runs. |
 | `facts` | [`FactsSection`](05_Knowledge_Sections.md#51-factssection) | MAY | — | Subject-predicate-object triples. |
 | `workflows` | [`WorkflowsSection`](05_Knowledge_Sections.md#52-workflowssection) | MAY | — | Ordered step sequences. |
 | `pipelines` | [`PipelinesSection`](05_Knowledge_Sections.md#53-pipelinessection) | MAY | — | Ordered stage sequences for data / build / deploy. |
