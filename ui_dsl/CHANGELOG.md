@@ -1,5 +1,22 @@
 # MCP UI DSL — Changelog
 
+## [Unreleased]
+
+### `client.mcpStream` channel type ([`08_Client_Extensions.md`](1.3/08_Client_Extensions.md) §8.6.2)
+
+Additive sixth channel type — the first that carries an MCP-server-**pushed**
+live stream. `client.poll` pulls a tool on an interval and `client.websocket`
+is a raw socket outside MCP; neither can deliver a server-initiated stream
+(BLE advertisements, sensor frames, notifications) with channel ergonomics.
+`client.mcpStream` subscribes a host-registered source by `uri` scheme and
+forwards each push through the normal lifecycle / backpressure / callbacks.
+
+Purely additive and version-neutral: a runtime that predates the type hits its
+channel factory's default branch and ignores the unknown type (graceful
+coexistence). The `major.minor` DSL-version gate (`MCPUIDSLVersion`) is
+unchanged — this is a patch-line feature marked `since v1.3`. First consumer:
+the `ble_scan` observation capability (platform spec 18).
+
 ## [1.3.4]
 
 Content-app capability tier — five-phase enrichment that turns the spec from a utility-app builder into a content-app builder (book / album / magazine / portfolio). All phases ship at the spec layer in this release; runtime first-cut wraps the M3 standard surfaces.

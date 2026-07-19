@@ -379,6 +379,47 @@ ChannelDefinition fields:
 | `client.systemMonitor` | Stream system metrics | `metrics[]`, `interval` |
 | `client.poll` | Periodic invocation of an action | `action`, `interval` |
 | `client.websocket` | Raw WebSocket connection | `url`, `protocols[]`, `headers` |
+| `client.mcpStream` *(since v1.3)* | Subscribe to a host-registered MCP stream source and forward every server push as a channel message | `uri`, `params` |
+
+#### `client.mcpStream` *(since v1.3)*
+
+The other five channel types cannot carry an MCP-server-**initiated** live
+stream: `client.poll` has the client re-invoke a tool on an interval (pull, not
+push) and `client.websocket` is a raw socket outside MCP. `client.mcpStream`
+fills that gap — it subscribes to a host-registered stream source identified by
+`uri` and delivers each push through the normal channel machinery (lifecycle,
+backpressure, `onMessage`/`onError`/`onConnect`/`onDisconnect`).
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `uri` | string | Stream-source URI. The **scheme** selects the host-registered source (e.g. `ble://scan`, `sensor://imu`); the remainder is source-specific. |
+| `params` | object | Subscribe arguments forwarded to the source (e.g. a filter `{ "minRssi": -70 }`). |
+
+The runtime stays transport-agnostic: a host registers a source per scheme
+(`registerStreamSource(scheme, open)` in the Flutter runtime), and the runtime
+never learns what a given scheme streams. `onMessage` fires once per push with
+the payload bound as the `data` context variable (the runtime's uniform channel
+onData contract — the same variable `client.poll` and the other channel types
+deliver through); a bundle accumulates those into state and binds a `list`/chart
+to render live. `channel.stop` unsubscribes — a ref-counted source (one physical
+stream fanned out to many subscriptions) powers down when its last subscriber
+stops.
+
+The channel declares its source and its per-push handler; buttons only start /
+stop it:
+
+```json
+"channels": {
+  "advertisements": {
+    "type": "client.mcpStream",
+    "params": { "uri": "ble://scan", "params": { "minRssi": -70 } },
+    "onMessage": {
+      "type": "state", "action": "append",
+      "binding": "advertisements", "value": "{{data}}"
+    }
+  }
+}
+```
 
 ### 8.6.3 Channel Lifecycle Actions
 

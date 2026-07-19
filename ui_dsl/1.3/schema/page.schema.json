@@ -276,7 +276,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "description": "Channel type — `client.watchFile`, `client.watchDirectory`, `client.systemMonitor`, `client.poll`, `client.websocket` per §8.6.2."
+          "description": "Channel type — `client.watchFile`, `client.watchDirectory`, `client.systemMonitor`, `client.poll`, `client.websocket`, `client.mcpStream` per §8.6.2."
         },
         "url": {
           "type": "string"
