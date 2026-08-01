@@ -192,6 +192,45 @@ Transports split into two tiers:
 
 **Absolute rule:** do NOT put FFI · Flutter · platform-specific dependencies into the **brain_kernel · mcp_client · mcp_server core.** Doing so pollutes *every* consumer of that core — the FlowBrain pure-Dart headless server, the mobile host, the CLI. **Keeping the kernel pure = guaranteeing pure-Dart instances the "freedom to go pure".**
 
+### Standard 3 Layers (client injection · shared by the three hosts)
+
+The standard for **consuming** — connecting the kernel to an external MCP server (embedded board · hub-exposed local · etc.) over an extension transport. Fixed into three layers — a host follows these three rather than wiring ad hoc.
+
+| Layer | Location | What |
+|---|---|---|
+| **① seam (contract)** | **core** `brain_kernel` (`package:brain_kernel/mcp_host.dart`) | `ExtensionTransportConnect` capability interface — `connectWith({id, transport})`. The reference impl `McpClientKernelHost` implements it. It is a **separate interface** from the abstract `KernelClientHost` (the type of `KernelApp.clientHost`), so `KernelClientHost` is unchanged (cascade 0). Canonical use = the **`connectExtension(clientHost, {id, transport})` helper** (probe + inject, throws on failure; it seals in one place the cast footgun that `ExtensionTransportConnect` is unrelated to `KernelClientHost?` so an `is` test does not promote the variable). |
+| **② transport impl** | **mcp_bridge** (desktop FFI) · **flutter_mcp** (mobile channel) | serial/usb/ble/tcp/ws `ClientTransport`. FFI isolated (the absolute rule above). |
+| **③ host surface (tool)** | **recipe `recipes/extension_transport/`** (`publish_to: none`, mcp_bridge dep) | `registerExtensionConnectTool(registry, clientHost)` → the **`mcp.connect_extension`** tool (companion to the kernel's `mcp.connect` — `mcp.connect` drives only the kernel-built stdio/http/sse, while extension transports are built by this tool via mcp_bridge and injected through the ① seam). The connection lands in the kernel `mcp.*` registry by `id` → drive it afterward with `mcp.list_tools`/`call_tool`/`read_resource`/`disconnect`. Only a host that exposes board-connect vendors it (otherwise no mcp_bridge FFI is pulled in). |
+
+- **Hub is a separate recipe.** The transport for consuming a hub-exposed local (`HubConsumerTransport`) is built by `recipes/gateway_node/` (mcp_gateway dep) and is likewise injected through the ① seam (`connectWith`) (`15-hub-channel.md` §8). So **only layer ② splits by dependency (mcp_bridge vs mcp_gateway); the ① seam and the `mcp.*` drive surface are single.**
+- Per-host adoption = the ③ tool is opt-in (Studio adopts board-connect · AppPlayer, if hub-only, skips it and uses just the seam helper). The consume drive surface is always the kernel `mcp.*`.
+
+### Standard Consumer Embed (marketplace) — platform-owned, host supplies one InstallSink
+
+**Embedding and using the marketplace must be identical across every host** (AppPlayer Pro · Studio Pro · standalone). That is the reason the platform/recipe exists — if each host re-implements install / connect / isInstalled ("ad-hoc"), it is a hollow interface, not a standard.
+
+**Principle: the platform owns the mechanism; the host injects only the one irreducible atom.** (The ① seam above is this standard's connection foundation — connection already has a standard, so the host does not re-write it.)
+
+The recipe `recipes/marketplace_embed` entry point is **`buildMarketEmbed({installSink, clientHost?, connectServer?, injectExtensionTransport?, fetchBundle?, ledger?, authToken?})`**.
+
+The platform **always owns** (no host re-implements): catalog UI · login wall (owned by the marketplace package; no anonymous browsing; identical mandatory login for every embedder) · sha256 verify gate · **owned/installed ledger logic (`MarketInstallLedger`)** · `isInstalled` (the ledger answers) · the **hub relay assembly** (`HubRelayConnection` → `connectHubViaGateway`).
+
+| Wire | Standard default (thin consumer host: Studio · standalone) | Runtime-owning host override (AppPlayer) |
+|---|---|---|
+| **install** | — (always the host atom) | **`InstallSink`** — `install(verifiedMbdPath, listingId) → InstallRecord` (materialize the verified archive into my runtime **+ register in chrome**: launcher card / tab) + `open(record)` (**launch / render** — only on the Open action). **install ≠ run.** |
+| **connectServer** | `clientHost.connect(streamableHttp)` (kernel seam) | `connectServer` override — my own connection/app model (AppPlayer = `openAppFromServer` + launcher card). The server analog of `InstallSink`. |
+| **hub inject** | `connectExtension` (① seam, `clientHost` is `ExtensionTransportConnect`) | `injectExtensionTransport` primitive (the host's `connectExtensionTransport`). **The relay assembly is the platform's**; only the inject is pluggable. |
+| **fetch** | `http.Client` GET | `fetchBundle` override (hardened downloader — retries · pinned CAs) |
+| **ledger** | `InMemory` / `Stored` | backed by the real install registry (AppPlayer = launcher list) |
+
+- **A thin consumer host (Studio) is fully turnkey**: `buildMarketEmbed(installSink:, clientHost:)` only → connect · hub · fetch all default. **No `isInstalled` stub** (the ledger answers).
+- **A runtime-owning host (AppPlayer)** overrides only its runtime materialization (server = app model · fetch = Dio · ledger = launcher list). The verify gate, ledger logic, hub assembly, catalog, and login are still the platform's — nothing is re-implemented. An override is not "ad-hoc re-implementation" but a runtime binding of the same shape as `InstallSink`.
+- **Connection credential (contract).** An entitlement's `accessToken` rides the **MCP-standard `Authorization: Bearer`** header — mapped by appplayer_core's `TransportFactory` streamableHttp branch (symmetric with the sse branch's `bearerToken`). Server-specific schemes pass through `transportConfig['headers']` (an explicit header wins over the derived one). No server-specific header name (e.g. X-API-Key) is hardcoded in the core — servers accept the standard Bearer.
+- **install ≠ run (contract).** `HostCapabilities.runBundle` = install only (download → sha256 verify → materialize + register in chrome + record the ledger; it does NOT launch). Running is the separate `openInstalled(listingId)` (resolve the install record from the ledger → `InstallSink.open`). Only the "Open" (열기) action hits `open`. This mirrors AppPlayer core's `installBundleFromFile` ↔ `openAppFromBundle` split.
+- **`open` presentation is host-defined (non-contract).** How `InstallSink.open` renders / navigates is the host chrome's concern — not part of the contract. Launcher-style hosts push a renderer route (AppPlayer Pro = `AppRendererScreen`, Studio = activate the tab), but a **single-app (dedicated-device) variant** returns to the home route instead of pushing (AppPlayer X = `popUntil(isFirst)` → the shell-less boot router renders full-screen; no pushed renderer / no close button). Because that tier is **install == run** (installing IS opening, holding a live connection), it also skips the server-install metadata prefetch (the open reads the same metadata itself). The contract surface (install ≠ run · ledger · isInstalled) is unchanged.
+- **Bundle format.** The marketplace download artifact is a **`.mcpb` packed archive** (produced by `McpBundlePacker`; `installBytes` ZipDecodes it). The verify gate writes the temp file as **`.mcpb`**. `.mcpb` = the internal install archive; `.mbd/` = an unpacked directory for in-place loading (the marketplace only ever hands the former). **Installers are uniformly extension-strict**: file installs accept `.mcpb` only (enforced by `McpBundleInstaller.installFile`; directories go through `installDirectory`), and Studio's install surface matches. Lenient (content-sniffing) installers are forbidden — they swallow a producer handing the wrong artifact form, masking the defect until a stricter host surfaces it (the temp-file case was exactly this).
+- The low-level `buildMarketHostCapabilities` (closures injected directly, now including installBundle · openInstalled) remains for special overrides, but **hosts use `buildMarketEmbed`**.
+
 ### Platform Branching (build integrity)
 
 Every native transport branches by platform via **conditional import + stub**:
@@ -226,7 +265,7 @@ the host wires `KernelApp.boot(serverHostFactory: ..., clientHost: MyTransportKe
 
 ## 5. Adding a New Tool Kind
 
-Add to `mcp_bundle`'s `ToolKind` enum (e.g. `wasm` · `embedded` · `cloud-2` · etc.). Add a per-kind handler-composition clause inside the host's BundleActivation logic:
+Add to `mcp_bundle`'s `ToolKind` enum (e.g. `wasm` · `embedded` · `cloud-2` · etc.) — realized example: **`ts`**, the compiled real-code tool of a `type: server` bundle; built and executed by the serving runtime, hosts have no executor and treat it as a declaration. Add a per-kind handler-composition clause inside the host's BundleActivation logic:
 
 ```dart
 Future<RegistrationResult> registerTool(ToolEntry tool) async {

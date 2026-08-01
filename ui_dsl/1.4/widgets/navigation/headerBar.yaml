@@ -1,0 +1,45 @@
+type: headerBar
+category: navigation
+profile: Core
+aliases:
+  - appbar
+description: |
+  Application header / toolbar at the top of a page.
+properties:
+  title:
+    type: "string | Widget"
+    description: "Header title."
+  leading:
+    type: "Widget"
+    description: "Leading widget (hamburger, back arrow)."
+  actions:
+    type: "Widget[]"
+    description: "Trailing action widgets."
+  exitButton:
+    type: "ExitButtonConfig | boolean"
+    description: "Override the host-inserted close button on the root route; see below."
+  backgroundColor:
+    type: "string"
+    description: "Header background."
+  elevation:
+    type: "number"
+    default: 1
+    description: "Shadow elevation."
+  centerTitle:
+    type: "boolean"
+    default: false
+    description: "Whether to center the title."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "headerBar",
+        "title": "Dashboard",
+        "leading": { "type": "iconButton", "icon": "menu",
+                     "onTap": { "type": "navigation", "action": "openDrawer" } },
+        "actions": [
+          { "type": "iconButton", "icon": "search",
+            "onTap": { "type": "navigation", "action": "push", "route": "/search" } }
+        ]
+      }

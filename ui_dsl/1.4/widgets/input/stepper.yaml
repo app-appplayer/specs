@@ -1,0 +1,39 @@
+type: stepper
+category: input
+profile: Core
+description: |
+  Step-by-step wizard. Shared `binding` / `value` / `enabled` / `onChange` per §2.6.0 — the bound value is the **active step index** (integer). `binding` and `currentStep` are aliases: when `binding` is set, it takes effect; otherwise `currentStep` is read as a one-way property.
+properties:
+  steps:
+    type: "Step[]"
+    required: true
+    description: "Each step: `{ title, subtitle?, state?, content, isActive? }`."
+  currentStep:
+    type: "number | binding"
+    default: 0
+    description: "One-way legacy property. Use §2.6.0 `binding` for two-way behavior."
+  stepperType:
+    type: "string"
+    default: "\"vertical\""
+    description: "`vertical` or `horizontal`."
+  onStepTapped:
+    type: "Action"
+    description: "Fired when a step header is tapped. Receives `{{event.index}}`."
+  onStepContinue:
+    type: "Action"
+    description: "Fired when the continue button is pressed."
+  onStepCancel:
+    type: "Action"
+    description: "Fired when the cancel button is pressed."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "stepper",
+        "binding": "wizard.currentStep",
+        "steps": [
+          { "title": "Account", "content": { "type": "text", "text": "..." } },
+          { "title": "Profile", "content": { "type": "text", "text": "..." } }
+        ]
+      }

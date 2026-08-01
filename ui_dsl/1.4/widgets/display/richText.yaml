@@ -1,0 +1,85 @@
+type: richText
+category: display
+profile: Core
+description: |
+  Multi-span styled text — paragraph composition for long-form content
+  (articles, book chapters, captions with inline emphasis or icons).
+  Each `Span` is either a styled text run or an inline widget; the
+  paragraph-level `style` provides the base TextStyle that individual
+  span styles layer on top of.
+properties:
+  spans:
+    type: array<Span>
+    required: true
+    description: |
+      Inline span list. Each entry is a `Span` (TextSpan or
+      WidgetSpan). See the `Span` $def for the two shapes.
+  style:
+    type: TextStyle
+    description: |
+      Paragraph base style applied to every span unless overridden.
+      Use this for a uniform `lineHeight` / `letterSpacing` /
+      `fontFamily` / `color` across the paragraph; per-span styles
+      layer on top via `merge` semantics.
+  dropCap:
+    type: DropCap
+    description: |
+      Render the first character of the first `TextSpan` as an
+      enlarged drop cap that the paragraph flows around. Mutually
+      exclusive with `maxLines`.
+  textAlign:
+    type: string
+    enum: [start, end, left, right, center, justify]
+    default: "\"start\""
+    description: Alignment for the composed paragraph.
+  textDirection:
+    type: string
+    enum: [ltr, rtl]
+    description: Resolution direction for `start`/`end` alignment.
+  maxLines:
+    type: number
+    description: Maximum rendered lines. Mutually exclusive with `dropCap`.
+  overflow:
+    type: string
+    enum: [clip, ellipsis, fade, visible]
+    default: "\"clip\""
+    description: Overflow behaviour when content exceeds `maxLines`.
+  softWrap:
+    type: boolean
+    default: "true"
+    description: When false, the paragraph never wraps and overflow rules apply at the right edge.
+examples:
+  - name: text_run_with_emphasis
+    description: Simple multi-style text run.
+    dsl: |
+      {
+        "type": "richText",
+        "style": { "fontSize": 16, "height": 1.5 },
+        "spans": [
+          { "text": "Hello " },
+          { "text": "{{user.name}}", "style": { "fontWeight": "bold" } },
+          { "text": "!" }
+        ]
+      }
+  - name: inline_widget_span
+    description: TextSpan + WidgetSpan mixed (inline icon).
+    dsl: |
+      {
+        "type": "richText",
+        "spans": [
+          { "text": "Pressed " },
+          { "widget": { "type": "icon", "icon": "favorite", "size": 14 }, "alignment": "middle" },
+          { "text": " 12 times" }
+        ]
+      }
+  - name: drop_cap_article
+    description: Article opening with drop cap.
+    dsl: |
+      {
+        "type": "richText",
+        "style": { "fontSize": 17, "height": 1.55 },
+        "dropCap": { "lines": 3, "style": { "fontFamily": "serif", "fontWeight": "bold" } },
+        "spans": [
+          { "text": "Once upon a time, in a land far far away, there lived a runtime that loved its decorations." }
+        ]
+      }

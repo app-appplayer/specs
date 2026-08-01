@@ -1,0 +1,38 @@
+name: Border
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "width": {
+        "type": "object",
+        "properties": {
+          "hairline": {
+            "type": "number"
+          },
+          "thin": {
+            "type": "number"
+          },
+          "normal": {
+            "type": "number"
+          },
+          "thick": {
+            "type": "number"
+          },
+          "heavy": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": {
+          "type": "number"
+        }
+      },
+      "style": {
+        "enum": [
+          "solid",
+          "dashed",
+          "dotted"
+        ]
+      }
+    },
+    "additionalProperties": false
+  }

@@ -1,0 +1,37 @@
+type: animatedOpacity
+category: animation
+profile: Core
+since: v1.3
+description: |
+  Implicitly animates the child's `opacity` whenever it changes.
+  Use for fade-in / fade-out micro-interactions without explicit
+  animation controllers.
+properties:
+  opacity:
+    type: number
+    required: true
+    description: Target opacity in `[0, 1]`. Changes are tweened.
+  duration:
+    type: Dimension
+    default: 300
+    description: Animation duration in milliseconds.
+  curve:
+    type: AnimationCurve
+    default: "\"easeInOut\""
+    description: Easing curve.
+  onEnd:
+    type: Action
+    description: Fires when the animation completes.
+  child:
+    type: Widget
+    required: true
+    description: Faded child.
+examples:
+  - name: toast_fade
+    dsl: |
+      {
+        "type": "animatedOpacity",
+        "opacity": "{{showToast ? 1 : 0}}",
+        "duration": 200,
+        "child": { "type": "text", "text": "Saved" }
+      }

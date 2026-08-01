@@ -1,0 +1,46 @@
+type: listItem
+category: list
+profile: Core
+aliases:
+  - listTile
+  - list-tile
+description: |
+  Single row in a list with optional leading/trailing widgets. Replaces Material `listTile` naming.
+properties:
+  title:
+    type: "string | Widget"
+    description: "Primary text, or an inline Widget for rich titles."
+  subtitle:
+    type: "string | Widget"
+    description: "Secondary text, or an inline Widget."
+  leading:
+    type: "Widget"
+    description: "Leading widget (icon, avatar)."
+  trailing:
+    type: "Widget"
+    description: "Trailing widget."
+  onTap:
+    type: "Action"
+    description: "Tap handler."
+  selected:
+    type: "boolean"
+    default: false
+    description: "Selected state."
+  enabled:
+    type: "boolean"
+    default: true
+    description: "Whether the item is interactive."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "listItem",
+        "title": "{{item.name}}",
+        "subtitle": "{{item.description}}",
+        "leading": { "type": "avatar", "label": "{{item.initials}}" },
+        "onTap": {
+          "type": "navigation", "action": "push",
+          "route": "/detail/{{item.id}}"
+        }
+      }

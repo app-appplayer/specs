@@ -1,0 +1,31 @@
+name: Shape
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "none": {
+        "$ref": "#/$defs/BorderRadius"
+      },
+      "extraSmall": {
+        "$ref": "#/$defs/BorderRadius"
+      },
+      "small": {
+        "$ref": "#/$defs/BorderRadius"
+      },
+      "medium": {
+        "$ref": "#/$defs/BorderRadius"
+      },
+      "large": {
+        "$ref": "#/$defs/BorderRadius"
+      },
+      "extraLarge": {
+        "$ref": "#/$defs/BorderRadius"
+      },
+      "full": {
+        "$ref": "#/$defs/BorderRadius"
+      }
+    },
+    "additionalProperties": {
+      "$ref": "#/$defs/BorderRadius"
+    }
+  }

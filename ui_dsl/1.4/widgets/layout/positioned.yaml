@@ -1,0 +1,11 @@
+type: positioned
+category: layout
+profile: Core
+description: |
+  Positions a child within a `stack` using offsets.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Positioned widget."
+# examples migrated verbatim from prose JSON fences.

@@ -1,0 +1,72 @@
+type: webView
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Embedded web view.
+properties:
+  url:
+    type: "string"
+    default: "null (if html set)"
+    description: "URL to load"
+  html:
+    type: "string"
+    default: "null (if url set)"
+    description: "Raw HTML content — alternative to `url`"
+  allowNavigation:
+    type: "boolean"
+    default: true
+    description: "Allow link navigation within the view"
+  enableJavaScript:
+    type: "boolean"
+    default: true
+    description: "Enable JavaScript"
+  enableZoom:
+    type: "boolean"
+    default: true
+    description: "Allow pinch-to-zoom"
+  width:
+    type: "number"
+    default: null
+    description: "Widget width"
+  height:
+    type: "number"
+    default: null
+    description: "Widget height"
+  onPageStarted:
+    type: "Action"
+    default: null
+    description: "Fired when loading starts"
+  onPageFinished:
+    type: "Action"
+    default: null
+    description: "Fired when loading finishes"
+  onError:
+    type: "Action"
+    default: null
+    description: "Fired on load error; `event.error`"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "webView",
+        "url": "https://example.com",
+        "allowNavigation": true,
+        "enableJavaScript": true,
+        "enableZoom": true,
+        "width": 600,
+        "height": 400,
+        "onPageStarted": {
+          "type": "state", "action": "set",
+          "binding": "webViewLoading", "value": true
+        },
+        "onPageFinished": {
+          "type": "state", "action": "set",
+          "binding": "webViewLoading", "value": false
+        },
+        "onError": {
+          "type": "state", "action": "set",
+          "binding": "webViewError", "value": "{{event.error}}"
+        }
+      }

@@ -17,7 +17,7 @@ shape it documents is stable enough to publish as a contract.
 | [`01_Bundle_Schema.md`](01_Bundle_Schema.md) | The `McpBundle` root object — `schemaVersion`, `manifest`, the optional content sections. |
 | [`02_Manifest.md`](02_Manifest.md) | `BundleManifest` — identity, metadata, dependencies, platform requirements. |
 | [`03_Sections.md`](03_Sections.md) | The 14 content sections (`ui`, `flow`, `skills`, `assets`, `knowledge`, `profiles`, `philosophy`, `agents`, `facts`, `workflows`, `pipelines`, `runbooks`, `tools`, `factGraphSchema` / `factGraphSection`) and how the host walks them. |
-| [`04_Tools.md`](04_Tools.md) | `ToolsSection` — the 4 tool kinds (`host` / `mcp` / `cloud` / `js`), `target` shapes, JS host bridge. |
+| [`04_Tools.md`](04_Tools.md) | `ToolsSection` — the 5 tool kinds (`host` / `mcp` / `cloud` / `js` / `ts`), `target` shapes, JS host bridge. |
 | [`05_Knowledge_Sections.md`](05_Knowledge_Sections.md) | `FactsSection` / `WorkflowsSection` / `PipelinesSection` / `RunbooksSection` — data shapes for the knowledge-ops slots. |
 | [`06_Wiring.md`](06_Wiring.md) | `manifest.wiring.{domainActions, lifecycle, settings}` + `chat.slashCommands[]`. The Studio-host surface that maps tools to UI slots. |
 | [`07_Resources.md`](07_Resources.md) | The 12 reserved folders, the `.mbd/` layout, the `.mcpb` archive, manifest-vs-folder precedence. |

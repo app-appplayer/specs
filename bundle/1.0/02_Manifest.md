@@ -36,7 +36,7 @@ considered the same product across versions; installing a higher
 | `provider` | string? | — | Author / publisher identifier. Distinct from `publisher.name` — `provider` is a free-form short tag, `publisher` is the structured profile. |
 | `description` | string? | — | Short product description (one paragraph). |
 | `schemaVersion` | string | `"1.0.0"` | Bundle schema this manifest conforms to. Mirrors the bundle root field. |
-| `type` | enum [`BundleType`](#221-bundletype) | `application` | Bundle role hint (application / library / skill / profile / extension / unknown). |
+| `type` | enum [`BundleType`](#221-bundletype) | `application` | Bundle role hint (application / library / skill / profile / extension / server / unknown). |
 | `entryPoint` | string? | — | Optional entry hint for hosts that need a "default" view (e.g. a route path). The host decides what the value means. |
 | `license` | string? | — | SPDX license identifier (`MIT`, `Apache-2.0`, ...). |
 | `homepage` | string? | — | Marketing URL. |
@@ -47,7 +47,7 @@ considered the same product across versions; installing a higher
 ### 2.2.1 `BundleType`
 
 ```
-application | library | skill | profile | extension | unknown
+application | library | skill | profile | extension | server | unknown
 ```
 
 - `application` — full UI-bearing product (default).
@@ -56,6 +56,11 @@ application | library | skill | profile | extension | unknown
 - `skill` / `profile` — single-domain bundles that carry only that
   section.
 - `extension` — augments an existing host or another bundle.
+- `server` — served as a live MCP server rather than installed (MCP
+  Serving: the server serves UI + manifest + tools + knowledge).
+  Not an install target — consumers reach it via `connectServer`;
+  its `kind: ts` tools are compiled and executed by the serving
+  runtime, never by a host.
 - `unknown` — round-trip slot for forward-compat values.
 
 The host MAY use `type` for filtering / categorisation but SHOULD NOT

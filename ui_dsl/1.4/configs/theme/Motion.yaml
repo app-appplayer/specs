@@ -1,0 +1,75 @@
+name: Motion
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "duration": {
+        "type": "object",
+        "properties": {
+          "short1": {
+            "type": "number"
+          },
+          "short2": {
+            "type": "number"
+          },
+          "short3": {
+            "type": "number"
+          },
+          "short4": {
+            "type": "number"
+          },
+          "medium1": {
+            "type": "number"
+          },
+          "medium2": {
+            "type": "number"
+          },
+          "medium3": {
+            "type": "number"
+          },
+          "medium4": {
+            "type": "number"
+          },
+          "long1": {
+            "type": "number"
+          },
+          "long2": {
+            "type": "number"
+          },
+          "long3": {
+            "type": "number"
+          },
+          "long4": {
+            "type": "number"
+          },
+          "extraLong": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": {
+          "type": "number"
+        }
+      },
+      "easing": {
+        "type": "object",
+        "properties": {
+          "standard": {
+            "type": "string"
+          },
+          "emphasized": {
+            "type": "string"
+          },
+          "decelerate": {
+            "type": "string"
+          },
+          "accelerate": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    },
+    "additionalProperties": false
+  }

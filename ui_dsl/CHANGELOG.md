@@ -1,21 +1,55 @@
 # MCP UI DSL — Changelog
 
-## [Unreleased]
+## [1.4.0]
 
-### `client.mcpStream` channel type ([`08_Client_Extensions.md`](1.3/08_Client_Extensions.md) §8.6.2)
+**Composition** — one document may now render definitions served by origins other than its own. This is what lets a single application compose several MCP servers (a temperature sensor, a humidity sensor, and a controller presented as one product) with the *author* deciding how that looks.
 
-Additive sixth channel type — the first that carries an MCP-server-**pushed**
-live stream. `client.poll` pulls a tool on an interval and `client.websocket`
-is a raw socket outside MCP; neither can deliver a server-initiated stream
-(BLE advertisements, sensor frames, notifications) with channel ergonomics.
-`client.mcpStream` subscribes a host-registered source by `uri` scheme and
-forwards each push through the normal lifecycle / backpressure / callbacks.
+### The gap this closes
 
-Purely additive and version-neutral: a runtime that predates the type hits its
-channel factory's default branch and ignores the unknown type (graceful
-coexistence). The `major.minor` DSL-version gate (`MCPUIDSLVersion`) is
-unchanged — this is a patch-line feature marked `since v1.3`. First consumer:
-the `ble_scan` observation capability (platform spec 18).
+v1.3 already defined how an application presents itself **when embedded** (§11.9 `dashboard`, which names "multi-app dashboards" explicitly). Nothing defined how an application **embeds**. The provider side existed; the consumer side did not. Meanwhile the spec was written in the singular throughout — §6.1 "communicates with *a* server" — so a definition fetched from elsewhere had nowhere to go.
+
+Note what is deliberately *not* added: any mechanism for opening connections. Establishing outbound MCP connections is a host capability that already exists and is already the canonical path; this release defines only how a definition is *addressed and rendered* once a connection exists (§6.11.1).
+
+### New — `DefinitionSource` ([`01_Core_Concepts.md`](1.4/01_Core_Concepts.md) §1.9)
+
+Names the concept of *where a definition comes from*, with four forms: inline, a `ui://` URI on the current origin, a qualified `{ $ref, from }` reference to another origin, or a binding to a definition already held in state. Omitting `from` means the current origin, so **every v1.3 document keeps its exact meaning**.
+
+`Origin` is deliberately open — `{ "connection": <id> }` is defined now; `{ "bundle": … }` / `{ "agent": … }` can follow without changing any document that already uses it.
+
+The binding form matters as much as the qualified one: it covers agent-generated, cached, bundle-loaded, and runtime-composed definitions, not only definitions that came from a server.
+
+### New — `view` widget ([`02_Widgets.md`](1.4/02_Widgets.md) §2.13.1)
+
+Embeds a `DefinitionSource` anywhere in a tree — `source`, `props`, `fallback`, `loading`, `onError`, `theme`. This is what puts several origins on one screen.
+
+### Changed — `RouteValue` accepts a `DefinitionSource` ([`01_Core_Concepts.md`](1.4/01_Core_Concepts.md) §1.2.1)
+
+A whole route may be another origin's page. Combined with existing machinery this delivers three author choices for free: `initialRoute` to show it at launch, a `navigation` action to reveal it on tap, `navigation.items` to place it in the app's chrome. No new navigation concept was introduced.
+
+### New — origin is a scope, not an argument (§1.9.5)
+
+Normative and load-bearing. When a definition resolves from an origin, that origin becomes **ambient** for the resolved subtree: tool calls, resource reads, subscriptions, state, storage and permissions all scope to it. This is what lets a definition authored with no knowledge of any embedder — a device serving its own `ui://app` — render **unmodified** inside another application and still reach its own server.
+
+The rejected alternative, a per-action origin field, would have required rewriting every embedded definition and would have made embedding a server you do not control impossible.
+
+### New — origin isolation ([`07_Security.md`](1.4/07_Security.md) §7.10, [`08_Client_Extensions.md`](1.4/08_Client_Extensions.md) §8.8)
+
+§8's existing rules are **not rewritten to be plural**. "Storage is scoped per MCP server identity; cross-server reads are prohibited" stays literally true — each embedded scope simply carries its own identity and the existing rules apply within it. Effective permissions are an **intersection** (embedder's grant toward that origin ∩ what the embedded definition requests); embedding never elevates. `props` is the only embedder→embedded channel.
+
+### New — Composition Profile ([`18_Conformance.md`](1.4/18_Conformance.md) §18.7)
+
+The conformance gate. Per §1.7.3 the support surface is declared by profile, not version — a host that cannot isolate scopes per origin does not claim it.
+
+This is also the one place where §1.7.2's forward-compatibility allowance does **not** apply: a runtime without the profile MUST reject a `from`-carrying source rather than resolve `$ref` against its own origin. A permissive reading would render one server's UI under another's identity — a security failure, not a missing feature.
+
+### Runtime contract ([`06_Runtime_Contract.md`](1.4/06_Runtime_Contract.md) §6.11)
+
+Resolution order, one runtime scope per origin, notification routing, and failure/lifecycle: failure is local (a dead origin renders that view's `fallback`, siblings keep rendering), reconnect remounts, depth is bounded and origin cycles are detected.
+
+### Compatibility
+
+Purely additive. No existing field changes meaning; `from` absent is v1.3 behaviour. `version: "1.4"` is accepted alongside the earlier forms.
+
 
 ## [1.3.4]
 

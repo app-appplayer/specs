@@ -1,0 +1,105 @@
+name: Sliver
+description: |
+  Scrollable region inside `scrollView.slivers`. Discriminated by
+  `type`:
+
+  - **sliverAppBar** — collapsing parallax masthead at the top of a
+    scroll view. Expands to `expandedHeight` then shrinks to a
+    fixed bar as the user scrolls. `flexibleSpace` paints the hero
+    area; `pinned`/`floating` control whether the bar sticks.
+  - **sliverPersistentHeader** — section header that stays visible
+    while its section's items scroll. `minExtent`/`maxExtent` set
+    the size envelope; the runtime morphs the header within it.
+  - **sliverList** — vertical list with variable-height items.
+    Same `items` + `itemTemplate` contract as the `list` widget.
+  - **sliverGrid** — 2D grid with the same `items` / `columns`
+    contract as `grid`.
+  - **sliverFixedExtentList** — list whose items all share the
+    same scroll-axis extent (uniform row height). Faster than
+    `sliverList` because the runtime can skip per-item measurement.
+
+  Each shape carries the type discriminator on `type` and is only
+  valid inside a `scrollView.slivers` array. The runtime rejects
+  these shapes at the top level.
+definition:
+  {
+    "oneOf": [
+      {
+        "type": "object",
+        "properties": {
+          "type": { "const": "sliverAppBar" },
+          "title": { "$ref": "#/$defs/Widget" },
+          "expandedHeight": { "$ref": "#/$defs/Dimension" },
+          "flexibleSpace": { "$ref": "#/$defs/Widget" },
+          "background": { "$ref": "#/$defs/Widget" },
+          "pinned": { "type": "boolean", "default": false },
+          "floating": { "type": "boolean", "default": false },
+          "snap": { "type": "boolean", "default": false },
+          "stretch": { "type": "boolean", "default": false },
+          "elevation": { "$ref": "#/$defs/Dimension" }
+        },
+        "required": ["type"],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": { "const": "sliverPersistentHeader" },
+          "minExtent": { "$ref": "#/$defs/Dimension" },
+          "maxExtent": { "$ref": "#/$defs/Dimension" },
+          "child": { "$ref": "#/$defs/Widget" },
+          "pinned": { "type": "boolean", "default": false },
+          "floating": { "type": "boolean", "default": false }
+        },
+        "required": ["type", "minExtent", "maxExtent", "child"],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": { "const": "sliverList" },
+          "items": { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" },
+          "itemTemplate": { "$ref": "#/$defs/Widget" },
+          "children": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/Widget" }
+          }
+        },
+        "required": ["type"],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": { "const": "sliverGrid" },
+          "items": { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" },
+          "itemTemplate": { "$ref": "#/$defs/Widget" },
+          "children": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/Widget" }
+          },
+          "columns": { "type": "number", "minimum": 1 },
+          "mainAxisSpacing": { "type": "number", "minimum": 0 },
+          "crossAxisSpacing": { "type": "number", "minimum": 0 },
+          "itemAspectRatio": { "type": "number", "exclusiveMinimum": 0 }
+        },
+        "required": ["type", "columns"],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "type": { "const": "sliverFixedExtentList" },
+          "itemExtent": { "$ref": "#/$defs/Dimension" },
+          "items": { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" },
+          "itemTemplate": { "$ref": "#/$defs/Widget" },
+          "children": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/Widget" }
+          }
+        },
+        "required": ["type", "itemExtent"],
+        "additionalProperties": false
+      }
+    ]
+  }

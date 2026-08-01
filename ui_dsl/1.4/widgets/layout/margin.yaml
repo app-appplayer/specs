@@ -1,0 +1,22 @@
+type: margin
+category: layout
+profile: Core
+description: |
+  Applies outer margin around a single child.
+properties:
+  margin:
+    type: "EdgeInsets"
+    required: true
+    description: "Outer margin."
+    aliases:
+      - value
+  child:
+    type: "Widget"
+    required: true
+    description: "Child widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      { "type": "margin", "margin": { "all": 16 },
+        "child": { "type": "text", "text": "With outer margin" } }

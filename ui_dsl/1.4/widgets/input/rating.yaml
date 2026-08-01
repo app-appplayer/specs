@@ -1,0 +1,18 @@
+type: rating
+category: input
+profile: Core
+description: |
+  Discrete rating control (e.g., star rating). Shared rows per §2.6.0; `value` is `number`.
+properties:
+  max:
+    type: "number"
+    default: 5
+    description: "Maximum rating value."
+  icon:
+    type: "string"
+    default: "\"star\""
+    description: "Icon name for each unit."
+  color:
+    type: "string"
+    description: "Icon color."
+# examples migrated verbatim from prose JSON fences.

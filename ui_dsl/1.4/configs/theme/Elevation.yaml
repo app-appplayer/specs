@@ -1,0 +1,26 @@
+name: Elevation
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "level0": {
+        "$ref": "#/$defs/ElevationLevel"
+      },
+      "level1": {
+        "$ref": "#/$defs/ElevationLevel"
+      },
+      "level2": {
+        "$ref": "#/$defs/ElevationLevel"
+      },
+      "level3": {
+        "$ref": "#/$defs/ElevationLevel"
+      },
+      "level4": {
+        "$ref": "#/$defs/ElevationLevel"
+      },
+      "level5": {
+        "$ref": "#/$defs/ElevationLevel"
+      }
+    },
+    "additionalProperties": false
+  }

@@ -1,0 +1,12 @@
+name: StateBlock
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "initial": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "additionalProperties": false
+  }

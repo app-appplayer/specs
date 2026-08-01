@@ -1,0 +1,46 @@
+type: gestureDetector
+category: interaction
+profile: Core
+description: |
+  Detects touch and pointer gestures on its child.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Detected widget."
+  onTap:
+    type: "Action"
+    description: "Tap."
+  onDoubleTap:
+    type: "Action"
+    description: "Double tap."
+  onLongPress:
+    type: "Action"
+    description: "Long press."
+  onPanStart:
+    type: "Action"
+    description: "Pan start."
+  onPanUpdate:
+    type: "Action"
+    description: "Pan update."
+  onPanEnd:
+    type: "Action"
+    description: "Pan end."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "gestureDetector",
+        "onTap": { "type": "state", "action": "set",
+                   "binding": "tapped", "value": true },
+        "onLongPress": {
+          "type": "dialog",
+          "dialog": { "type": "alertDialog", "title": "Context",
+                      "content": "Long press detected" }
+        },
+        "child": {
+          "type": "box", "padding": { "all": 16 },
+          "child": { "type": "text", "text": "Tap or long-press me" }
+        }
+      }

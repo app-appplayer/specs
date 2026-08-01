@@ -1,0 +1,21 @@
+type: badge
+category: display
+profile: Core
+description: |
+  Small status indicator typically anchored to another widget.
+properties:
+  label:
+    type: "string"
+    description: "Text content of the badge."
+  color:
+    type: "string"
+    description: "Badge background color."
+  child:
+    type: "Widget"
+    description: "Optional child the badge is attached to."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      { "type": "badge", "label": "3",
+        "child": { "type": "icon", "icon": "notifications" } }

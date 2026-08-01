@@ -1,0 +1,83 @@
+type: carousel
+category: list
+profile: Core
+since: v1.3
+description: |
+  Horizontally scrolling browser with optional partial-viewport
+  framing (cover-flow / album-shelf style). Distinct from `pageView`
+  (which always snaps a full viewport per page) — `carousel` lets
+  authors set `viewportFraction` < 1 so adjacent items peek in,
+  signalling "more to scroll". Used for content shelves (book
+  covers, album browsers, magazine front pages).
+properties:
+  items:
+    type: binding
+    description: Array source. Required when `children` is omitted.
+  itemTemplate:
+    type: Widget
+    description: Template rendered per bound item. Required with `items`.
+  children:
+    type: "Widget[]"
+    description: Static slides. Mutually exclusive with `items` + `itemTemplate`.
+  scrollDirection:
+    type: string
+    enum: [horizontal, vertical]
+    default: "\"horizontal\""
+    description: Scroll axis.
+  viewportFraction:
+    type: number
+    default: 1.0
+    description: |
+      Each slide's width as a fraction of the carousel width.
+      `1.0` = one item fills the viewport (matches `pageView`);
+      `0.85` leaves both neighbours peeking; `0.6` shows three items.
+  loop:
+    type: boolean
+    default: "false"
+    description: When true the list wraps around — last → first → last.
+  autoPlay:
+    type: number
+    description: |
+      When set, advances one item every `autoPlay` ms. Authors
+      typically pair with `loop: true`.
+  initialIndex:
+    type: number
+    default: 0
+    description: Index of the slide rendered first.
+  transition:
+    type: string
+    enum: [slide, fade, coverflow, depth]
+    default: "\"slide\""
+    description: |
+      Per-slide transition. `slide` is the default linear scroll;
+      `fade` cross-fades between slides at the same position;
+      `coverflow` rotates and depth-shifts neighbours; `depth`
+      scales/translates Z-axis. `coverflow`/`depth` need a
+      perspective-aware compositor — runtimes without it fall
+      back to `slide`.
+  indicatorPosition:
+    type: string
+    enum: [bottom, top, none]
+    default: "\"bottom\""
+    description: Page indicator dot bar.
+  onPageChanged:
+    type: Action
+    description: Fires after the active slide settles. `event.page` carries the new index.
+examples:
+  - name: book_shelf
+    dsl: |
+      {
+        "type": "carousel",
+        "items": "{{books}}",
+        "viewportFraction": 0.7,
+        "loop": true,
+        "autoPlay": 4000,
+        "transition": "coverflow",
+        "indicatorPosition": "bottom",
+        "itemTemplate": {
+          "type": "card",
+          "child": {
+            "type": "image", "src": "{{item.cover}}", "fit": "cover"
+          }
+        }
+      }

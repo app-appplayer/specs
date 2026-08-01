@@ -1,0 +1,31 @@
+type: indexedStack
+category: layout
+profile: Core
+description: |
+  Displays a single child selected by index. All children retain state.
+properties:
+  index:
+    type: "number | binding"
+    default: 0
+    description: "Index of the child to display."
+  alignment:
+    type: Alignment
+    default: "\"topStart\""
+    description: Alignment of the displayed child.
+  children:
+    type: "Widget[]"
+    required: true
+    description: "Candidate children."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "indexedStack",
+        "index": "{{currentStep}}",
+        "children": [
+          { "type": "text", "text": "Step 1" },
+          { "type": "text", "text": "Step 2" },
+          { "type": "text", "text": "Step 3" }
+        ]
+      }

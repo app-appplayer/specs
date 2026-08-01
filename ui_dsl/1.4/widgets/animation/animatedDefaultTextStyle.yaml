@@ -1,0 +1,43 @@
+type: animatedDefaultTextStyle
+category: animation
+profile: Core
+since: v1.3
+description: |
+  Implicitly animates the default `TextStyle` applied to descendant
+  `text` / `richText` widgets. Each style field (color, fontSize,
+  fontWeight, letterSpacing, lineHeight, …) tweens independently.
+  Use for emphasis transitions (e.g., headline grows + bolds when
+  selected).
+properties:
+  style:
+    type: TextStyle
+    required: true
+    description: Target text style. Changes are tweened.
+  duration:
+    type: Dimension
+    default: 300
+    description: Animation duration in milliseconds.
+  curve:
+    type: AnimationCurve
+    default: "\"easeInOut\""
+    description: Easing curve.
+  onEnd:
+    type: Action
+    description: Fires when the animation completes.
+  child:
+    type: Widget
+    required: true
+    description: Subtree whose default text style is tweened.
+examples:
+  - name: emphasis_on_select
+    dsl: |
+      {
+        "type": "animatedDefaultTextStyle",
+        "style": {
+          "fontSize": "{{selected ? 24 : 16}}",
+          "fontWeight": "{{selected ? 'bold' : 'normal'}}",
+          "color": "{{selected ? '#FF6B6B' : '#666666'}}"
+        },
+        "duration": 250,
+        "child": { "type": "text", "text": "{{title}}" }
+      }

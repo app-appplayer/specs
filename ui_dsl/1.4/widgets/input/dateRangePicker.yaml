@@ -1,0 +1,46 @@
+type: dateRangePicker
+category: input
+profile: Core
+description: |
+  Date range selection. Exception to §2.6.0: instead of a single `binding`, the range is bound via **two separate properties** — `startDate` and `endDate` — each independently following §2.6.0 two-way semantics (each accepts a literal ISO string, a `{{path}}` expression for read-only display, or a plain state-path string for two-way binding). `firstDate`/`lastDate` remain one-way constraints on the allowed range.
+properties:
+  startDate:
+    type: "string"
+    description: "State path bound two-way to the range's start (ISO date)."
+  endDate:
+    type: "string"
+    description: "State path bound two-way to the range's end (ISO date)."
+  label:
+    type: "string"
+    description: "Field label."
+  firstDate:
+    type: "string"
+    description: "Earliest allowed date (constraint, one-way)."
+  lastDate:
+    type: "string"
+    description: "Latest allowed date (constraint, one-way)."
+  format:
+    type: "string"
+    default: "\"yyyy-MM-dd\""
+    description: "Display format."
+  locale:
+    type: "string"
+    description: "Locale identifier."
+  enabled:
+    type: "boolean"
+    default: true
+    description: "Whether the picker accepts user input."
+  onChange:
+    type: "Action"
+    description: "Fired when the range changes. Receives `{{event.value}}` as `{ start, end }`."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "dateRangePicker",
+        "startDate": "filter.from",
+        "endDate": "filter.to",
+        "firstDate": "2026-01-01",
+        "lastDate": "2026-12-31"
+      }

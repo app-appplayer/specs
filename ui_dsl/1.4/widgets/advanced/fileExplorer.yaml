@@ -1,0 +1,74 @@
+type: fileExplorer
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  File and directory browser.
+properties:
+  items:
+    type: "binding"
+    description: "Hierarchical `{ name, path, type, children? }` tree. Required when `rootPath`/`files`/`directories` legacy props are omitted."
+  rootPath:
+    type: "string"
+    description: "Legacy: root path string; pairs with flat `files` / `directories`."
+  files:
+    type: "string[]"
+    description: "Legacy: flat file list (alternative to hierarchical `items`)."
+  directories:
+    type: "string[]"
+    description: "Legacy: flat directory list (alternative to hierarchical `items`)."
+  showIcons:
+    type: "boolean"
+    default: true
+    description: "Show file / folder icons"
+  showHidden:
+    type: "boolean"
+    default: false
+    description: "Show entries whose name starts with `.`"
+  expandAll:
+    type: "boolean"
+    default: false
+    description: "Expand all folders by default"
+  width:
+    type: "number"
+    default: null
+    description: "Widget width"
+  height:
+    type: "number"
+    default: null
+    description: "Widget height"
+  selectedColor:
+    type: "string"
+    default: null
+    description: "Background color for selected entry"
+  onSelect:
+    type: "Action"
+    default: null
+    description: "Fired on selection; `event.value` is the selected path"
+  onOpen:
+    type: "Action"
+    default: null
+    description: "Fired on activation (double-tap / Enter); `event.value` is the path"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "fileExplorer",
+        "items": "{{fileTree}}",
+        "showIcons": true,
+        "showHidden": false,
+        "expandAll": false,
+        "width": 300,
+        "height": 500,
+        "selectedColor": "#E3F2FD",
+        "onSelect": {
+          "type": "state", "action": "set",
+          "binding": "selectedFile", "value": "{{event.value}}"
+        },
+        "onOpen": {
+          "type": "tool",
+          "tool": "openFile",
+          "params": { "path": "{{event.value}}" }
+        }
+      }

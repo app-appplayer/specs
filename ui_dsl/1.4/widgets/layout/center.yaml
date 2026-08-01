@@ -1,0 +1,15 @@
+type: center
+category: layout
+profile: Core
+description: |
+  Centers a single child within available space.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Centered widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      { "type": "center", "child": { "type": "text", "text": "Centered" } }

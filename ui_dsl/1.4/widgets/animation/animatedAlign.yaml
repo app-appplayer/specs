@@ -1,0 +1,36 @@
+type: animatedAlign
+category: animation
+profile: Core
+since: v1.3
+description: |
+  Implicitly animates a child's `alignment` within its bounds. Use
+  for slide-from-edge / settle-to-position micro-interactions.
+properties:
+  alignment:
+    type: Alignment
+    required: true
+    description: Target alignment. Changes are tweened.
+  duration:
+    type: Dimension
+    default: 300
+    description: Animation duration in milliseconds.
+  curve:
+    type: AnimationCurve
+    default: "\"easeInOut\""
+    description: Easing curve.
+  onEnd:
+    type: Action
+    description: Fires when the animation completes.
+  child:
+    type: Widget
+    required: true
+    description: Aligned child.
+examples:
+  - name: slide_in_from_top_start
+    dsl: |
+      {
+        "type": "animatedAlign",
+        "alignment": "{{ready ? 'center' : 'topStart'}}",
+        "duration": 400,
+        "child": { "type": "icon", "icon": "check_circle" }
+      }

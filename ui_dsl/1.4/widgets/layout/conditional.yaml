@@ -1,0 +1,53 @@
+type: conditional
+category: layout
+profile: Core
+description: |
+  Renders different branches based on an expression. Two forms are supported: then/else and multi-branch (`switch`/`cases`).
+properties:
+  # Two polymorphic forms: then/else OR switch/cases. Authors pick one.
+  # Schema-level `required` is not enforced because each form needs a
+  # different subset of these keys.
+  condition:
+    type: "boolean | binding"
+    description: "Boolean literal or boolean-producing expression (then/else form)."
+  then:
+    type: "Widget"
+    description: "Rendered when `condition` is truthy (then/else form)."
+  else:
+    type: "Widget"
+    description: "Rendered when `condition` is falsy (then/else form)."
+  switch:
+    type: "binding"
+    description: "Expression whose value is compared against each case (switch form)."
+  cases:
+    type: "array"
+    description: "List of `{ value, child }` entries (switch form)."
+  default:
+    type: "Widget"
+    description: "Rendered when no case matches (switch form)."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "conditional",
+        "condition": "{{user.isAuthenticated}}",
+        "then": { "type": "text", "text": "Welcome, {{user.name}}!" },
+        "else": {
+          "type": "button",
+          "label": "Sign In",
+          "onTap": { "type": "navigation", "action": "push", "route": "/login" }
+        }
+      }
+  - name: prose_example_1
+    dsl: |
+      {
+        "type": "conditional",
+        "switch": "{{status}}",
+        "cases": [
+          { "value": "loading", "child": { "type": "progressBar" } },
+          { "value": "error",   "child": { "type": "text", "text": "Error: {{errorMessage}}" } },
+          { "value": "empty",   "child": { "type": "text", "text": "No data available" } }
+        ],
+        "default": { "type": "text", "text": "Ready" }
+      }

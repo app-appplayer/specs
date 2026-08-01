@@ -1,0 +1,19 @@
+type: flexible
+category: layout
+profile: Core
+description: |
+  Flex child that may occupy up to its natural size.
+properties:
+  flex:
+    type: "number"
+    default: 1
+    description: "Flex weight."
+  fit:
+    type: "string"
+    default: "\"loose\""
+    description: "`\"loose\"` or `\"tight\"`."
+  child:
+    type: "Widget"
+    required: true
+    description: "Child widget."
+# examples migrated verbatim from prose JSON fences.

@@ -1,0 +1,64 @@
+type: graph
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Time-series / numeric data graph (line, bar, area, scatter) drawn on a single set of axes. For node/edge topology visualization use `networkGraph` (§10.13).
+properties:
+  data:
+    type: "`Point[]` "
+    default: "binding"
+    description: "required | Array of `{ x, y }` points (or `{ label, value }`)."
+  chartType:
+    type: "string"
+    enum: ["line", "bar", "area", "scatter"]
+    default: "line"
+    description: "Chart style. Legacy alias `type` is retained for backward compatibility but avoid it — it collides with the widget-type discriminator."
+  width:
+    type: "number"
+    default: 300
+    description: "Render width in logical px."
+  height:
+    type: "number"
+    default: 200
+    description: "Render height."
+  showGrid:
+    type: "boolean"
+    default: true
+    description: "Draw background grid."
+  showLabels:
+    type: "boolean"
+    default: true
+    description: "Draw axis labels."
+  lineColor:
+    type: "Color"
+    default: "#2196F3"
+    description: "Line / bar color."
+  fillColor:
+    type: "Color"
+    description: "Area fill color."
+  gridColor:
+    type: "Color"
+    default: "light grey"
+    description: "Grid color."
+  strokeWidth:
+    type: "number"
+    default: 2
+    description: "Line stroke thickness."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "graph",
+        "chartType": "line",
+        "data": [
+          { "x": 0, "y": 12 },
+          { "x": 1, "y": 19 },
+          { "x": 2, "y": 8 }
+        ],
+        "width": 300,
+        "height": 200,
+        "showGrid": true,
+        "lineColor": "#2196F3"
+      }

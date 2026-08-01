@@ -1,0 +1,47 @@
+name: DefinitionSource
+since: v1.4
+description: |
+  Where a definition comes from. Four forms: an inline definition, a resource
+  URI on the current origin, a qualified `{ $ref, from }` reference to another
+  origin, or a binding to a definition already held in state.
+
+  Omitting `from` means the current origin, so every pre-1.4 document keeps its
+  exact meaning. Naming an origin makes that origin ambient for the resolved
+  subtree — its tool calls, resource reads, state, storage and permissions all
+  scope to it. See `01_Core_Concepts.md` §1.9 and `07_Security.md` §7.10.
+
+  Accepted wherever `RouteValue` is accepted (§1.2.1) and as the `source` of the
+  `view` widget (§2.13.1).
+definition:
+  {
+    "oneOf": [
+      {
+        "type": "string",
+        "pattern": "^\\{\\{.*\\}\\}$",
+        "description": "Binding to a definition held in state (since v1.4)."
+      },
+      {
+        "type": "string",
+        "description": "Resource URI on the current origin, e.g. `ui://pages/main`."
+      },
+      {
+        "type": "object",
+        "description": "Qualified reference to a definition on another origin (since v1.4).",
+        "properties": {
+          "$ref": {
+            "type": "string",
+            "description": "Resource URI to read from the named origin."
+          },
+          "from": {
+            "$ref": "#/$defs/Origin"
+          }
+        },
+        "required": ["$ref"],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "description": "Inline PageDefinition or WidgetDefinition."
+      }
+    ]
+  }

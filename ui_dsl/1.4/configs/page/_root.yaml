@@ -1,0 +1,72 @@
+name: page.root
+description: |
+  Single-screen page definition per docs/01_Core_Concepts.md §1.3. Widget and action sub-trees are validated by widgets.schema.json — left permissive here so this schema is self-contained.
+definition:
+  {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://specs.makemind.com/mcp_ui_dsl/1.3/page.schema.json",
+    "title": "MCP UI DSL 1.3 — PageDefinition",
+    "type": "object",
+    "properties": {
+      "type": {
+        "enum": [
+          "page",
+          "screen"
+        ],
+        "description": "Discriminator. `screen` is a legacy alias accepted for backward compatibility (§17.3.5)."
+      },
+      "version": {
+        "$ref": "#/$defs/SemverLike"
+      },
+      "title": {
+        "type": "string"
+      },
+      "content": {
+        "$ref": "#/$defs/Widget"
+      },
+      "themeOverride": {
+        "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.3/theme.schema.json"
+      },
+      "state": {
+        "$ref": "#/$defs/StateBlock"
+      },
+      "lifecycle": {
+        "$ref": "#/$defs/LifecycleHooks"
+      },
+      "onInit": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onReady": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onMount": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onPause": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onResume": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onUnmount": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onDestroy": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "validation": {
+        "$ref": "#/$defs/ValidationConfig"
+      },
+      "permissions": {
+        "$ref": "#/$defs/PermissionDeclaration"
+      },
+      "channels": {
+        "$ref": "#/$defs/ChannelMap"
+      }
+    },
+    "required": [
+      "type",
+      "content"
+    ],
+    "additionalProperties": false
+  }

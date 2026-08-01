@@ -1,0 +1,59 @@
+name: I18nConfig
+description: |
+  Locale bundles per docs/12_Internationalization.md §12.1.1.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "defaultLocale": {
+        "$ref": "#/$defs/Locale"
+      },
+      "locales": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Locale"
+        }
+      },
+      "text": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "pluralization": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "numberFormat": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "dateFormat": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "textDirection": {
+        "type": "object",
+        "additionalProperties": {
+          "enum": [
+            "ltr",
+            "rtl"
+          ]
+        }
+      }
+    },
+    "required": [
+      "defaultLocale"
+    ],
+    "additionalProperties": true
+  }

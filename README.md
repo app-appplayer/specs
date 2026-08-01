@@ -8,6 +8,8 @@ Specifications for the MakeMind / AppPlayer ecosystem — its UI DSL, bundle for
 - **[bundle/](bundle/)** — Bundle: a manifest plus sibling sections packaging an application.
 - **[serving/](serving/)** — Serving: serving a bundle so a client runs it identically to a local one.
 - **[platform/](platform/)** — Platform: the structural contract composing UI, bundle, and kernel into a framework.
+- **[form/](form/)** — Form: a schema-based document generation engine — fixed templates, schema-constrained fill, six render formats.
+- **[gateway/](gateway/)** — Gateway: the dispatch protocol carrying full MCP across a mediated relay (hub topologies, NAT-bound providers).
 
 ## Language
 

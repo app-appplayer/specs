@@ -1,0 +1,46 @@
+name: RouteTransition
+description: |
+  Per-route page transition. Declared on a `RouteValue` so every
+  `navigate` to that route uses the same transition, OR overridden
+  inline on a `navigate` action. Six canonical styles:
+
+  - `slide` — incoming page slides over the outgoing along the
+    direction (M3 default for forward navigation).
+  - `fade` — cross-fade between pages at the same position.
+  - `scale` — outgoing scales out, incoming scales in.
+  - `cube` — perspective-rotate as if turning a 3D cube; needs a
+    perspective-aware compositor (falls back to `slide` when
+    unavailable).
+  - `sharedAxis` — coordinated slide+fade across an axis (M3 motion
+    pattern for sibling-level navigation).
+  - `fadeThrough` — outgoing fades out while incoming fades in
+    after a brief zero-opacity bridge (M3 motion pattern for
+    top-level navigation).
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "style": {
+        "enum": ["slide", "fade", "scale", "cube", "sharedAxis", "fadeThrough"]
+      },
+      "duration": {
+        "$ref": "#/$defs/Dimension",
+        "description": "Total transition duration in milliseconds. Defaults to the M3 motion-system value for the chosen style."
+      },
+      "curve": {
+        "$ref": "#/$defs/AnimationCurve",
+        "description": "Easing curve for the transition's progress. Defaults to `emphasized`."
+      },
+      "axis": {
+        "enum": ["horizontal", "vertical"],
+        "description": "Direction for `slide` / `sharedAxis`. Defaults to `horizontal`."
+      },
+      "reverse": {
+        "type": "boolean",
+        "default": false,
+        "description": "When true, run the transition in reverse direction (for back navigation)."
+      }
+    },
+    "required": ["style"],
+    "additionalProperties": false
+  }

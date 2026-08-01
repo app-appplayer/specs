@@ -1,0 +1,23 @@
+type: colorPicker
+category: input
+profile: Core
+description: |
+  Color selection. Shared rows per §2.6.0; `value` is a hex color string.
+properties:
+  showAlpha:
+    type: "boolean"
+    default: false
+    description: "Enable alpha channel."
+  showLabel:
+    type: "boolean"
+    default: true
+    description: "Show hex label."
+  pickerType:
+    type: "string"
+    default: "\"wheel\""
+    description: "`wheel`, `palette`, `both`."
+  enableHistory:
+    type: "boolean"
+    default: false
+    description: "Show recent colors."
+# examples migrated verbatim from prose JSON fences.

@@ -1,0 +1,28 @@
+type: checkboxGroup
+category: input
+profile: Core
+description: |
+  Multi-selection checkbox group. Shared rows per §2.6.0; `binding` holds an `array` of selected values (top-level, not per-option).
+properties:
+  options:
+    type: "Option[]"
+    required: true
+    description: "`{ value, label }` entries."
+    aliases:
+      - items
+  orientation:
+    type: "string"
+    default: "\"vertical\""
+    description: "`vertical` or `horizontal`."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "checkboxGroup",
+        "binding": "form.interests",
+        "options": [
+          { "value": "sports", "label": "Sports" },
+          { "value": "music",  "label": "Music" }
+        ]
+      }

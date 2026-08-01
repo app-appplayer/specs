@@ -1,0 +1,129 @@
+type: map
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Geographic map with markers and overlays.
+properties:
+  center:
+    type: "`{ latitude, longitude }`"
+    description: "Map center coordinates. Required when flat `latitude` / `longitude` are omitted."
+  latitude:
+    type: "number"
+    description: "Flat shorthand for `center.latitude` — legacy alternative to `center`."
+  longitude:
+    type: "number"
+    description: "Flat shorthand for `center.longitude` — legacy alternative to `center`."
+  zoom:
+    type: "number"
+    default: 13
+    description: "Zoom level (0–22)"
+  mapType:
+    type: "string"
+    enum: ["standard", "satellite", "terrain", "hybrid"]
+    default: "standard"
+    description: "Base tile set."
+  markers:
+    type: "`Marker[]`"
+    default: "[]"
+    description: "Point markers"
+  markers[].id:
+    type: "string"
+    required: true
+    description: "Unique marker ID"
+  markers[].latitude:
+    type: "number"
+    required: true
+    description: "Marker latitude"
+  markers[].longitude:
+    type: "number"
+    required: true
+    description: "Marker longitude"
+  markers[].label:
+    type: "string"
+    default: null
+    description: "Marker label"
+  markers[].icon:
+    type: "string"
+    default: null
+    description: "Icon name"
+  markers[].color:
+    type: "string"
+    default: null
+    description: "Marker color"
+  overlays:
+    type: "`Overlay[]`"
+    default: "[]"
+    description: "Polygon / polyline / circle overlays"
+  overlays[].type:
+    type: "string"
+    enum: ["polygon", "polyline", "circle"]
+    required: true
+    description: "Overlay shape."
+  overlays[].points:
+    type: "`{ latitude, longitude }[]`"
+    default: "required for polygon/polyline"
+    description: "Vertex list"
+  overlays[].fillColor:
+    type: "string"
+    default: null
+    description: "Fill color (polygon/circle)"
+  overlays[].strokeColor:
+    type: "string"
+    default: null
+    description: "Stroke color"
+  overlays[].strokeWidth:
+    type: "number"
+    default: 1
+    description: "Stroke width"
+  onMarkerTap:
+    type: "Action"
+    default: null
+    description: "Fired on marker tap; `event.id` is the marker ID"
+  onMapTap:
+    type: "Action"
+    default: null
+    description: "Fired on map tap; `event.latitude` / `event.longitude`"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "map",
+        "center": { "latitude": 37.5665, "longitude": 126.9780 },
+        "zoom": 13,
+        "mapType": "standard",
+        "markers": [
+          {
+            "id": "m1",
+            "latitude": 37.5665,
+            "longitude": 126.9780,
+            "label": "Seoul City Hall",
+            "icon": "location_pin",
+            "color": "#F44336"
+          },
+          {
+            "id": "m2",
+            "latitude": 37.5512,
+            "longitude": 126.9882,
+            "label": "Namsan Tower"
+          }
+        ],
+        "overlays": [
+          {
+            "type": "polygon",
+            "points": [
+              { "latitude": 37.570, "longitude": 126.975 },
+              { "latitude": 37.570, "longitude": 126.985 },
+              { "latitude": 37.560, "longitude": 126.985 }
+            ],
+            "fillColor": "rgba(33,150,243,0.3)",
+            "strokeColor": "#2196F3",
+            "strokeWidth": 2
+          }
+        ],
+        "onMarkerTap": {
+          "type": "state", "action": "set",
+          "binding": "selectedMarker", "value": "{{event.id}}"
+        }
+      }

@@ -1,0 +1,19 @@
+type: baseline
+category: utility
+profile: Core
+description: |
+  Aligns a child by its baseline.
+properties:
+  baseline:
+    type: "number"
+    required: true
+    description: "Distance from the top to the child's baseline."
+  baselineType:
+    type: "string"
+    default: "\"alphabetic\""
+    description: "`alphabetic` or `ideographic`."
+  child:
+    type: "Widget"
+    required: true
+    description: "Baselined child."
+# examples migrated verbatim from prose JSON fences.

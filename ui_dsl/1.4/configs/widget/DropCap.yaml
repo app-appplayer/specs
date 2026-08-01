@@ -1,0 +1,33 @@
+name: DropCap
+description: |
+  Typographic drop-cap ornament for long-form text (book chapters,
+  magazine articles). The first character of the text widget's content
+  is rendered enlarged in the top-left corner; the surrounding text
+  flows in a left-indented column for `lines` lines and then continues
+  full width below the cap. `glyph` overrides the cap character (e.g.
+  rendering a stylised dingbat instead of the literal first letter).
+  `style` layers on top of the parent text widget's resolved style for
+  cap-specific overrides (typically a different `fontFamily` and
+  larger `fontWeight`).
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "lines": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 6,
+        "default": 3,
+        "description": "Number of body-text lines the cap spans vertically."
+      },
+      "glyph": {
+        "type": "string",
+        "description": "Override character. Default: first character of the text widget's `text`."
+      },
+      "style": {
+        "$ref": "#/$defs/TextStyle",
+        "description": "Cap-specific style overrides, layered on top of the parent widget's style. `fontSize` is computed from `lines × parent.fontSize` when omitted."
+      }
+    },
+    "additionalProperties": false
+  }

@@ -1,0 +1,16 @@
+type: layoutBuilder
+category: utility
+profile: Core
+description: |
+  Runtime-only responsive container: picks a child by matching the current constraints against a breakpoint map.
+properties:
+  breakpoints:
+    type: "object"
+    description: "Map of breakpoint name → threshold (e.g., `{ \"sm\": 480, \"md\": 768 }`)."
+  layouts:
+    type: "object"
+    description: "Map of breakpoint name → Widget; matched against `breakpoints`."
+  default:
+    type: "Widget"
+    description: "Fallback when no breakpoint matches. Legacy alias: `child`."
+# examples migrated verbatim from prose JSON fences.

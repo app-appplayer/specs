@@ -1,0 +1,25 @@
+name: PublisherInfo
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "logo": {
+        "$ref": "#/$defs/AssetRef"
+      },
+      "website": {
+        "type": "string",
+        "format": "uri"
+      },
+      "email": {
+        "type": "string",
+        "format": "email"
+      }
+    },
+    "required": [
+      "name"
+    ],
+    "additionalProperties": false
+  }

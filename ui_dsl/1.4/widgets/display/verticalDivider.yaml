@@ -1,0 +1,23 @@
+type: verticalDivider
+category: display
+profile: Core
+description: |
+  Vertical separator, typically used in horizontal layouts.
+properties:
+  width:
+    type: "number"
+    description: "Total width including spacing."
+  thickness:
+    type: "number"
+    default: 1
+    description: "Line thickness."
+  color:
+    type: "string"
+    description: "Line color."
+  indent:
+    type: "number"
+    description: "Top indent."
+  endIndent:
+    type: "number"
+    description: "Bottom indent."
+# examples migrated verbatim from prose JSON fences.

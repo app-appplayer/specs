@@ -1,0 +1,16 @@
+type: use
+category: utility
+profile: Core
+description: |
+  Instantiates a named template (see §9.6).
+properties:
+  template:
+    type: "string"
+    required: true
+    description: "Template name to instantiate."
+  params:
+    type: "object"
+    description: "Parameter values; merged with the template's declared defaults."
+  slots:
+    type: "object"
+    description: "Widget subtrees keyed by slot name."

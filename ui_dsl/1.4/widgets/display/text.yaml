@@ -1,0 +1,70 @@
+type: text
+category: display
+profile: Core
+description: |
+  Renders a string. The canonical content field is `text`.
+properties:
+  text:
+    type: "string"
+    required: true
+    description: "Text content. Supports binding expressions."
+    aliases:
+      - content
+  variant:
+    type: "string"
+    enum:
+      - displayLarge
+      - displayMedium
+      - displaySmall
+      - headlineLarge
+      - headlineMedium
+      - headlineSmall
+      - titleLarge
+      - titleMedium
+      - titleSmall
+      - bodyLarge
+      - bodyMedium
+      - bodySmall
+      - labelLarge
+      - labelMedium
+      - labelSmall
+    description: |
+      M3 typography role. The runtime resolves it through
+      `theme.typography.<variant>` (see `05_Theme.md` § 5.4) and uses the
+      result as the base TextStyle. Inline `style` (if present) overrides
+      individual fields on top of the resolved role.
+  style:
+    type: TextStyle
+    description: |
+      Inline `TextStyle` overrides (color, fontWeight, fontSize,
+      decoration, shader, shadows, fontFeatures, …). Layered on top of
+      `variant` when both are set. A binding expression
+      `"{{theme.typography.<role>}}"` is also accepted and resolves to
+      the same role's typography object — equivalent to writing
+      `variant: "<role>"`.
+  dropCap:
+    type: DropCap
+    description: |
+      Render the first character of `text` as an enlarged drop cap that
+      the surrounding lines flow around (book / magazine ornament).
+      Mutually exclusive with `maxLines`.
+  maxLines:
+    type: "number"
+    description: "Maximum rendered lines."
+  overflow:
+    type: "string"
+    default: "\"clip\""
+    description: "`clip`, `ellipsis`, `fade`, `visible`."
+  textAlign:
+    type: "string"
+    default: "\"start\""
+    description: "`start`, `center`, `end`, `justify`."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "text",
+        "text": "Hello {{user.name}}",
+        "style": { "fontSize": 16, "fontWeight": "bold", "color": "#333333" }
+      }

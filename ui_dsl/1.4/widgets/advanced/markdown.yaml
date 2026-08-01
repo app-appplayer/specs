@@ -1,0 +1,61 @@
+type: markdown
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Markdown renderer.
+properties:
+  text:
+    type: "string "
+    default: "binding"
+    description: "required | Markdown source"
+  selectable:
+    type: "boolean"
+    default: false
+    description: "Allow text selection"
+  width:
+    type: "number"
+    default: null
+    description: "Widget width"
+  height:
+    type: "number"
+    default: null
+    description: "Widget height"
+  fontSize:
+    type: "number"
+    default: null
+    description: "Base font size"
+  textColor:
+    type: "string"
+    default: null
+    description: "Default text color"
+  linkColor:
+    type: "string"
+    default: null
+    description: "Hyperlink color"
+  codeBackgroundColor:
+    type: "string"
+    default: null
+    description: "Code-block background"
+  onLinkTap:
+    type: "Action"
+    default: null
+    description: "Fired on link tap; `event.url` is the target"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "markdown",
+        "text": "# Hello World\n\nThis is **markdown** content with [a link](https://example.com).",
+        "selectable": true,
+        "width": 600,
+        "fontSize": 16,
+        "textColor": "#212121",
+        "linkColor": "#1976D2",
+        "codeBackgroundColor": "#F5F5F5",
+        "onLinkTap": {
+          "type": "navigation", "action": "push",
+          "route": "{{event.url}}"
+        }
+      }

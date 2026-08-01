@@ -1,0 +1,12 @@
+name: Binding
+description: |
+  Binding-expression string of the form `"{{...}}"`. Authors may
+  substitute any primitive value with a binding so the runtime
+  resolves the value at render time. Used as an alternative branch
+  in primitives that otherwise expect a specific structural shape
+  (AssetRef, Dimension, BorderRadius, Alignment, …).
+definition:
+  {
+    "type": "string",
+    "pattern": "^\\{\\{.*\\}\\}$"
+  }

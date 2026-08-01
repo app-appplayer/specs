@@ -1,0 +1,140 @@
+type: textInput
+category: input
+profile: Core
+since: v1.0
+aliases: [textField, textfield, textFormField, text-form-field]
+description: |
+  Single-line (or multi-line when `maxLines > 1`) text entry. Follows the
+  shared input contract (spec §2.6.0): when `binding` is set, the runtime
+  reads the current value from the state path and writes user input back
+  without requiring an explicit `onChange`. Explicit `value` + `onChange`
+  override the shorthand.
+
+properties:
+  # Shared per §2.6.0 — repeated here so the schema can discriminate directly.
+  binding:
+    type: string
+    description: State path bound two-way to the input value.
+  value:
+    type: "string | binding"
+    description: One-way initial/display value when `binding` is not set.
+  enabled:
+    type: boolean
+    default: true
+    description: Whether the field accepts user input.
+
+  label:
+    type: string
+    description: Field label shown above or floating inside the field.
+  placeholder:
+    type: string
+    description: Placeholder shown when the field is empty.
+    aliases:
+      - hint
+  helperText:
+    type: string
+    description: Helper text shown below the field.
+  prefixIcon:
+    type: string
+    description: Icon displayed at the start of the field.
+  suffixIcon:
+    type: string
+    description: Icon displayed at the end of the field.
+  obscureText:
+    type: boolean
+    default: false
+    description: Hide input characters (passwords).
+  readOnly:
+    type: boolean
+    default: false
+    description: Whether the field is read-only.
+  maxLines:
+    type: integer
+    default: 1
+    description: Maximum number of visible lines.
+  maxLength:
+    type: integer
+    description: Maximum character length enforced at input time.
+  inputType:
+    type: string
+    enum: [text, number, email, phone, url, multiline]
+    default: text
+    description: Virtual keyboard hint / input semantics.
+  validation:
+    type: ValidationConfig
+    description: Input constraints; see `../../07_Security.md` §7.2.1.
+
+events:
+  onChange:
+    description: Fired when the value changes.
+    payload:
+      value: string
+      type: change
+    aliases: [onChanged, change]
+  onSubmit:
+    description: Fired when the input action button is invoked.
+    payload:
+      value: string
+      type: submit
+    aliases: [submit]
+  onFocus:
+    description: Fired when the field gains focus.
+    payload:
+      type: focus
+  onBlur:
+    description: Fired when the field loses focus.
+    payload:
+      value: string
+      type: blur
+    aliases: [blur]
+
+children:
+  kind: none
+
+examples:
+  - name: binding_only
+    description: Canonical binding shorthand — runtime hydrates + writes back automatically.
+    dsl: |
+      {
+        "type": "textInput",
+        "label": "Email",
+        "binding": "form.email",
+        "inputType": "email"
+      }
+  - name: validation_email
+    description: Shape B validation (rule array).
+    dsl: |
+      {
+        "type": "textInput",
+        "label": "Email",
+        "binding": "form.email",
+        "validation": [
+          { "rule": "required", "message": "Email is required" },
+          { "rule": "email",    "message": "Invalid email format" }
+        ]
+      }
+  - name: explicit_value_onChange
+    description: Opts out of binding shorthand — explicit `value` + `onChange`.
+    dsl: |
+      {
+        "type": "textInput",
+        "value": "{{form.query}}",
+        "onChange": {
+          "type": "state",
+          "action": "set",
+          "binding": "form.query",
+          "value": "{{event.value}}"
+        }
+      }
+  - name: missing_type
+    description: "`type` missing — top-level validation error."
+    dsl: |
+      { "label": "Oops" }
+    expect: validation_error
+    error_path: "#/required/type"
+  - name: bad_input_type
+    description: "`inputType` must be one of the enum values."
+    dsl: |
+      { "type": "textInput", "inputType": "currency" }
+    expect: validation_error
+    error_path: "#/properties/inputType/enum"

@@ -1,0 +1,61 @@
+type: rive
+category: animation
+profile: Core
+since: v1.3
+description: |
+  Plays a Rive animation (`.riv` asset) — the alternative to
+  `lottieAnimation` when the asset was authored in Rive. State-machine
+  inputs are driven via `inputs` so the same asset reacts to host
+  state changes (toggle, scrub, trigger). Distinct from Lottie:
+  Rive supports interactive state machines, vector deformation, and
+  smaller binary footprints; Lottie is After Effects-based and
+  better suited to time-driven motion graphics.
+properties:
+  src:
+    type: AssetRef
+    required: true
+    description: Rive asset path (`bundle://...riv`, `https://...riv`, `assets/...riv`).
+  artboard:
+    type: string
+    description: Named artboard to render. Defaults to the file's primary artboard.
+  animation:
+    type: string
+    description: Named timeline animation. Mutually exclusive with `stateMachine`.
+  stateMachine:
+    type: string
+    description: Named state machine. Mutually exclusive with `animation`.
+  inputs:
+    type: object
+    description: |
+      Map of state-machine input name → value. `boolean` / `number` /
+      `trigger` (set to `true` to fire) — type matches the input's
+      declared type in the Rive file.
+  fit:
+    type: string
+    enum: [fill, contain, cover, fitWidth, fitHeight, none, scaleDown]
+    default: "\"contain\""
+    description: How the artboard scales within its render bounds.
+  alignment:
+    type: Alignment
+    default: "\"center\""
+    description: Alignment of the artboard within its render bounds.
+  width:
+    type: Dimension
+    description: Render width in logical pixels.
+  height:
+    type: Dimension
+    description: Render height in logical pixels.
+examples:
+  - name: animated_avatar
+    dsl: |
+      {
+        "type": "rive",
+        "src": "bundle://avatars/dragon.riv",
+        "stateMachine": "Idle",
+        "inputs": {
+          "happy": "{{user.online}}",
+          "wave": "{{justGreeted}}"
+        },
+        "width": 120,
+        "height": 120
+      }

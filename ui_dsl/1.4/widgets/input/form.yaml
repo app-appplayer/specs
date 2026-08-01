@@ -1,0 +1,35 @@
+type: form
+category: input
+profile: Core
+description: |
+  Container that manages validation state for its child inputs.
+properties:
+  children:
+    type: "Widget[]"
+    required: true
+    description: "Form field widgets."
+  showErrorsOn:
+    type: "string"
+    default: "\"submit\""
+    description: "`submit`, `change`, `blur`."
+  onSubmit:
+    type: "Action"
+    description: "Fired on form submission."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "form",
+        "showErrorsOn": "submit",
+        "onSubmit": {
+          "type": "tool", "tool": "submitRegistration", "params": "{{form.data}}"
+        },
+        "children": [
+          { "type": "textInput", "label": "Email", "value": "{{form.email}}" },
+          { "type": "textInput", "label": "Password",
+            "value": "{{form.password}}", "obscureText": true },
+          { "type": "button", "label": "Submit",
+            "onTap": { "type": "form", "action": "submit" } }
+        ]
+      }

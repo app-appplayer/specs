@@ -1,0 +1,16 @@
+name: Widget
+description: |
+  Widget per docs/02_Widgets.md. Validated against the union in widgets.schema.json; left permissive here.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "type"
+    ],
+    "additionalProperties": true
+  }

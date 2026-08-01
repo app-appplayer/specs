@@ -1,0 +1,42 @@
+name: BackgroundImage
+description: |
+  Image fill behind a box's content. `image` accepts the same forms as
+  the `image` widget's `src` (`bundle://`, `https?://`, `data:`,
+  `client://`). `fit` and `alignment` mirror the `image` widget's
+  semantics. `opacity` applies an alpha multiplier; `colorFilter`
+  composites a tint via the named blend mode. `repeat` controls
+  tiling behaviour outside the image's natural bounds.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "image": { "$ref": "#/$defs/AssetRef" },
+      "fit": {
+        "enum": ["fill", "contain", "cover", "fitWidth", "fitHeight", "none", "scaleDown"],
+        "default": "cover"
+      },
+      "alignment": { "$ref": "#/$defs/Alignment" },
+      "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+      "colorFilter": {
+        "type": "object",
+        "properties": {
+          "color": { "type": "string" },
+          "blendMode": {
+            "enum": [
+              "srcIn", "color", "screen", "overlay", "multiply"
+            ],
+            "default": "srcIn",
+            "description": "Curated subset of blend modes covering the common tinting use cases (`srcIn` for solid tint, `color` for hue swap, `screen`/`overlay`/`multiply` for atmosphere)."
+          }
+        },
+        "required": ["color"],
+        "additionalProperties": false
+      },
+      "repeat": {
+        "enum": ["noRepeat", "repeat", "repeatX", "repeatY"],
+        "default": "noRepeat"
+      }
+    },
+    "required": ["image"],
+    "additionalProperties": false
+  }

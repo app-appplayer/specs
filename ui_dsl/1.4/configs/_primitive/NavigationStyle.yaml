@@ -1,0 +1,58 @@
+name: NavigationStyle
+description: |
+  Visual styling for a navigation surface (drawer / rail / tabs /
+  bottomBar). Every field is optional — omitted fields fall back to
+  the active theme's component defaults. Used by
+  `NavigationConfig.style` (whole surface) and `NavItem.style`
+  (per-item override).
+
+  Backgrounds compose: `backgroundColor` paints first, then
+  `backgroundImage` paints over it.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "backgroundColor": { "type": "string" },
+      "backgroundImage": { "$ref": "#/$defs/BackgroundImage" },
+      "indicatorColor": {
+        "type": "string",
+        "description": "Selection indicator pill color (rail / drawer / tabs)."
+      },
+      "indicatorShape": {
+        "$ref": "#/$defs/BorderRadius",
+        "description": "Selection indicator corner radius. Defaults to a fully-rounded pill."
+      },
+      "dividerColor": {
+        "type": "string",
+        "description": "Drawer-only — color of dividers between item groups."
+      },
+      "dividerThickness": { "$ref": "#/$defs/Dimension" },
+      "dividerIndent": {
+        "$ref": "#/$defs/Dimension",
+        "description": "Drawer-only — leading inset before each divider."
+      },
+      "labelStyle": {
+        "$ref": "#/$defs/TextStyle",
+        "description": "Default text style for item labels (selected and unselected). Per-item override via NavItem.style.labelStyle."
+      },
+      "iconStyle": {
+        "type": "object",
+        "properties": {
+          "color": { "type": "string" },
+          "size": { "$ref": "#/$defs/Dimension" }
+        },
+        "additionalProperties": false,
+        "description": "Default icon color and size."
+      },
+      "selectedColor": {
+        "type": "string",
+        "description": "Foreground color (icon + label) for the selected item."
+      },
+      "unselectedColor": {
+        "type": "string",
+        "description": "Foreground color for non-selected items."
+      },
+      "elevation": { "$ref": "#/$defs/Dimension" }
+    },
+    "additionalProperties": false
+  }

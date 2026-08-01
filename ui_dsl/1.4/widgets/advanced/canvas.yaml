@@ -1,0 +1,33 @@
+type: canvas
+category: advanced
+profile: Core
+since: v1.3
+description: |
+  General-purpose vector drawing via an ordered command array. All numeric and color properties support binding expressions, enabling data-driven graphics (progress rings, custom indicators, composable chart primitives).
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "canvas",
+        "width": 300,
+        "height": 200,
+        "backgroundColor": "#FFFFFF",
+        "commands": [
+          { "op": "rect", "x": 10, "y": 10, "width": 100, "height": 80,
+            "fill": "#FF5722", "cornerRadius": 8 },
+          { "op": "circle", "cx": 200, "cy": 100, "radius": 40,
+            "fill": "{{app.color}}", "stroke": "#333333", "strokeWidth": 2 },
+          { "op": "arc", "cx": 60, "cy": 150, "radius": 30,
+            "startAngle": 3.14, "endAngle": "{{3.14 + (app.progress / 100) * 3.14}}",
+            "stroke": "#4CAF50", "strokeWidth": 4, "strokeCap": "round" },
+          { "op": "line", "x1": 10, "y1": 190, "x2": 290, "y2": 190,
+            "stroke": "#E0E0E0", "strokeWidth": 1 },
+          { "op": "path", "d": "M 10 10 L 90 10 L 90 90 Z",
+            "fill": "rgba(33,150,243,0.2)", "stroke": "#2196F3", "strokeWidth": 1 },
+          { "op": "text", "text": "{{app.label}}", "x": 10, "y": 180,
+            "fontSize": 14, "color": "#333333", "textAlign": "start" },
+          { "op": "image", "src": "bundle://icons/logo.png",
+            "x": 250, "y": 10, "width": 40, "height": 40, "opacity": 0.9 }
+        ]
+      }

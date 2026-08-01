@@ -1,0 +1,25 @@
+type: floatingActionButton
+category: navigation
+profile: Core
+description: |
+  Floating action button (FAB).
+properties:
+  icon:
+    type: "string"
+    description: "Icon name."
+  label:
+    type: "string"
+    description: "Extended FAB label."
+  onTap:
+    type: "Action"
+    description: "Tap handler. Omitted FABs render as inert."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "floatingActionButton",
+        "icon": "add",
+        "label": "New Item",
+        "onTap": { "type": "navigation", "action": "push", "route": "/create" }
+      }

@@ -1,0 +1,38 @@
+name: AnimationCurve
+description: |
+  Easing curve applied to an animation's progress. Eleven canonical
+  values cover the M3-recommended palette plus the CSS-familiar
+  basics:
+
+  - **CSS-familiar** — `linear`, `easeIn`, `easeOut`, `easeInOut`.
+  - **M3 standard** — `standard`, `standardAccelerate`,
+    `standardDecelerate`. Used for everyday transitions; minimal
+    overshoot, clean cubic.
+  - **M3 emphasized** — `emphasized`, `emphasizedAccelerate`,
+    `emphasizedDecelerate`. Used for hero / page transitions; more
+    dramatic acceleration profile.
+  - **Bounce** — `bounceIn`, `bounceOut`. For attention / alert
+    micro-interactions.
+
+  Cross-schema canonical for `animatedContainer.curve`,
+  `animatedOpacity.curve`, RouteTransition, scrollAnimated easing,
+  and any future implicit-animation widget. Matches the M3 motion
+  spec's named tokens 1:1 so theme-level motion overrides stay
+  vendor-neutral.
+definition:
+  {
+    "enum": [
+      "linear",
+      "easeIn",
+      "easeOut",
+      "easeInOut",
+      "standard",
+      "standardAccelerate",
+      "standardDecelerate",
+      "emphasized",
+      "emphasizedAccelerate",
+      "emphasizedDecelerate",
+      "bounceIn",
+      "bounceOut"
+    ]
+  }

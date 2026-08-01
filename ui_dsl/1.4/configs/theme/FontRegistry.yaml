@@ -1,0 +1,49 @@
+name: FontRegistry
+description: |
+  Font asset registration. Map of font family name → asset
+  declaration. Each declaration tells the runtime which file to
+  load for a given weight/style and, for variable fonts, which
+  axes are tunable.
+
+  - `weights` — map of weight value (`100`..`900` or `regular`/
+    `bold`/etc.) to AssetRef. Set per file you want to ship.
+  - `variableAxes` — list of variable-font axis tunings. Each entry
+    is `{tag, min, max, default}`. Standard axes: `wght` (weight),
+    `wdth` (width), `opsz` (optical size), `ital` (italic), `slnt`
+    (slant). Custom axes (`GRAD`, `XOPQ`, etc.) are accepted by tag.
+    When set, `weights` becomes optional — the runtime drives the
+    `wght` axis from text.style.fontWeight.
+  - `fallbacks` — ordered family-name list used when a glyph isn't
+    in the primary font (CJK, emoji, math).
+definition:
+  {
+    "type": "object",
+    "additionalProperties": {
+      "type": "object",
+      "properties": {
+        "weights": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/AssetRef" }
+        },
+        "variableAxes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tag": { "type": "string", "minLength": 4, "maxLength": 4 },
+              "min": { "type": "number" },
+              "max": { "type": "number" },
+              "default": { "type": "number" }
+            },
+            "required": ["tag", "min", "max"],
+            "additionalProperties": false
+          }
+        },
+        "fallbacks": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }

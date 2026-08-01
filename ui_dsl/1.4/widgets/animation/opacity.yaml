@@ -1,0 +1,41 @@
+type: opacity
+category: animation
+profile: Core
+since: v1.3
+description: |
+  Wraps a child with opacity, with optional animation.
+properties:
+  opacity:
+    type: "number | binding"
+    required: true
+    description: "Opacity in `0.0..1.0`."
+  animated:
+    type: "boolean"
+    default: false
+    description: "Animate opacity changes."
+  duration:
+    type: "number"
+    default: 300
+    description: "Animation duration in milliseconds (when `animated: true`)."
+  curve:
+    type: "string"
+    default: "\"easeInOut\""
+    description: "Animation curve (when `animated: true`)."
+  child:
+    type: "Widget"
+    required: true
+    description: "Child widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "opacity",
+        "opacity": "{{item.isActive ? 1.0 : 0.3}}",
+        "animated": true,
+        "duration": 200,
+        "child": {
+          "type": "card",
+          "child": { "type": "text", "text": "{{item.name}}" }
+        }
+      }

@@ -1,0 +1,8 @@
+name: Locale
+description: |
+  BCP 47 locale tag (e.g. `en`, `en-US`, `zh-Hant-TW`).
+definition:
+  {
+    "type": "string",
+    "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
+  }

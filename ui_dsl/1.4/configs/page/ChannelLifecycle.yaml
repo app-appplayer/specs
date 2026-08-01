@@ -1,0 +1,40 @@
+name: ChannelLifecycle
+description: |
+  Channel lifecycle config per docs/08_Client_Extensions.md §8.6.5.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "autoStart": {
+        "type": "boolean",
+        "default": false
+      },
+      "autoDispose": {
+        "type": "boolean",
+        "default": false
+      },
+      "restartOnError": {
+        "type": "boolean",
+        "default": false
+      },
+      "maxRestarts": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 3
+      },
+      "restartDelay": {
+        "type": "integer",
+        "minimum": 0,
+        "default": 1000
+      },
+      "restartBackoff": {
+        "enum": [
+          "fixed",
+          "linear",
+          "exponential"
+        ],
+        "default": "fixed"
+      }
+    },
+    "additionalProperties": false
+  }

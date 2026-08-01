@@ -1,0 +1,62 @@
+type: animatedContainer
+category: animation
+profile: Core
+description: |
+  Container that implicitly animates property changes. Whenever any
+  of the size/decoration/alignment/padding fields change between
+  builds the runtime tweens between the old and new values over
+  `duration` using `curve`.
+properties:
+  duration:
+    type: Dimension
+    default: 300
+    description: Animation duration in milliseconds.
+  curve:
+    type: AnimationCurve
+    default: "\"easeInOut\""
+    description: Easing curve.
+  width:
+    type: Dimension
+    description: Animated width.
+  height:
+    type: Dimension
+    description: Animated height.
+  padding:
+    type: EdgeInsets
+    description: Animated inner padding.
+  margin:
+    type: EdgeInsets
+    description: Animated outer margin.
+  alignment:
+    type: Alignment
+    description: Animated child alignment.
+  decoration:
+    type: BoxDecoration
+    description: Animated decoration (color/gradient/border/shadow/image).
+  onEnd:
+    type: Action
+    description: Fires when the animation completes.
+  child:
+    type: Widget
+    description: Animated child widget.
+examples:
+  - name: expand_collapse
+    dsl: |
+      {
+        "type": "animatedContainer",
+        "duration": 500,
+        "curve": "emphasized",
+        "width": "{{expanded ? 300 : 100}}",
+        "height": "{{expanded ? 200 : 50}}",
+        "padding": { "all": 16 },
+        "decoration": {
+          "color": "{{expanded ? '#2196F3' : '#E0E0E0'}}",
+          "borderRadius": 8
+        },
+        "onEnd": {
+          "type": "state", "action": "set",
+          "binding": "animationComplete", "value": true
+        },
+        "child": { "type": "center",
+                   "child": { "type": "text", "text": "Animated" } }
+      }

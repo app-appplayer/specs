@@ -1,0 +1,20 @@
+type: padding
+category: layout
+profile: Core
+description: |
+  Applies padding around a single child.
+properties:
+  padding:
+    type: "EdgeInsets"
+    required: true
+    description: "Inset values."
+  child:
+    type: "Widget"
+    required: true
+    description: "Inset widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      { "type": "padding", "padding": { "all": 16 },
+        "child": { "type": "text", "text": "Padded" } }

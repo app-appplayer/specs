@@ -1,0 +1,48 @@
+type: hero
+category: animation
+profile: Core
+since: v1.3
+description: |
+  Shared-element transition wrapper. Wrap a child widget on the
+  source page AND on the destination page with the SAME `tag`; the
+  runtime morphs the source widget's bounds → destination widget's
+  bounds during the route transition (cover → detail magnification,
+  album cover → expanded album view). Pairs naturally with
+  `RouteTransition` styles such as `fade` or `sharedAxis`.
+properties:
+  tag:
+    type: string
+    required: true
+    description: |
+      Identifier shared between source and destination pages. Both
+      sides MUST set the same tag for the morph to engage. Tags must
+      be unique within each page (a single page cannot have two heroes
+      with the same tag).
+  child:
+    type: Widget
+    required: true
+    description: The widget that morphs across the route boundary.
+  transitionOnUserGestures:
+    type: boolean
+    default: "false"
+    description: |
+      When true, also morphs during gesture-driven back navigation
+      (iOS swipe-from-edge). Adds slight render cost.
+  flightShuttleBuilder:
+    type: Widget
+    description: |
+      Optional intermediate widget used during the morph itself.
+      When omitted the runtime tweens between the source and
+      destination children.
+examples:
+  - name: cover_to_detail
+    dsl: |
+      {
+        "type": "hero",
+        "tag": "album-{{album.id}}",
+        "child": {
+          "type": "image",
+          "src": "{{album.cover}}",
+          "fit": "cover"
+        }
+      }

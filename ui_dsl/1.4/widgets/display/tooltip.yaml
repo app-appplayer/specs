@@ -1,0 +1,23 @@
+type: tooltip
+category: display
+profile: Core
+description: |
+  Wrapper that reveals a tooltip on hover or long-press.
+properties:
+  message:
+    type: "string"
+    required: true
+    description: "Tooltip text."
+  child:
+    type: "Widget"
+    required: true
+    description: "Wrapped widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "tooltip",
+        "message": "Click to save your changes",
+        "child": { "type": "button", "label": "Save" }
+      }

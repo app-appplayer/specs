@@ -1,0 +1,36 @@
+type: permissionPrompt
+category: utility
+profile: Core
+description: |
+  Presents a prompt for one or more client capabilities (e.g., clipboard, filesystem). See [`07_Security.md`](07_Security.md) for the permission vocabulary.
+properties:
+  permissions:
+    type: "string[]"
+    description: "Permission identifiers (e.g., `[\"client.clipboard\"]`). Required when `permissionType` is omitted."
+  permissionType:
+    type: "string"
+    description: "Single-permission shorthand for `permissions: [permissionType]`."
+  style:
+    type: "string"
+    default: "\"inline\""
+    description: "`inline`, `dialog`, `banner`."
+  title:
+    type: "string"
+    description: "Prompt title."
+  description:
+    type: "string"
+    description: "Prompt body."
+  icon:
+    type: "string"
+    description: "Icon shown alongside the prompt."
+  allowPartial:
+    type: "boolean"
+    default: false
+    description: "Allow the user to grant a subset."
+  onAllow:
+    type: "Action"
+    description: "Fired when the user grants (all / partial per `allowPartial`)."
+  onDeny:
+    type: "Action"
+    description: "Fired when the user denies."
+# examples migrated verbatim from prose JSON fences.

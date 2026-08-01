@@ -1,0 +1,15 @@
+type: toggle
+category: input
+profile: Core
+aliases:
+  - switch
+description: |
+  Binary on/off control. Shared `binding` / `value` / `enabled` / `onChange` per §2.6.0; `value` is `boolean`.
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "toggle",
+        "binding": "settings.darkMode"
+      }

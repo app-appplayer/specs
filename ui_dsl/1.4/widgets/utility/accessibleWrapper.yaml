@@ -1,0 +1,14 @@
+type: accessibleWrapper
+category: utility
+profile: Core
+description: |
+  Wraps a child with accessibility annotations (ARIA-style). See [`13_Accessibility.md`](13_Accessibility.md) for the full property set.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Wrapped subtree."
+  accessibility:
+    type: "object"
+    description: "`{ label, hint, role, live }` — mirrors §13."
+# examples migrated verbatim from prose JSON fences.

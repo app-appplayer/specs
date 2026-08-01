@@ -1,0 +1,56 @@
+type: grid
+category: list
+profile: Core
+aliases:
+  - gridview
+description: |
+  Scrollable two-dimensional collection.
+properties:
+  items:
+    type: "binding"
+    description: "Array source. Required when `children` is omitted."
+  itemTemplate:
+    type: "Widget"
+    description: "Template rendered per bound item. Required with `items`."
+  children:
+    type: "Widget[]"
+    description: "Static grid cells. Mutually exclusive with `items` + `itemTemplate`."
+  columns:
+    type: "number | object"
+    required: true
+    description: "Column count; may use responsive `{default, sm, md, lg}`."
+    aliases:
+      - crossAxisCount
+  rowGap:
+    type: "number"
+    default: 0
+    description: "Gap between rows."
+  columnGap:
+    type: "number"
+    default: 0
+    description: "Gap between columns."
+  itemAspectRatio:
+    type: "number"
+    description: "Fixed aspect ratio for each item."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "grid",
+        "items": "{{products}}",
+        "columns": 2,
+        "rowGap": 12,
+        "columnGap": 12,
+        "itemAspectRatio": 0.75,
+        "itemTemplate": {
+          "type": "card",
+          "child": {
+            "type": "linear", "direction": "vertical",
+            "children": [
+              { "type": "image", "src": "{{item.image}}", "fit": "cover" },
+              { "type": "text",  "text": "{{item.name}}" }
+            ]
+          }
+        }
+      }

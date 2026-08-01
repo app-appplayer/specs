@@ -1,0 +1,22 @@
+name: TemplateLibraryRef
+description: |
+  Remote template library reference per docs/09_Templates.md §9.11.1.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "uri": {
+        "type": "string"
+      },
+      "version": {
+        "$ref": "#/$defs/SemverLike"
+      },
+      "integrity": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "uri"
+    ],
+    "additionalProperties": true
+  }

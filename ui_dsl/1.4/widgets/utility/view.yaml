@@ -1,0 +1,50 @@
+type: view
+category: utility
+profile: Composition
+since: v1.4
+description: |
+  Embeds a definition sourced from anywhere — including another MCP origin — at
+  this point in the tree. The consumer side of composition: `11_Bundle_Metadata.md`
+  §11.9 `dashboard` declares how an app presents itself *when embedded*; `view`
+  is how an app *embeds*. See [`01_Core_Concepts.md`](01_Core_Concepts.md) §1.9
+  for `DefinitionSource` and the origin-scope rule.
+
+  When `source` names an origin, that origin becomes the ambient origin for the
+  embedded subtree: its `tool` calls, resource reads, subscriptions, state,
+  storage, and permissions all scope to it (§1.9.5, §7.10, §8.8). This is what
+  lets a definition authored with no knowledge of any embedder render unmodified
+  and still reach its own server.
+properties:
+  source:
+    type: "DefinitionSource"
+    required: true
+    description: |
+      What to render — an inline definition, a `ui://` URI on the current origin,
+      a qualified `{ $ref, from }` reference to another origin, or a binding to a
+      definition held in state. See §1.9.1.
+  props:
+    type: "object"
+    description: |
+      Values merged into the embedded definition's initial state. The ONLY channel
+      from embedder to embedded — an embedded view never implicitly reads the
+      embedder's state (§7.10). One-way: mutations inside the embedded scope do not
+      propagate back.
+  fallback:
+    type: "Widget"
+    description: "Rendered when the source cannot be resolved (origin unreachable, resource missing, malformed definition). Absent = a generic unavailable indicator."
+  loading:
+    type: "Widget"
+    description: "Rendered while the source resolves. Absent = a generic progress indicator."
+  onError:
+    type: "Action"
+    description: "Fired with `{{event.error}}` when resolution fails. Failure is scoped to this view — sibling views and the embedding page continue to render (§2.13.1)."
+  theme:
+    type: "string"
+    enum: ["inherit", "own"]
+    default: "inherit"
+    description: |
+      `inherit` (default) renders the embedded definition under the embedder's
+      theme so a composed screen looks like one product. `own` honours the
+      embedded definition's own theme — appropriate when embedding a
+      full third-party application rather than a summary tile.
+# examples live in the prose section 2.13.1.

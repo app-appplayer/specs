@@ -84,7 +84,7 @@ as-is and decide how to dispatch.
 ## 4.3 `ToolKind`
 
 ```
-host | mcp | cloud | js | unknown
+host | mcp | cloud | js | ts | unknown
 ```
 
 | Kind | Dispatched by | `target` shape | Typical use |
@@ -93,6 +93,7 @@ host | mcp | cloud | js | unknown
 | `mcp` | External MCP server | `{ "transport": "http" \| "stdio", "url"?, "command"?, "args"? }` | Outbound MCP connections — remote HTTPS servers, local stdio binaries. |
 | `cloud` | External HTTPS endpoint | `{ "url": "https://..." }` | SaaS / cloud APIs. |
 | `js` | Bundled JavaScript executed in `flutter_js` | `{ "entry": "tools/foo.js", "fn": "foo" }` | The bundle's own scripts — most domain tools. |
+| `ts` | Serving runtime (server-side) | `{ "entry": "tools/foo.ts", "fn": "foo" }` | Compiled real-code tools of a `type: server` bundle — built and executed by the serving runtime (e.g. the marketplace server build). Hosts have no executor: the entry is declaration-only. |
 | `unknown` | — | — | Forward-compat round-trip slot for unrecognized `kind` strings. Validator rejects. |
 
 `kind` is parsed case-insensitively (`HOST` → `host`).
@@ -321,7 +322,7 @@ A bundle MUST:
 
 1. Declare `name` non-empty for every entry in `tools[]`.
 2. Use unique `name` values within a single `tools[]`.
-3. Use a known `kind` value (`host` / `mcp` / `cloud` / `js`).
+3. Use a known `kind` value (`host` / `mcp` / `cloud` / `js` / `ts`).
 4. For `kind: js`, ensure `target.entry` resolves to a file inside the
    bundle and `target.fn` exports a function.
 

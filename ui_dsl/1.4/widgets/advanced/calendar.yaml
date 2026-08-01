@@ -1,0 +1,48 @@
+type: calendar
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Calendar view for date selection and event display.
+properties:
+  selectedDate:
+    type: "string | binding"
+    default: null
+    description: "Currently selected date (ISO 8601 string, or binding to a string)."
+  events:
+    type: "binding"
+    default: null
+    description: "Array of `{ date, title, color? }`"
+  firstDate:
+    type: "string"
+    default: null
+    description: "Earliest selectable date (ISO 8601)."
+  lastDate:
+    type: "string"
+    default: null
+    description: "Latest selectable date (ISO 8601)."
+  view:
+    type: "string"
+    enum: ["month", "week", "day"]
+    default: "month"
+    description: "Calendar display granularity."
+  onChange:
+    type: "Action"
+    default: null
+    description: "Fired on date selection; `event.value` is ISO date"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "calendar",
+        "selectedDate": "{{selectedDate}}",
+        "events": "{{calendarEvents}}",
+        "firstDate": "2020-01-01",
+        "lastDate": "2030-12-31",
+        "view": "month",
+        "onChange": {
+          "type": "state", "action": "set",
+          "binding": "selectedDate", "value": "{{event.value}}"
+        }
+      }

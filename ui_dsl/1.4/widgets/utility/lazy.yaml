@@ -1,0 +1,11 @@
+type: lazy
+category: utility
+profile: Core
+description: |
+  Defers construction of a child until it is first rendered.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Deferred child."
+# examples migrated verbatim from prose JSON fences.

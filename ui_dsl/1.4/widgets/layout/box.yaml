@@ -1,0 +1,91 @@
+type: box
+category: layout
+profile: Core
+since: v1.0
+aliases: [container]
+description: |
+  Generic single-child container that applies size, padding, margin, and a
+  decoration (background color, border, shadow, gradient, borderRadius). Most
+  commonly used as a styled wrapper around any child widget.
+
+properties:
+  width:
+    type: number
+    description: Fixed width in logical pixels. When omitted, the box shrinks to its child's width.
+  height:
+    type: number
+    description: Fixed height in logical pixels. When omitted, the box shrinks to its child's height.
+  minWidth:
+    type: number
+    description: Minimum width constraint. Honored independently of `width`; a child wider than `minWidth` is allowed.
+  maxWidth:
+    type: number
+    description: Maximum width constraint. Caps the child's width regardless of intrinsic size.
+  minHeight:
+    type: number
+    description: Minimum height constraint.
+  maxHeight:
+    type: number
+    description: Maximum height constraint.
+  padding:
+    type: ["string", "EdgeInsets"]
+    description: |
+      Space inside the box, between the border and the child. Accepts an
+      M3 spacing token shorthand (`xxs` / `xs` / `sm` / `md` / `lg` /
+      `xl` / `2xl` / `3xl` / `4xl`, or any custom slot in
+      `theme.spacing`) — resolved through `theme.spacing.<token>` to a
+      uniform inset — or the legacy EdgeInsets object form.
+  margin:
+    type: EdgeInsets
+    description: Space outside the box, between the box and its parent.
+  alignment:
+    type: Alignment
+    description: |
+      Alignment of the child inside the box when the box is larger
+      than the child. See the `Alignment` primitive for the canonical
+      9-token directional set and the `{x, y}` numeric form.
+  color:
+    type: Color
+    description: Solid background color. Shorthand for `decoration.color`; mutually exclusive with `decoration`.
+    aliases:
+      - backgroundColor
+  decoration:
+    type: BoxDecoration
+    description: |
+      Visual decoration. Mutually exclusive with the top-level `color`
+      shorthand — when both are present `decoration` wins. See the
+      `BoxDecoration` $def for the full property set: `color`,
+      `gradient`, `image`, `border`, `borderRadius`, `boxShadow`,
+      `shape`, `backdropBlur`.
+
+children:
+  kind: single
+  key: child
+
+examples:
+  - name: sized_decorated_no_child
+    description: Sized + decorated + padded, without a child. Validates via schema alone.
+    dsl: |
+      {
+        "type": "box",
+        "width": 200,
+        "height": 80,
+        "padding": { "all": 12 },
+        "decoration": { "color": "#2196F3", "borderRadius": 8 }
+      }
+  - name: child_is_box
+    description: Child is another `box`. Self-contained within the Phase 1 registry.
+    dsl: |
+      {
+        "type": "box",
+        "child": { "type": "box", "width": 40, "height": 40, "color": "#FF4081" }
+      }
+  - name: unknown_type
+    description: "`type` value must be `box` or a declared alias."
+    dsl: |
+      { "type": "not-a-real-widget" }
+    expect: validation_error
+    error_path: "#/oneOf"
+  # Note: strict `additionalProperties: false` is intentionally relaxed (see
+  # codegen comment). Unknown properties pass validation today — tightening
+  # this is tracked for a future phase.

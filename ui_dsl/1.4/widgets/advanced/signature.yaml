@@ -1,0 +1,78 @@
+type: signature
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Signature capture pad.
+properties:
+  binding:
+    type: "binding"
+    description: "Target binding for signature data (base64 PNG or SVG path). Required when capturing is needed; may be omitted for pure display."
+  penColor:
+    type: "string"
+    default: "#000000"
+    description: "Stroke color"
+    aliases:
+      - color
+  penWidth:
+    type: "number"
+    default: 2.0
+    description: "Stroke width"
+    aliases:
+      - strokeWidth
+  width:
+    type: "number"
+    default: null
+    description: "Widget width"
+  height:
+    type: "number"
+    default: null
+    description: "Widget height"
+  backgroundColor:
+    type: "string"
+    default: null
+    description: "Pad background"
+  borderColor:
+    type: "string"
+    default: null
+    description: "Pad border"
+  showClearButton:
+    type: "boolean"
+    default: true
+    description: "Show a clear-signature button"
+  showGuide:
+    type: "boolean"
+    default: false
+    description: "Show a signing guide line"
+  onSignatureEnd:
+    type: "Action"
+    default: null
+    description: "Fired when a stroke completes"
+  onClear:
+    type: "Action"
+    default: null
+    description: "Fired when the signature is cleared"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "signature",
+        "binding": "{{signatureData}}",
+        "penColor": "#000000",
+        "penWidth": 2.0,
+        "width": 400,
+        "height": 200,
+        "backgroundColor": "#FFFFFF",
+        "borderColor": "#E0E0E0",
+        "showClearButton": true,
+        "showGuide": true,
+        "onSignatureEnd": {
+          "type": "state", "action": "set",
+          "binding": "signatureData", "value": "{{event.value}}"
+        },
+        "onClear": {
+          "type": "state", "action": "set",
+          "binding": "signatureData", "value": null
+        }
+      }

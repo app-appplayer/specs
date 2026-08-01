@@ -1,0 +1,20 @@
+type: align
+category: layout
+profile: Core
+description: |
+  Aligns a single child at a specified alignment.
+properties:
+  alignment:
+    type: Alignment
+    default: "\"center\""
+    description: Alignment of the child within this widget's bounds. Defaults to `center` when omitted.
+  child:
+    type: "Widget"
+    required: true
+    description: "Aligned widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      { "type": "align", "alignment": "bottomEnd",
+        "child": { "type": "icon", "icon": "close" } }

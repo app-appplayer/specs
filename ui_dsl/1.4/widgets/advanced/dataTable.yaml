@@ -1,0 +1,84 @@
+type: dataTable
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Material-style sortable, selectable data table bound to a row array.
+properties:
+  columns:
+    type: "`Column[]`"
+    required: true
+    description: "Column definitions"
+  columns[].key:
+    type: "string"
+    required: true
+    description: "Row field key"
+  columns[].label:
+    type: "string"
+    required: true
+    description: "Header label"
+  columns[].width:
+    type: "number"
+    default: null
+    description: "Fixed column width"
+  columns[].sortable:
+    type: "boolean"
+    default: false
+    description: "Whether column supports sorting"
+  columns[].align:
+    type: "string"
+    enum: ["start", "center", "end"]
+    default: "start"
+    description: "Horizontal text alignment."
+  rows:
+    type: "binding"
+    required: true
+    description: "Array of row objects"
+  selectable:
+    type: "boolean"
+    default: false
+    description: "Whether rows are selectable"
+  sortColumn:
+    type: "binding"
+    default: null
+    description: "Current sort column key"
+  sortAscending:
+    type: "binding"
+    default: true
+    description: "Current sort direction"
+  onSort:
+    type: "Action"
+    default: null
+    description: "Fired on header tap of a sortable column"
+  onRowTap:
+    type: "Action"
+    default: null
+    description: "Fired on row tap; `event.row` is the row object"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "dataTable",
+        "columns": [
+          { "key": "id", "label": "ID", "width": 100 },
+          { "key": "name", "label": "Name", "sortable": true },
+          { "key": "status", "label": "Status", "align": "center" }
+        ],
+        "rows": "{{items}}",
+        "selectable": true,
+        "sortColumn": "{{sortColumn}}",
+        "sortAscending": "{{sortAscending}}",
+        "onSort": {
+          "type": "batch",
+          "actions": [
+            { "type": "state", "action": "set", "binding": "sortColumn", "value": "{{event.column}}" },
+            { "type": "state", "action": "set", "binding": "sortAscending", "value": "{{event.ascending}}" }
+          ]
+        },
+        "onRowTap": {
+          "type": "navigation",
+          "action": "push",
+          "route": "/detail/{{event.row.id}}"
+        }
+      }

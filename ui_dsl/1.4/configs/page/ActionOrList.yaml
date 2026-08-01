@@ -1,0 +1,15 @@
+name: ActionOrList
+definition:
+  {
+    "oneOf": [
+      {
+        "$ref": "#/$defs/Action"
+      },
+      {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Action"
+        }
+      }
+    ]
+  }

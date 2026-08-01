@@ -1,0 +1,10 @@
+name: Opacity
+definition:
+  {
+    "type": "object",
+    "additionalProperties": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }

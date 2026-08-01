@@ -1,0 +1,34 @@
+type: avatar
+category: display
+profile: Core
+description: |
+  Circular widget for user images or initials.
+properties:
+  src:
+    type: "string"
+    description: "Image URL; if absent, falls back to `label`."
+  label:
+    type: "string"
+    description: "Text label (typically initials)."
+    aliases:
+      - text
+  size:
+    type: "number"
+    default: 40
+    description: "Diameter in logical pixels."
+  color:
+    type: "string"
+    description: "Background color when showing label."
+    aliases:
+      - backgroundColor
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "avatar",
+        "src": "https://example.com/user.jpg",
+        "label": "JD",
+        "size": 40,
+        "color": "#2196F3"
+      }

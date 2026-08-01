@@ -1,0 +1,29 @@
+name: LifecycleHooks
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "onInit": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onReady": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onMount": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onPause": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onResume": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onUnmount": {
+        "$ref": "#/$defs/ActionOrList"
+      },
+      "onDestroy": {
+        "$ref": "#/$defs/ActionOrList"
+      }
+    },
+    "additionalProperties": false
+  }

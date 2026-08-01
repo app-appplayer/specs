@@ -1,0 +1,34 @@
+name: NavigationConfig
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "type": {
+        "enum": [
+          "drawer",
+          "bottomBar",
+          "rail",
+          "tabs"
+        ]
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/NavItem"
+        }
+      },
+      "header": {
+        "$ref": "#/$defs/Widget"
+      },
+      "footer": {
+        "$ref": "#/$defs/Widget"
+      },
+      "style": {
+        "$ref": "#/$defs/NavigationStyle"
+      }
+    },
+    "required": [
+      "type"
+    ],
+    "additionalProperties": true
+  }

@@ -1,0 +1,73 @@
+name: TemplateDefinition
+description: |
+  Reusable template definition per docs/09_Templates.md §9.2. The widget tree lives in `content`; the runtime registers entries by walking `application.templates` and reading `entry.content`.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "params": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "default": {},
+            "enum": {
+              "type": "array"
+            },
+            "validator": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "slots": {
+        "type": "object",
+        "description": "Named insertion points the template body references via `{ \"type\": \"slot\", \"name\": \"<id>\" }`. See docs/09_Templates.md §9.4.",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "fallback": {},
+            "description": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "styles": {
+        "type": "object",
+        "description": "Named style bundles the body can reference (e.g. `{{styles.container}}`). See docs/09_Templates.md §9.5.",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "stateDefaults": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "content": {
+        "$ref": "#/$defs/Widget"
+      },
+      "lifecycle": {
+        "$ref": "#/$defs/LifecycleHooks"
+      }
+    },
+    "required": [
+      "content"
+    ],
+    "additionalProperties": true
+  }

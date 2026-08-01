@@ -1,0 +1,26 @@
+type: errorRecovery
+category: utility
+profile: Core
+description: |
+  Retry-oriented variant of `errorBoundary`. The `handlers` map may route specific error types to distinct fallbacks.
+properties:
+  child:
+    type: "Widget"
+    description: "Protected subtree. Required when `children` is omitted."
+  children:
+    type: "Widget[]"
+    description: "Multiple protected widgets; runtime wraps them in a linear column."
+  fallback:
+    type: "Widget"
+    description: "Default UI shown when `child` throws."
+  handlers:
+    type: "object"
+    description: "Map of error-type → fallback Widget."
+  onError:
+    type: "Action"
+    description: "Fired on capture with `{{event.error}}` / `{{event.stack}}`."
+  showDetails:
+    type: "boolean"
+    default: false
+    description: "Whether to render stack/error detail."
+# examples migrated verbatim from prose JSON fences.

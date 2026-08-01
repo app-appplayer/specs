@@ -1,0 +1,59 @@
+type: pageView
+category: scroll
+profile: Core
+description: |
+  Full-viewport paged scroll view. Snaps one page per swipe; ideal
+  for book pages, photo galleries, onboarding flows. Distinct from
+  `carousel` (partial-viewport, peeking neighbours) — pageView is
+  always one full page. Each child is rendered as a separate page.
+properties:
+  direction:
+    type: string
+    enum: [horizontal, vertical]
+    default: "\"horizontal\""
+    description: Scroll axis.
+  children:
+    type: "Widget[]"
+    required: true
+    description: One child per page.
+  initialPage:
+    type: number
+    default: 0
+    description: Index of the page rendered first.
+  loop:
+    type: boolean
+    default: "false"
+    description: When true the list wraps around — last → first.
+  scrollPhysics:
+    type: string
+    enum: [bouncing, clamping, neverScrollable]
+    default: "\"clamping\""
+    description: |
+      Edge / overscroll behaviour. `bouncing` mirrors iOS rubber-band;
+      `clamping` is the Android-style hard stop; `neverScrollable`
+      disables user dragging (use programmatic page change only).
+  allowImplicitScrolling:
+    type: boolean
+    default: "false"
+    description: |
+      Pre-render the adjacent pages off-screen so subsequent swipes
+      are instant (assistive-technology friendly). Costs memory.
+  onPageChanged:
+    type: Action
+    description: Fires after the active page settles. `event.page` carries the new index.
+examples:
+  - name: book_pages
+    dsl: |
+      {
+        "type": "pageView",
+        "direction": "horizontal",
+        "scrollPhysics": "bouncing",
+        "children": [
+          { "type": "richText", "spans": [ { "text": "{{book.chapter1}}" } ] },
+          { "type": "richText", "spans": [ { "text": "{{book.chapter2}}" } ] }
+        ],
+        "onPageChanged": {
+          "type": "state", "action": "set",
+          "binding": "currentPage", "value": "{{event.page}}"
+        }
+      }

@@ -1,0 +1,34 @@
+name: Origin
+since: v1.4
+description: |
+  Who serves a definition. Deliberately open so future sources need no new
+  syntax — today one shape is defined; `{ "bundle": ... }` / `{ "agent": ... }`
+  and similar can be added without changing any document that uses it.
+
+  `connection` names a live connection in the host's outbound MCP client
+  registry, addressed by the id used to open it. The DSL does not define how
+  connections are made — that is a host capability (`06_Runtime_Contract.md`
+  §6.11.1); it defines only how a definition is addressed once one exists.
+
+  A binding is the normal value here: an application opens its connections in
+  `lifecycle.onInit` and keeps the ids in state.
+
+  Runtimes MUST reject an Origin whose sole key they do not recognise rather
+  than falling back to the current origin — a permissive reading would render a
+  different server's UI under the requested one's identity (`07_Security.md`
+  §7.10.1).
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "connection": {
+        "oneOf": [
+          { "type": "string" },
+          { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" }
+        ],
+        "description": "Outbound MCP client connection id, or a binding to one."
+      }
+    },
+    "required": ["connection"],
+    "additionalProperties": false
+  }

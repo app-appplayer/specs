@@ -1,0 +1,49 @@
+type: decoration
+category: display
+profile: Core
+description: |
+  Wraps a child with a decoration box (color, gradient, border, shadow,
+  image, blur) without otherwise affecting layout. The full
+  `BoxDecoration` may be supplied via `decoration:`, or any of its
+  fields may appear flat at the top level for ergonomic shorthand.
+properties:
+  decoration:
+    type: BoxDecoration
+    description: |
+      Full decoration object. Alternatively, the constituent fields
+      (`color`, `gradient`, `image`, `border`, `borderRadius`,
+      `boxShadow`, `shape`, `backdropBlur`) may appear flat at the top
+      level. Flat keys override matching `decoration.<field>` entries.
+  color:
+    type: Color
+    description: Flat shorthand for `decoration.color`.
+  borderRadius:
+    type: BorderRadius
+    description: Flat shorthand for `decoration.borderRadius`.
+  border:
+    type: BoxBorder
+    description: Flat shorthand for `decoration.border`.
+  gradient:
+    type: Gradient
+    description: Flat shorthand for `decoration.gradient`.
+  image:
+    type: BackgroundImage
+    description: Flat shorthand for `decoration.image`.
+  boxShadow:
+    type: array<BoxShadow>
+    description: Flat shorthand for `decoration.boxShadow`.
+  shape:
+    type: string
+    enum: [rectangle, circle]
+    default: "\"rectangle\""
+    description: Flat shorthand for `decoration.shape`.
+  backdropBlur:
+    type: number
+    description: Flat shorthand for `decoration.backdropBlur` (Gaussian blur sigma).
+  child:
+    type: Widget
+    description: Decorated widget. Required when `children` is omitted.
+  children:
+    type: "Widget[]"
+    description: Multiple widgets; runtime wraps them in a linear column.
+# examples migrated verbatim from prose JSON fences.

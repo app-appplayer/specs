@@ -1,0 +1,87 @@
+type: tree
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Hierarchical tree view with expandable nodes.
+properties:
+  data:
+    type: "array | binding"
+    required: true
+    description: "Hierarchical data; each node MAY carry a `children` array. Literal array or binding."
+  childrenKey:
+    type: "string"
+    default: "children"
+    description: "Field name of the children array"
+  indentation:
+    type: "number"
+    default: 24
+    description: "Per-depth horizontal indentation in logical pixels."
+  itemPadding:
+    type: "EdgeInsets"
+    description: "Padding applied inside every tree row (expandable and leaf). Defaults to `{vertical: 4, right: 8}`. Adjust the vertical component to change row height / density."
+  itemTemplate:
+    type: "Widget"
+    description: "Template rendered per node; `{{item}}` is node data. Falls back to a default list-item renderer when omitted."
+  expandable:
+    type: "boolean"
+    default: true
+    description: "Allow expand/collapse"
+  initiallyExpanded:
+    type: "boolean"
+    default: false
+    description: "Expand all nodes on mount"
+  selectable:
+    type: "boolean"
+    default: false
+    description: "Whether a node can be selected by tap."
+  showLines:
+    type: "boolean"
+    default: true
+    description: "Draw connector lines between parent and leaf nodes."
+  selectedColor:
+    type: "Color"
+    description: "Background color of the currently selected row."
+  lineColor:
+    type: "Color"
+    description: "Color of connector lines when `showLines` is true."
+  width:
+    type: "number"
+    description: "Fixed widget width in logical pixels."
+  height:
+    type: "number"
+    description: "Fixed widget height in logical pixels."
+  onNodeTap:
+    type: "Action"
+    default: null
+    description: "Fired on node tap"
+  onSelect:
+    type: "Action"
+    description: "Fired when a node is selected (requires `selectable: true`). Event payload is the node object."
+  onExpand:
+    type: "Action"
+    default: null
+    description: "Fired on node expand; `event.id`"
+  onCollapse:
+    type: "Action"
+    default: null
+    description: "Fired on node collapse; `event.id`"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "tree",
+        "data": "{{fileStructure}}",
+        "expandable": true,
+        "childrenKey": "children",
+        "itemTemplate": {
+          "type": "listItem",
+          "title": "{{item.name}}",
+          "leading": { "type": "icon", "icon": "{{item.icon}}" }
+        },
+        "onNodeTap": {
+          "type": "state", "action": "set",
+          "binding": "selectedNodeId", "value": "{{event.id}}"
+        }
+      }

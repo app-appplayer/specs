@@ -1,0 +1,16 @@
+name: BorderSide
+description: |
+  One side of a box border.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "color": { "type": "string" },
+      "width": { "type": "number", "minimum": 0 },
+      "style": {
+        "enum": ["solid", "none"],
+        "default": "solid"
+      }
+    },
+    "additionalProperties": false
+  }

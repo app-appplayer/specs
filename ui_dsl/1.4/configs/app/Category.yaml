@@ -1,0 +1,7 @@
+name: Category
+description: |
+  Free-form. Recommended values: productivity, education, entertainment, social, business, utilities, health, finance, lifestyle, news, travel, food, sports, music, photo, video, communication, developer, reference, other.
+definition:
+  {
+    "type": "string"
+  }

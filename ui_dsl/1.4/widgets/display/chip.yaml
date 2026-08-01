@@ -1,0 +1,41 @@
+type: chip
+category: display
+profile: Core
+description: |
+  Compact element representing an attribute, action, or filter.
+properties:
+  label:
+    type: "string"
+    required: true
+    description: "Display text."
+  avatar:
+    type: "Widget"
+    description: "Leading widget (icon or image)."
+  selected:
+    type: "boolean"
+    default: false
+    description: "Selected state."
+  variant:
+    type: "string"
+    default: "\"filled\""
+    description: "`filled` or `outlined`."
+  onDelete:
+    type: "Action"
+    description: "Action when delete icon is tapped."
+  onTap:
+    type: "Action"
+    description: "Action when chip is tapped."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "chip",
+        "label": "Technology",
+        "avatar": { "type": "icon", "icon": "tag", "size": 16 },
+        "variant": "filled",
+        "onDelete": {
+          "type": "state", "action": "remove",
+          "binding": "selectedTags", "value": "Technology"
+        }
+      }

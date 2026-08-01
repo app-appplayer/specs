@@ -1,0 +1,52 @@
+name: Span
+description: |
+  Inline span in a `richText` composition. Discriminated by which
+  identifying field is present:
+
+  - `text` (string) → **TextSpan** — a styled run of text. Optional
+    `style: TextStyle`, `onTap: Action`, and nested `children:
+    Span[]` for further inline structure.
+  - `widget` (Widget) → **WidgetSpan** — an inline-widget placeholder
+    (icon, image, custom badge) that the rich-text layout treats as
+    a single character. `alignment` and `baseline` control its
+    vertical placement relative to the surrounding line.
+
+  The two shapes are mutually exclusive — a span MUST NOT carry both
+  `text` and `widget`.
+definition:
+  {
+    "oneOf": [
+      {
+        "type": "object",
+        "properties": {
+          "text": { "type": "string" },
+          "style": { "$ref": "#/$defs/TextStyle" },
+          "onTap": { "$ref": "#/$defs/Action" },
+          "children": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/Span" }
+          }
+        },
+        "required": ["text"],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "widget": { "$ref": "#/$defs/Widget" },
+          "alignment": {
+            "enum": [
+              "top", "middle", "bottom",
+              "aboveBaseline", "belowBaseline", "baseline"
+            ],
+            "default": "bottom"
+          },
+          "baseline": {
+            "enum": ["alphabetic", "ideographic"]
+          }
+        },
+        "required": ["widget"],
+        "additionalProperties": false
+      }
+    ]
+  }

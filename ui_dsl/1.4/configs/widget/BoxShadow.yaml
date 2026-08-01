@@ -1,0 +1,25 @@
+name: BoxShadow
+description: |
+  A drop shadow painted beneath the box. Multiple shadows compose via
+  `decoration.boxShadow: array<BoxShadow>` and stack from the first
+  (closest to the box) outward.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "color": { "type": "string" },
+      "offset": {
+        "type": "object",
+        "properties": {
+          "dx": { "type": "number" },
+          "dy": { "type": "number" }
+        },
+        "required": ["dx", "dy"],
+        "additionalProperties": false
+      },
+      "blurRadius": { "type": "number", "minimum": 0 },
+      "spreadRadius": { "type": "number" }
+    },
+    "required": ["color"],
+    "additionalProperties": false
+  }

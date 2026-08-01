@@ -319,6 +319,8 @@ The `mcp.*` surface of mcp_client is **kernel-provided** (not a recipe). Reason:
 
 Implementation: `brain_kernel/.../system/host/client_tools.dart` — `clientTools(KernelClientHost)` + `registerClientTools(HostToolRegistry, KernelClientHost)`, the `mcp.*` 6 tools (connect·call_tool·read_resource·list_tools·list_resources·disconnect). barrel export. tests 7 PASS.
 
+**`mcp.connect` drives only the transports the kernel builds itself** (stdio·streamableHttp·sse — 0 FFI). The companion tool for connecting over an extension transport (serial·usb·ble·tcp·ws — mcp_bridge FFI), **`mcp.connect_extension`, is recipe-provided, not kernel** — it carries an mcp_bridge dependency that must not enter the kernel (`08-extension.md` §4 absolute rule). The recipe `recipes/extension_transport/` `registerExtensionConnectTool(registry, clientHost)` builds the mcp_bridge transport, injects it through the kernel seam (`ExtensionTransportConnect.connectWith`, `connectExtension` helper), and registers it as `mcp.connect_extension` (path 3). The injected connection lands in the same client-host registry → drive it afterward with `mcp.list_tools`/`call_tool`/`read_resource`/`disconnect`. The standard 3 layers = `08-extension.md` §4 "Standard 3 Layers". Only a host that exposes board-connect adopts it.
+
 **shape = identical to `standardTools` (`InProcessToolHandler`, raw JSON).** One source feeds both host paths:
 - in-process dispatcher direct (AppPlayer `ToolDispatcher` consumes it exactly like `bk.*`) → register via `clientTools(host)`.
 - external endpoint (vibe_studio `ServerBootstrap`, etc.) → `registerClientTools` (`wrapInProcess` automatic).

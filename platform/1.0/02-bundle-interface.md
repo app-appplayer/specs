@@ -21,7 +21,7 @@ Manifest categories (aligned with the actual `McpBundle` schema sections):
 | Category | spec | host wiring path |
 |---|---|---|
 | **id / name / version / requires** | bundle identity + compatibility gate | `BundleActivation.activate(bundle, bundleIdOverride?)` |
-| **tools.tools[]** | domain-owned tools (kind: js · external · mcp · cloud) | host → `HostToolRegistry.registerExposed` (`<bundleId>.<rawName>` prefix) |
+| **tools.tools[]** | domain-owned tools (kind: js · ts · external · mcp · cloud) | host → `HostToolRegistry.registerExposed` (`<bundleId>.<rawName>` prefix) |
 | **agents** | agent definition (id · role · model · systemPrompt) | `BundleActivation` calls `KnowledgeSystem.agents.createAgent` |
 | **skills / profiles / philosophy / facts** | 4 axis + knowledge assets | `BundleActivation` registers 4 facades (automatic) |
 | **flow (workflows)** | OpsRuntime workflow registry | `BundleActivation` registers `FlowDefinitionWorkflow` factory (automatic) |
@@ -57,7 +57,7 @@ Domain-owned logic tools. Name = unique within the bundle (the same name MAY exi
 }
 ```
 
-- `kind` = `host` · `mcp` · `cloud` · `js`
+- `kind` = `host` · `mcp` · `cloud` · `js` · `ts` (`ts` = the compiled real-code tool of a `type: server` bundle — built and executed by the serving runtime, declaration-only for hosts; bundle spec 04_Tools §4.3)
 - On host wiring = `HostToolRegistry.registerExposed(bundleId, rawName: 'editor.open', ...)` → external name `<bundleId>.editor.open`
 - A tool name starting with `bk.` = **forbidden** (knowledge tool domain — the bridge's responsibility)
 

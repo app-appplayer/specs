@@ -1,0 +1,73 @@
+type: scrollView
+category: scroll
+profile: Core
+description: |
+  Scrollable viewport. Two layout modes — pick one per instance:
+
+  - **Linear mode** — `child` (single widget) or `children` (wrapped
+    in an implicit linear column along `direction`). Simplest for
+    everyday scrolling content.
+  - **Sliver mode** — `slivers` array of `Sliver` primitives. Use
+    for collapsing app bars, sticky section headers, parallax
+    mastheads, or mixing list/grid sections in one viewport.
+
+  The three input slots (`child`, `children`, `slivers`) are
+  mutually exclusive.
+properties:
+  direction:
+    type: string
+    enum: [vertical, horizontal]
+    default: "\"vertical\""
+    description: Scroll axis.
+  padding:
+    type: EdgeInsets
+    description: Inner padding around the scrollable content.
+  scrollPhysics:
+    type: string
+    enum: [bouncing, clamping, neverScrollable]
+    default: "\"clamping\""
+    description: Edge / overscroll behaviour.
+  child:
+    type: Widget
+    description: Single scrolled child. Mutually exclusive with `children` and `slivers`.
+  children:
+    type: "Widget[]"
+    description: Multiple widgets wrapped in an implicit linear column along `direction`. Mutually exclusive with `child` and `slivers`.
+  slivers:
+    type: array<Sliver>
+    description: |
+      Sliver entries (sliverAppBar / sliverPersistentHeader /
+      sliverList / sliverGrid / sliverFixedExtentList). Mutually
+      exclusive with `child` and `children`.
+examples:
+  - name: linear_mode
+    dsl: |
+      {
+        "type": "scrollView",
+        "direction": "vertical",
+        "padding": { "all": 16 },
+        "children": [
+          { "type": "text", "text": "Hello" },
+          { "type": "text", "text": "World" }
+        ]
+      }
+  - name: sliver_mode_collapsing_app_bar
+    dsl: |
+      {
+        "type": "scrollView",
+        "slivers": [
+          {
+            "type": "sliverAppBar",
+            "expandedHeight": 240,
+            "pinned": true,
+            "stretch": true,
+            "title": { "type": "text", "text": "Library" },
+            "background": { "type": "image", "src": "{{cover}}", "fit": "cover" }
+          },
+          {
+            "type": "sliverList",
+            "items": "{{books}}",
+            "itemTemplate": { "type": "listItem", "title": "{{item.title}}" }
+          }
+        ]
+      }

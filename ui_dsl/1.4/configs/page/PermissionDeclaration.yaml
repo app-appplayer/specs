@@ -1,0 +1,38 @@
+name: PermissionDeclaration
+description: |
+  Permissions per docs/08_Client_Extensions.md §8.4. Either a list of permission names, a profile shorthand, or an object grouped by category.
+definition:
+  {
+    "oneOf": [
+      {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      {
+        "enum": [
+          "readonly",
+          "interactive",
+          "full"
+        ]
+      },
+      {
+        "type": "object",
+        "additionalProperties": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": true
+            }
+          ]
+        }
+      }
+    ]
+  }

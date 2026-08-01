@@ -1,0 +1,19 @@
+type: fittedBox
+category: utility
+profile: Core
+description: |
+  Scales and aligns its child to fit available space.
+properties:
+  fit:
+    type: "string"
+    default: "\"contain\""
+    description: "`cover`, `contain`, `fill`, `scaleDown`, `none`."
+  alignment:
+    type: Alignment
+    default: "\"center\""
+    description: "Alignment within the fitted bounds."
+  child:
+    type: "Widget"
+    required: true
+    description: "Child widget."
+# examples migrated verbatim from prose JSON fences.

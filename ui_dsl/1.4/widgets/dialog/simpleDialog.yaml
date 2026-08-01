@@ -1,0 +1,22 @@
+type: simpleDialog
+category: dialog
+profile: Core
+description: |
+  Dialog presenting a list of options.
+properties:
+  title:
+    type: "string"
+    description: "Dialog title."
+  options:
+    type: "Option[]"
+    description: "`{ value, label, icon? }` entries. Required when `children` is omitted."
+  children:
+    type: "Widget[]"
+    description: "Custom option widgets. Mutually exclusive with `options`."
+  onSelect:
+    type: "Action"
+    description: "Fired when an option is chosen."
+  onClose:
+    type: "Action"
+    description: "Fired when the dialog is dismissed without an option being selected."
+# examples migrated verbatim from prose JSON fences.

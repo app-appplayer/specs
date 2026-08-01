@@ -1,0 +1,106 @@
+name: TextStyle
+description: |
+  Inline text style applied per `text` widget instance. Layered on
+  top of an M3 typography role when `variant` is set, or used
+  standalone. Mirrors the theme `TextStyle` token shape (fontFamily,
+  fontSize, fontWeight, lineHeight, letterSpacing, fontFeatureSettings)
+  and adds the per-instance fields a content app needs: color,
+  decoration, shader (gradient fill), and shadow stack.
+definition:
+  {
+    "oneOf": [
+      {
+        "type": "string",
+        "pattern": "^\\{\\{.*\\}\\}$",
+        "description": "Binding expression that resolves to a TextStyle object — typically `{{theme.typography.<role>}}`."
+      },
+      {
+        "type": "object",
+        "properties": {
+      "fontFamily": {
+        "oneOf": [
+          { "type": "string" },
+          { "type": "array", "items": { "type": "string" } }
+        ]
+      },
+      "fontSize": { "$ref": "#/$defs/Dimension" },
+      "fontWeight": {
+        "oneOf": [
+          { "type": "number" },
+          {
+            "enum": [
+              "thin", "extraLight", "light", "normal",
+              "medium", "semiBold", "bold", "extraBold", "black",
+              "regular",
+              "w100", "w200", "w300", "w400",
+              "w500", "w600", "w700", "w800", "w900"
+            ]
+          },
+          { "$ref": "#/$defs/Binding" }
+        ]
+      },
+      "fontStyle": {
+        "oneOf": [
+          { "enum": ["normal", "italic"] },
+          { "$ref": "#/$defs/Binding" }
+        ]
+      },
+      "color": { "type": "string" },
+      "backgroundColor": { "type": "string" },
+      "letterSpacing": { "$ref": "#/$defs/Dimension" },
+      "wordSpacing": { "$ref": "#/$defs/Dimension" },
+      "height": {
+        "$ref": "#/$defs/Dimension",
+        "description": "Line-height multiplier — `height * fontSize` is the per-line vertical advance."
+      },
+      "decoration": {
+        "oneOf": [
+          { "enum": ["none", "underline", "overline", "lineThrough"] },
+          { "$ref": "#/$defs/Binding" }
+        ]
+      },
+      "decorationColor": { "type": "string" },
+      "decorationStyle": {
+        "oneOf": [
+          { "enum": ["solid", "double", "dotted", "dashed", "wavy"] },
+          { "$ref": "#/$defs/Binding" }
+        ]
+      },
+      "decorationThickness": { "$ref": "#/$defs/Dimension" },
+      "fontFeatures": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "OpenType feature tags (`smcp`, `lnum`, `tnum`, `liga`, `dlig`, …)."
+      },
+      "shadows": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "color": { "type": "string" },
+            "offset": {
+              "type": "object",
+              "properties": {
+                "dx": { "type": "number" },
+                "dy": { "type": "number" },
+                "x": { "type": "number" },
+                "y": { "type": "number" }
+              },
+              "additionalProperties": false,
+              "description": "`{dx, dy}` (canonical) or `{x, y}` (legacy alias) offset."
+            },
+            "blurRadius": { "$ref": "#/$defs/Dimension" }
+          },
+          "required": ["color"],
+          "additionalProperties": false
+        }
+      },
+      "shader": {
+        "$ref": "#/$defs/Gradient",
+        "description": "Gradient/shader fill applied to the rendered text via a shader mask. When set, `color` is ignored."
+      }
+        },
+        "additionalProperties": false
+      }
+    ]
+  }

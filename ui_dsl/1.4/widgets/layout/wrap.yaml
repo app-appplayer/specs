@@ -1,0 +1,27 @@
+type: wrap
+category: layout
+profile: Core
+description: |
+  Flow layout that wraps children to the next line when they exceed available width/height.
+properties:
+  direction:
+    type: "string"
+    default: "\"horizontal\""
+    description: "Primary flow direction."
+  spacing:
+    type: "number"
+    default: 0
+    description: "Gap between children on the same run."
+  runSpacing:
+    type: "number"
+    default: 0
+    description: "Gap between runs."
+  alignment:
+    type: "string"
+    default: "\"start\""
+    description: "Alignment within a run."
+  children:
+    type: "Widget[]"
+    required: true
+    description: "Children to wrap."
+# examples migrated verbatim from prose JSON fences.

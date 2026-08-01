@@ -1,0 +1,21 @@
+type: radio
+category: input
+profile: Core
+description: |
+  Single radio button. The group's selected value is bound via `groupValue` (or the enclosing `radioGroup`'s `binding`).
+properties:
+  value:
+    type: "any"
+    required: true
+    description: "This button's value."
+  groupValue:
+    type: "any | binding"
+    required: true
+    description: "Currently selected value in the group."
+  label:
+    type: "string"
+    description: "Optional label."
+  onChange:
+    type: "Action"
+    description: "Fired when selected."
+# examples migrated verbatim from prose JSON fences.

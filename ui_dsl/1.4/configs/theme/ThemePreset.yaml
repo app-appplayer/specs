@@ -1,0 +1,23 @@
+name: ThemePreset
+description: |
+  Curated content-app theme bundle. Five named presets cover the
+  common content-app moods. When set, the preset is applied first
+  (color scheme + typography + spacing tone) and individual theme
+  fields then layer overrides on top — so authors can pick a preset
+  and tweak just one or two fields rather than building the whole
+  theme from scratch.
+
+  Presets (color tone · typography character · spacing density):
+  - `warm` — book-shelf paper tones, serif typography, cozy spacing.
+  - `cool` — album / streaming ambient. Cool blues, sans-serif,
+    standard spacing.
+  - `sepia` — long-form reading. Aged-paper background, increased
+    line-height, narrower content column.
+  - `mono` — typography-led, neutral grays, generous line-height,
+    minimal accents.
+  - `highContrast` — accessibility-first. WCAG AAA contrast ratios,
+    enlarged hit targets, bold weights.
+definition:
+  {
+    "enum": ["warm", "cool", "sepia", "mono", "highContrast"]
+  }

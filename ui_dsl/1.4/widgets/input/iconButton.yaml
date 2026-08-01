@@ -1,0 +1,33 @@
+type: iconButton
+category: input
+profile: Core
+description: |
+  Icon-only button for compact actions.
+properties:
+  icon:
+    type: "string"
+    required: true
+    description: "Icon name."
+  size:
+    type: "number"
+    description: "Icon size; uses theme default if omitted."
+  color:
+    type: "string"
+    description: "Icon color."
+  enabled:
+    type: "boolean"
+    default: true
+    description: "Whether the button is interactive."
+  onTap:
+    type: "Action"
+    description: "Tap handler."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "iconButton",
+        "icon": "favorite",
+        "color": "#F44336",
+        "onTap": { "type": "state", "action": "toggle", "binding": "isFavorite" }
+      }

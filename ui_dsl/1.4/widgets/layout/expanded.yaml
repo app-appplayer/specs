@@ -1,0 +1,20 @@
+type: expanded
+category: layout
+profile: Core
+description: |
+  Flex child that expands to fill available space inside a `linear` parent.
+properties:
+  flex:
+    type: "number"
+    default: 1
+    description: "Flex weight."
+  child:
+    type: "Widget"
+    required: true
+    description: "Expanded widget."
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      { "type": "expanded", "flex": 2,
+        "child": { "type": "box", "child": { "type": "text", "text": "Fills space" } } }

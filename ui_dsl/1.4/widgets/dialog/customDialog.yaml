@@ -1,0 +1,18 @@
+type: customDialog
+category: dialog
+profile: Core
+description: |
+  Dialog with arbitrary widget content.
+properties:
+  child:
+    type: "Widget"
+    required: true
+    description: "Dialog body."
+  dismissible:
+    type: "boolean"
+    default: true
+    description: "Whether tapping outside dismisses."
+  onClose:
+    type: Action
+    description: "Fired when the dialog is dismissed (outside-tap when `dismissible: true`, escape key)."
+# examples migrated verbatim from prose JSON fences.

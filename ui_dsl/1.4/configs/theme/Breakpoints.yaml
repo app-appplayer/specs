@@ -1,0 +1,25 @@
+name: Breakpoints
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "compact": {
+        "type": "number"
+      },
+      "medium": {
+        "type": "number"
+      },
+      "expanded": {
+        "type": "number"
+      },
+      "large": {
+        "type": "number"
+      },
+      "extraLarge": {
+        "type": "number"
+      }
+    },
+    "additionalProperties": {
+      "type": "number"
+    }
+  }

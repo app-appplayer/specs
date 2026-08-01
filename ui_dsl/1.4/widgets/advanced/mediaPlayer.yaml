@@ -1,0 +1,99 @@
+type: mediaPlayer
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Audio / video player widget.
+properties:
+  source:
+    type: AssetRef
+    required: true
+    description: Media asset reference (audio or video file).
+    aliases:
+      - src
+  mediaType:
+    type: "string"
+    enum: ["audio", "video"]
+    default: "inferred"
+    description: "Media kind."
+  autoPlay:
+    type: "boolean"
+    default: false
+    description: "Start playing automatically"
+  loop:
+    type: "boolean"
+    default: false
+    description: "Loop at end"
+  muted:
+    type: "boolean"
+    default: false
+    description: "Start muted"
+  volume:
+    type: "number"
+    default: 1.0
+    description: "Volume 0.0–1.0"
+  controls:
+    type: "boolean"
+    default: true
+    description: "Show native controls"
+  poster:
+    type: AssetRef
+    description: Preview image rendered before playback starts (video only).
+  waveform:
+    type: boolean
+    default: "false"
+    description: |
+      Audio mode only. When true, the audio's amplitude waveform is
+      rendered above the transport controls, advancing with playback.
+      Ignored for video sources.
+  width:
+    type: "number"
+    default: null
+    description: "Display width"
+  height:
+    type: "number"
+    default: null
+    description: "Display height"
+  onPlay:
+    type: "Action"
+    default: null
+    description: "Fired when playback starts"
+  onPause:
+    type: "Action"
+    default: null
+    description: "Fired when playback pauses"
+  onEnded:
+    type: "Action"
+    default: null
+    description: "Fired when media ends"
+  onTimeUpdate:
+    type: "Action"
+    default: null
+    description: "Fired on time update; `event.currentTime` in seconds"
+  onError:
+    type: "Action"
+    default: null
+    description: "Fired on playback error; `event.error`"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "mediaPlayer",
+        "source": "bundle://assets/intro.mp4",
+        "mediaType": "video",
+        "autoPlay": false,
+        "loop": false,
+        "muted": false,
+        "volume": 0.8,
+        "controls": true,
+        "poster": "bundle://assets/intro_poster.png",
+        "width": 640,
+        "height": 360,
+        "onPlay": { "type": "state", "action": "set", "binding": "isPlaying", "value": true },
+        "onPause": { "type": "state", "action": "set", "binding": "isPlaying", "value": false },
+        "onEnded": { "type": "state", "action": "set", "binding": "isPlaying", "value": false },
+        "onTimeUpdate": {
+          "type": "state", "action": "set", "binding": "currentTime", "value": "{{event.currentTime}}"
+        }
+      }

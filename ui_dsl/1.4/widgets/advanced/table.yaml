@@ -1,0 +1,54 @@
+type: table
+category: advanced
+profile: Core
+since: v1.0
+description: |
+  Layout table for arranging widgets in rows and columns. Not data-bound; each cell is a widget.
+properties:
+  rows:
+    type: "`{ cells: Widget[] }[]`"
+    required: true
+    description: "Row definitions"
+  border:
+    type: "`{ color, width }`"
+    default: null
+    description: "Optional cell border"
+  defaultColumnWidth:
+    type: "string | number"
+    default: "flex"
+    description: "`flex`, `intrinsic`, or a fixed number (logical px)."
+  defaultVerticalAlignment:
+    type: "string"
+    enum: ["top", "middle", "bottom", "baseline"]
+    default: "middle"
+    description: "Cell vertical alignment."
+  columnWidths:
+    type: "object"
+    default: null
+    description: "Map `columnIndex` → width override"
+# examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "table",
+        "border": { "color": "#E0E0E0", "width": 1 },
+        "defaultColumnWidth": "flex",
+        "defaultVerticalAlignment": "middle",
+        "rows": [
+          {
+            "cells": [
+              { "type": "text", "text": "Name" },
+              { "type": "textInput", "value": "{{name}}",
+                "onChange": { "type": "state", "action": "set", "binding": "name", "value": "{{event.value}}" } }
+            ]
+          },
+          {
+            "cells": [
+              { "type": "text", "text": "Email" },
+              { "type": "textInput", "value": "{{email}}",
+                "onChange": { "type": "state", "action": "set", "binding": "email", "value": "{{event.value}}" } }
+            ]
+          }
+        ]
+      }

@@ -1,0 +1,20 @@
+type: divider
+category: display
+profile: Core
+description: |
+  Horizontal separator.
+properties:
+  thickness:
+    type: "number"
+    default: 1
+    description: "Line thickness."
+  color:
+    type: "string"
+    description: "Line color."
+  indent:
+    type: "number"
+    description: "Leading indent."
+  endIndent:
+    type: "number"
+    description: "Trailing indent."
+# examples migrated verbatim from prose JSON fences.
