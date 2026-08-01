@@ -27,6 +27,12 @@ The composition model of every package, tool, bundle, and UI in the MakeMind fra
 | [`1.0/12-flowbrain-runtime.md`](1.0/12-flowbrain-runtime.md) | FlowBrain runtime wiring (4-axis ask composition · work-time gate · review) |
 | [`1.0/13-datastores.md`](1.0/13-datastores.md) | datastore data interface (`fs.*`/`db.*` · sibling DB adapters · internal policy · separate layer from io) |
 | [`1.0/14-asset-credentials.md`](1.0/14-asset-credentials.md) | assets & credentials (`asset` fact convention · `secret.*` keyed vault · `credentialRef` indirection · passphrase migration) |
+| [`1.0/16-ble-transport.md`](1.0/16-ble-transport.md) | BLE extension transport (fixed GATT service · byte pipe · newline-delimited JSON-RPC on top) |
+| [`1.0/17-device-discovery.md`](1.0/17-device-discovery.md) | nearby device discovery (announce-scan → probe-confirm · mDNS `_mcp._tcp` · manifest `trust` signature · onboarding axis) |
+| [`1.0/18-ble-scan-observe.md`](1.0/18-ble-scan-observe.md) | BLE advertisement observation (one radio, N isolated subscriptions · `client.mcpStream` binding) |
+| [`1.0/19-scan-entry-identity.md`](1.0/19-scan-entry-identity.md) | scan entry & identity (how a scanned medium opens an app on the page it named, and who the opener is) |
+
+Numbers absent from this table are specs whose subject is outside the Standard surface, so they are not published here.
 
 ## Related specifications
 
