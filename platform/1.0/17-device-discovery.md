@@ -1,6 +1,6 @@
 # 17 — Nearby device discovery
 
-> status: **draft** (added 2026-07-14 · rev.2 2026-07-15 — §6 trust/signature carriage · rev.3 2026-07-28 — §7 coupling with the onboarding axis)
+> status: **draft** (added 2026-07-14 · rev.2 2026-07-15 — §6 trust/signature carriage · rev.3 2026-07-28 — §7 coupling with the onboarding axis · rev.4 2026-08-06 — §7.6c mirrored, §7.6d reconnect persistence, §7.6e observation as trigger)
 > companions: [`16-ble-transport.md`](16-ble-transport.md) (BLE binding · advertising) · [`08-extension.md`](08-extension.md) §4 (the three connection layers) · the embedded node docs (board product documentation) · AppPlayer Pro MOD-DISC (the consuming pipeline)
 
 The standard for finding and connecting to a **nearby** MCP server (an embedded board, a local device) without going through the cloud. The discovery pipeline itself — policy, candidate stream, the "discovered" surface — belongs to the host (AppPlayer Pro's `DiscoveryManager` is the reference); this document fixes only the **per-transport announce/scan rules and the confirmation procedure**. Follow them and any board is found by any host's discovery surface.
@@ -47,6 +47,7 @@ Registration and connection are separate from discovery: once the user picks a c
 
 - Board: obey the announce rule for its own transport — BLE advertising (16 §6) or mDNS publication (§3) — and complete the Stage 2 probe.
 - Client scanner: MUST NOT require a manifest in Stage 1 · MUST NOT surface a candidate that failed its probe · MUST NOT filter serial enumeration by VID/PID.
+- Client host: re-attach subscriptions, notification fan-out and a read-once every time a link is re-established (§7.6c) · absorb truncated provisioning-status notifications with a read (§7.4a) · do not give up reconnecting while the app is open, and keep detection and retry pacing as separate values (§7.6d) · if observation is used as a trigger, scope it to servers an open app is waiting on and keep the time-based retry as the floor (§7.6e).
 - Board (optional): a manifest `trust` signature (§6). Required to appear on a host whose policy enforces signatures.
 
 ## 6. Trust and signature — how a manifest carries a signature
@@ -185,6 +186,77 @@ Sharing the connection makes **everything layered on top a shared resource too.*
 | notification | **fan out**. Client implementations commonly hold a single handler per method. Used as-is, a later registration silently replaces an earlier one and that consumer never receives another notification — the registration was not lost, its owner changed, so closing the screen does not bring it back |
 
 All three defects **are reported by no layer.** The subscription is alive and so is the socket. The symptom is visible only on screen: a tile stops, and pressing `Subscribe` on that page moves the value **exactly one step**. That step is not a notification — it is the read-once included in the subscribe operation. Had notifications been arriving the value would have kept flowing, which makes this "changes exactly once" the decisive signal that the notification path is severed.
+
+### 7.6c The link is re-established, and what sat on it does not come along (MUST)
+
+§7.6b fixes that a connection is released only on explicit termination by the
+user. But **the platform terminates it for you** — mobile suspends the process
+in the background and kills the socket. On return the host re-establishes the
+connection, and at that moment the client is a **new** one: the server has no
+idea what the old link had subscribed to.
+
+So every time a link is re-established the host MUST re-attach what sat on it:
+
+| re-attach | why |
+|---|---|
+| `resources/subscribe` | a subscription belongs to the connection. A new link has subscribed to nothing |
+| notification fan-out registration | handlers are held on the old client |
+| a read-once right after re-subscribing | values kept flowing on the device. A returning screen must show the **current** value, not the number that was frozen there |
+
+Like the three in §7.6b, **no layer reports this defect.** Tool calls resolve the
+current client per call and keep working, and the screen renders. The only thing
+stopped is one stream. The decisive signal is that **pressing `Subscribe` does
+nothing** — the runtime binding never went away, so from the runtime's point of
+view it is already subscribed and there is nothing to do.
+
+This is not limited to the full-screen app: a **composed tile's summary runtime**
+watching the same device must be re-attached too, or it is the one surface still
+frozen after a resume.
+
+### 7.6d A dropped link is not given up on while the app is open (MUST)
+
+§7.6c fixes what to re-attach once a link is up again. The question before it —
+**does it come up at all** — is this one.
+
+A host MUST NOT end reconnection by attempt count. With a cap, an app sitting on
+screen reaches a point where nothing happens any more, and the only recovery
+left to the user is leaving the app and coming back. Measured case: a phone
+hotspot switched off and back on minutes later — the board was back, the host
+had already given up.
+
+| rule | |
+|---|---|
+| no giving up (MUST) | while the app is open (while the host's reconnect monitor runs), retries do not stop |
+| detection ≠ retry pacing (MUST) | the observation interval (keepalive, liveness) and the retry interval are **different values**. Fused into one knob, tuning detection to be fast also accelerates retries and burns an attempt cap in seconds |
+| an open app does not back off (SHOULD) | an app on screen is the explicit statement that this connection is supposed to exist. Widening the gap buys nothing there. Backoff is for connections **nobody is looking at** |
+| retries do not overlap (MUST) | the interval applies **between dials**. A 1s interval on a dial that takes five seconds is one dial every six, not five overlapping ones — and on the single-peer boards of §7.6b overlapping dials refuse each other |
+| a dial is bounded (MUST) | an unanswered dial that hangs forever stops the retry loop with it. The host connector carries the deadline |
+
+### 7.6e What came back can be observed (SHOULD)
+
+A timer can only guess *when to look again*. A signal knows. A device that comes
+back is **visible before it is connectable** — BLE advertises, an mDNS node
+re-announces on rejoin (RFC 6762 §8.3), a USB port reappears in the enumeration.
+A host may use these observations as the retry trigger, and then the interval no
+longer decides recovery latency.
+
+Three things are normative:
+
+1. **Observation is not a dial.** Receiving an advertisement, running a browse
+   window, reading a port list opens no session on the device, so none of it is
+   subject to the single-peer constraint of §7.6b. Do not confirm with a probe —
+   that is a connection.
+2. **Observe only what an open app is waiting on (MUST).** Observing everything
+   ever registered *is* an always-on scan, and undoes from behind the reason
+   discovery is scoped to a screen's lifetime (§7.3 radio exclusion, power). No
+   app waiting, no observation.
+3. **Observation accelerates, it does not replace (MUST).** No signal source
+   covers every transport — a remote / cloud server is never named by one, and
+   **network regain is its only external signal**; an advertisement can be
+   missed. The time-based retry must remain as the floor.
+
+A network-regain signal cannot name a server, so it applies to **every failed
+connection**.
 
 ### 7.7 Where the capability lives
 

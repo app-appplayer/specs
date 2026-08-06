@@ -7,13 +7,13 @@ depend on these contracts because hosts back the JS host-bridge atoms
 (see [`04_Tools.md`](04_Tools.md) §4.8) with port implementations.
 
 This document is a **reference** — it lists every port defined under
-`lib/src/ports/` in the `mcp_bundle` package. The detailed Dart API
+`packages/mcp_bundle/dart/lib/src/ports/`. The detailed Dart API
 lives in source; this section anchors the names so they appear once
 in the spec and so adopters know which contracts are stable.
 
-References, in the `mcp_bundle` package:
-- `lib/src/ports/ports.dart` (barrel export)
-- `lib/ports.dart` (top-level barrel)
+References:
+- `packages/mcp_bundle/dart/lib/src/ports/ports.dart` (barrel export)
+- `packages/mcp_bundle/dart/lib/ports.dart` (top-level barrel)
 
 ## 9.1 Catalog Layout
 
@@ -87,7 +87,7 @@ barrel file's section headers.
 | Port | File | Role |
 |------|------|------|
 | `PhilosophyPort` | `philosophy_port.dart` | Read / apply philosophy entries. |
-| `EthosStorePort` | `ethos_store_port.dart` | Persisted ethos records (philosophy + provenance). |
+| `EthosStorePort` | `ethos_store_port.dart` | Persisted ethos records. `put`/`activate`/`getActiveEthosId` carry the scope-bound active pointer + provenance lifecycle (`payload.provenance{kind: anchor\|derived\|workaround, serves, validWhile}`, candidate→confirm) — governance contract in platform `07-knowledge-access.md` §ethos governance. |
 
 ### 9.1.7 IO Ports
 
@@ -123,6 +123,41 @@ barrel file's section headers.
 | `FlowPort` | `flow_port.dart` | Flow execution entry point. |
 | `McpPort` | `mcp_port.dart` | Bridge to the MCP wire protocol. |
 
+### 9.1.11 Bundle Storage Ports
+
+Where a bundle's own bytes live. Distinct from `StoragePort` (§9.1.1),
+which is KV-style host storage for whatever a bundle wants to keep —
+these are about the bundle itself.
+
+| Port | File | Role |
+|------|------|------|
+| `BundleStoragePort` | `io/bundle_storage_port.dart` | URI-addressed bundle / asset I/O used by the loader and repository. |
+| `BundleFileStore` | `io/bundle_file_store.dart` | One bundle's contents: `read` · `exists` · `write` · `delete` · `list`. Paths are bundle-root relative; absolute paths and `..` are rejected. |
+| `BundleInstallStore` | `install/bundle_install_store.dart` | Where installed bundles live: enumerate · open · stage · promote · remove · lock (§10.5a). |
+| `BundleStagingArea` | `install/bundle_install_store.dart` | A staged, not-yet-installed copy of one bundle. |
+
+Reference implementations ship for both shapes — filesystem
+(`FileBundleFileStore` / `FileBundleInstallStore`) and in-memory
+(`MemoryBundleFileStore` / `MemoryBundleInstallStore`). The in-memory
+pair is the reference for storage that has neither `rename` nor file
+locks, which is every remote store.
+
+**These ports are the reason a bundle is not tied to a filesystem.**
+A host with no `dart:io` supplies its own implementations and the
+install and read paths are unchanged.
+
+A store MUST NOT assume a bundle path is a legal key in its own
+namespace. Bundle paths are what the bundle format says they are —
+including `.install.json`, which begins with a dot — and a store whose
+keys are constrained (no leading dot, length caps, reserved prefixes)
+has to **map** them, not reject them. Mapping is the store's business
+and invisible above it.
+
+An in-memory reference store accepts anything, so a store that only
+tests against one will pass locally and fail against the real backend
+on the first constrained key. Test the mapping against the backend's
+actual rules.
+
 ## 9.2 Port-vs-Atom Relationship
 
 Ports live in **Dart** — typed contracts implemented by host packages.
@@ -149,7 +184,7 @@ This spec does not freeze each port's method signature — that is owned
 by the Dart source. The spec freezes:
 
 1. Port **names** as they appear in the catalog.
-2. The package layout (`lib/src/ports/` in the `mcp_bundle` package).
+2. The package layout (`packages/mcp_bundle/dart/lib/src/ports/`).
 3. The barrel file (`ports.dart`) as the single import surface.
 
 Adopters may bind to ports by name knowing the catalog will grow but

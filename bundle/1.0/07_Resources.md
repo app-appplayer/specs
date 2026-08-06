@@ -10,10 +10,10 @@ A bundle exists in two physical forms:
 Both forms carry the same logical bundle. Authoring tools read /
 write `.mbd/`; marketplaces ship `.mcpb`.
 
-References, in the `mcp_bundle` package:
-- `lib/src/io/bundle_resources.dart`
-- `lib/src/io/mcp_bundle_loader.dart`
-- `lib/src/install/mcp_bundle_packer.dart`
+References:
+- `packages/mcp_bundle/dart/lib/src/io/bundle_resources.dart`
+- `packages/mcp_bundle/dart/lib/src/io/mcp_bundle_loader.dart`
+- `packages/mcp_bundle/dart/lib/src/install/mcp_bundle_packer.dart`
 
 ## 7.1 Reserved Folders
 
@@ -229,19 +229,29 @@ metadata still produce predictable output.
 
 ## 7.5 Loading
 
-The reference loader supports four sources:
+The reference loader supports five sources:
 
 | Source | Entry point | Notes |
 |--------|-------------|-------|
 | `.mbd/` directory | `McpBundleLoader.loadDirectory(path)` | Reads `manifest.json` + reserved folders eagerly. Sets `bundle.directory`. |
 | Installed bundle | `McpBundleLoader.loadInstalled(installRoot, id)` | Reads from a pre-installed location. |
-| Inline JSON map | `McpBundleLoader.loadJson(map)` | For tests / in-memory composition. `bundle.directory` = `null`. |
+| Bundle store | `McpBundleLoader.loadStore(store)` | Reads through a `BundleFileStore` — no filesystem. Sets `bundle.store`. Asset `contentRef`s stay relative (there is no absolute path to rewrite them to). |
+| Inline JSON map | `McpBundleLoader.loadJson(map)` | For tests / in-memory composition. Carries no files. |
 | Remote `.mcpb` URL | `McpBundleLoader.loadUrl(uri)` | Fetches + unpacks in memory. |
 
 Reference: `mcp_bundle_loader.dart`.
 
-A bundle loaded inline (`directory == null`) can NOT call
-`bundle.uiResources` etc. — those getters throw `StateError`.
+**A bundle names where its files are, not necessarily a path.**
+`bundle.directory` is the filesystem spelling; `bundle.store` is the
+general one; `bundle.fileStore` resolves the two (store wins when both
+are set, and a `directory` is wrapped into a store).
+
+A bundle that carries no files at all (`fileStore == null` — loaded
+inline or from a remote fetch) can NOT call `bundle.uiResources` etc. —
+those getters throw `StateError`. Consumers that gate on *readable
+files* MUST test `fileStore`, not `directory`: a bundle installed into
+host-provided storage has the former and never the latter, and gating
+on the path refuses it before anything is read.
 Authoring tools that need both inline JSON and folder I/O must
 install the bundle to disk first.
 

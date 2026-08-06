@@ -4,15 +4,15 @@ This document defines how a bundle moves from authoring to a host's
 install root: pack `.mbd/` → optional sign → install (with policy
 gates).
 
-References, in the `mcp_bundle` package:
-- `lib/src/install/mcp_bundle_packer.dart`
-- `lib/src/install/bundle_signer.dart`
-- `lib/src/install/mcp_bundle_installer.dart`
-- `lib/src/install/install_policy.dart`
-- `lib/src/install/installed_bundle.dart`
-- `lib/src/install/runtime_descriptor.dart`
-- `lib/src/install/trust_store.dart`
-- `lib/src/models/integrity.dart`
+References:
+- `packages/mcp_bundle/dart/lib/src/install/mcp_bundle_packer.dart`
+- `packages/mcp_bundle/dart/lib/src/install/bundle_signer.dart`
+- `packages/mcp_bundle/dart/lib/src/install/mcp_bundle_installer.dart`
+- `packages/mcp_bundle/dart/lib/src/install/install_policy.dart`
+- `packages/mcp_bundle/dart/lib/src/install/installed_bundle.dart`
+- `packages/mcp_bundle/dart/lib/src/install/runtime_descriptor.dart`
+- `packages/mcp_bundle/dart/lib/src/install/trust_store.dart`
+- `packages/mcp_bundle/dart/lib/src/models/integrity.dart`
 
 ## 10.1 The Pack Step
 
@@ -126,8 +126,8 @@ class InstallPolicy {
 
 | Value | Behavior |
 |-------|----------|
-| `failIfExists` | Throw `BundleAlreadyInstalledException` when `<installRoot>/<id>/` exists. |
-| `replace` (default) | Atomic swap: stage → rename existing aside → rename new into place → delete the displaced tree. |
+| `failIfExists` | Throw `BundleAlreadyInstalledException` when the id is already installed. |
+| `replace` (default) | Stage the new copy, then promote it over the old one (§10.5a). |
 | `skipIfExists` | Leave the existing install alone and return its metadata. |
 
 ### 10.3.2 `requireIntegrity`
@@ -219,43 +219,88 @@ The installer compares `RuntimeDescriptor` against
 Rejection codes follow the [`08_Validation.md`](08_Validation.md)
 patterns; failures are wrapped as `BundleIncompatibleException`.
 
+## 10.5a The install destination is a port
+
+Where an installed bundle lands is **not** part of this spec's data
+model, and MUST NOT be assumed to be a filesystem path. A host with no
+filesystem — a browser — installs into storage it supplies, and every
+step below has to hold there too.
+
+```dart
+abstract interface class BundleInstallStore {
+  Future<List<String>> listInstalled();
+  Future<BundleFileStore?> openInstalled(String id);
+  Future<BundleStagingArea> beginInstall(String id);
+  Future<void> remove(String id);
+  String locatorOf(String id);
+  Future<T> withLock<T>(Future<T> Function() body);
+}
+
+abstract interface class BundleStagingArea {
+  BundleFileStore get files;
+  Future<String> promote();
+  Future<void> abandon();
+}
+```
+
+An implementation MUST hold three guarantees:
+
+1. **`listInstalled` reports only complete installs.** An id that is
+   mid-install must not appear — a caller that opens it gets a bundle
+   that is half a bundle.
+2. **A failed `promote` never leaves a partially replaced install
+   visible.** Storage with an atomic swap (a filesystem `rename`) MUST
+   use it. Storage without one MUST make the id *disappear* for the
+   duration rather than appear installed while half of it is the old
+   copy — absence is a state a caller can act on; a blend of two
+   versions is not.
+3. **`withLock` is real exclusion,** or the implementation says it is
+   not. Installs mutate a shared registry.
+
+`installRoot` remains as the filesystem spelling of the same thing and
+is what hosts with a disk pass. Exactly one of the two is required.
+
 ## 10.6 The Install Flow
 
 ```
-caller                    installer                  filesystem
-──────                    ─────────                  ──────────
+caller                    installer                  install store
+──────                    ─────────                  ─────────────
 installBytes(bytes)  →
                   decode ZIP (limits enforced)
                   parse manifest
                   validate compatibility (descriptor)
+                  acquire store lock            →   withLock
+                  read the installed registry   →   listInstalled
                   validate integrity (hashes, signatures)
                   validate requires (atoms / tools)
-                  stage to <installRoot>/.staging/<id>/
-                                                    write extracted files
-                  acquire <installRoot>/.lock
-                  swap or skip per onConflict
+                  resolve conflict per onConflict
+                  open staging                  →   beginInstall(id)
+                  write extracted entries       →   staging.files.write
+                  write .install.json sidecar   →   staging.files.write
+                  promote                       →   staging.promote()
                   release lock
-                                                    rename into place
-                  write .install.json sidecar
-                                                    write sidecar
                   return InstalledBundle
 ```
+
+On any failure after staging opens, the installer abandons the staging
+area — a rejected archive leaves nothing behind.
 
 The installer entry points:
 
 | Entry | Source |
 |-------|--------|
-| `installBytes(bytes, ...)` | Raw `.mcpb` bytes. |
+| `installBytes(bytes, ...)` | Raw `.mcpb` bytes. The only entry a host without a filesystem can use — it fetched the archive, so it has bytes and no path. |
 | `installFile(path, ...)` | `.mcpb` file path. |
 | `installDirectory(mbdPath, ...)` | `.mbd/` directory; packs in memory first via `McpBundlePacker.packDirectory`. |
 | `installUrl(uri, ...)` | HTTP(S) GET; honors `InstallLimits.maxCompressedBytes` against `Content-Length` pre-check. |
 
-All entries return an `InstalledBundle` describing where the bundle
-landed and its parsed manifest.
+All entries take either `installRoot:` or `store:` and return an
+`InstalledBundle` describing where the bundle landed and its parsed
+manifest.
 
 ## 10.7 `InstalledBundle` and `.install.json`
 
-Each install directory carries an `.install.json` sidecar:
+Each installed bundle carries an `.install.json` sidecar at its root:
 
 ```json
 {
@@ -280,13 +325,17 @@ the installer only requires `registrySchema`, `id`, `version`.
 
 The installer also exposes:
 
-- `list(installRoot)` — enumerate installed bundles.
-- `get(installRoot, id)` — read one `InstalledBundle`.
-- `uninstall(installRoot, id)` — delete `<installRoot>/<id>/`.
+- `list(installRoot)` / `listFrom(store)` — enumerate installed bundles.
+- `uninstall(installRoot, id)` / `uninstallFrom(store, id)` — remove one.
 
-Uninstall is best-effort recursive deletion. Hosts that want to
-preserve user data (config, caches) outside the bundle directory
-SHOULD store it in a separate location.
+Listing is best-effort per bundle: an entry that cannot be read is
+skipped rather than failing the whole listing, so one corrupt install
+does not hide every healthy one.
+
+Uninstall removes everything the store holds under that id. Hosts that
+want to preserve user data (config, caches) across an uninstall MUST
+store it outside the bundle — `20-account-storage.md` `app/<appId>` is
+that place.
 
 ## 10.9 Conformance
 
