@@ -1,20 +1,38 @@
 type: heatmap
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Two-dimensional heatmap visualization.
 properties:
+  cellGap:
+    type: Dimension
+    description: "Gap between adjacent cells."
+  colorScheme:
+    type: "string"
+    description: "Named colour ramp used between `minValue` and `maxValue`."
+  columns:
+    type: "number"
+    description: "Number of columns the values are laid out in."
+  maxValue:
+    type: "number"
+    description: "Value mapped to the high end of the colour range. Optional — when omitted the range is taken from the data, so a heatmap always renders as a scale rather than one flat block."
+  minValue:
+    type: "number"
+    description: "Value mapped to the low end of the colour range. Optional — when omitted the range is taken from the data."
+  showLabels:
+    type: "boolean"
+    description: "Show the row and column labels declared in `rowLabels` / `columnLabels`. Off by default: without it those labels draw nothing, and an author who declared them reads the blank axis as their own mistake. The numeric value inside a cell is `showValues`."
   data:
     type: "array | binding"
     required: true
     description: "2D numeric array (rows × columns). Literal array or binding."
   columnLabels:
-    type: "string[]"
+    type: "array<string>"
     default: null
     description: "Horizontal axis labels"
   rowLabels:
-    type: "string[]"
+    type: "array<string>"
     default: null
     description: "Vertical axis labels"
   cellSize:
@@ -22,13 +40,22 @@ properties:
     default: 40
     description: "Cell size (logical px)"
   colorRange:
-    type: "`{ low, high }`"
+    type: "{ low, high }"
     default: "{ \"#E3F2FD\", \"#1565C0\" }"
-    description: "Hex gradient endpoints"
+    description: "Gradient endpoints — the color a cell takes at the lowest value and at the highest."
+  colorRange.low:
+    type: Color
+    description: "Color at the low end of the range."
+  colorRange.high:
+    type: Color
+    description: "Color at the high end of the range."
   showValues:
     type: "boolean"
-    default: false
-    description: "Render numeric value inside each cell"
+    default: true
+    description: |
+      Render the numeric value inside each cell. On by default: every heatmap
+      written before this property was read showed its numbers, and turning
+      them off by default would change what those documents display.
   onCellTap:
     type: "Action"
     default: null

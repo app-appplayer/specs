@@ -4,12 +4,18 @@ profile: Core
 description: |
   Horizontal separator.
 properties:
+  vertical:
+    type: "boolean"
+    description: "Draw the rule vertically instead of horizontally."
+  height:
+    type: Dimension
+    description: "Fixed height."
   thickness:
     type: "number"
     default: 1
     description: "Line thickness."
   color:
-    type: "string"
+    type: Color
     description: "Line color."
   indent:
     type: "number"

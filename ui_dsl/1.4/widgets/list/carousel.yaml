@@ -11,18 +11,18 @@ description: |
   covers, album browsers, magazine front pages).
 properties:
   items:
-    type: binding
+    type: "array | binding"
     description: Array source. Required when `children` is omitted.
   itemTemplate:
     type: Widget
     description: Template rendered per bound item. Required with `items`.
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: Static slides. Mutually exclusive with `items` + `itemTemplate`.
   scrollDirection:
     type: string
     enum: [horizontal, vertical]
-    default: "\"horizontal\""
+    default: "horizontal"
     description: Scroll axis.
   viewportFraction:
     type: number
@@ -33,10 +33,10 @@ properties:
       `0.85` leaves both neighbours peeking; `0.6` shows three items.
   loop:
     type: boolean
-    default: "false"
+    default: false
     description: When true the list wraps around — last → first → last.
   autoPlay:
-    type: number
+    type: "boolean | number | binding"
     description: |
       When set, advances one item every `autoPlay` ms. Authors
       typically pair with `loop: true`.
@@ -47,7 +47,7 @@ properties:
   transition:
     type: string
     enum: [slide, fade, coverflow, depth]
-    default: "\"slide\""
+    default: "slide"
     description: |
       Per-slide transition. `slide` is the default linear scroll;
       `fade` cross-fades between slides at the same position;
@@ -58,7 +58,7 @@ properties:
   indicatorPosition:
     type: string
     enum: [bottom, top, none]
-    default: "\"bottom\""
+    default: "bottom"
     description: Page indicator dot bar.
   onPageChanged:
     type: Action

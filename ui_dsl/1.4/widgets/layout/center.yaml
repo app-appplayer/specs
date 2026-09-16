@@ -4,6 +4,12 @@ profile: Core
 description: |
   Centers a single child within available space.
 properties:
+  heightFactor:
+    type: "number"
+    description: "Size to this multiple of the child height."
+  widthFactor:
+    type: "number"
+    description: "Size to this multiple of the child width."
   child:
     type: "Widget"
     required: true

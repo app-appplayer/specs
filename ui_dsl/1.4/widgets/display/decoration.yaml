@@ -7,6 +7,9 @@ description: |
   `BoxDecoration` may be supplied via `decoration:`, or any of its
   fields may appear flat at the top level for ergonomic shorthand.
 properties:
+  position:
+    type: "string"
+    description: "Where the decoration sits relative to the child: `background` or `foreground`."
   decoration:
     type: BoxDecoration
     description: |
@@ -35,7 +38,7 @@ properties:
   shape:
     type: string
     enum: [rectangle, circle]
-    default: "\"rectangle\""
+    default: "rectangle"
     description: Flat shorthand for `decoration.shape`.
   backdropBlur:
     type: number
@@ -44,6 +47,6 @@ properties:
     type: Widget
     description: Decorated widget. Required when `children` is omitted.
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: Multiple widgets; runtime wraps them in a linear column.
 # examples migrated verbatim from prose JSON fences.

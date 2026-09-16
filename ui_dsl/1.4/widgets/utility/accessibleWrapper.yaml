@@ -4,6 +4,36 @@ profile: Core
 description: |
   Wraps a child with accessibility annotations (ARIA-style). See [`13_Accessibility.md`](13_Accessibility.md) for the full property set.
 properties:
+  announceNavigation:
+    type: "boolean"
+    description: "Announce navigation changes through the screen reader."
+  announceOnChange:
+    type: "boolean"
+    description: "Announce the watched value whenever it changes."
+  autoFocus:
+    type: "boolean"
+    description: "Move focus into this subtree when it appears."
+  focusGroup:
+    type: "string"
+    description: |
+      Name of the focus group this subtree belongs to. Traversal moves through
+      one group before leaving it, so the name is what ties siblings together.
+  focusOrder:
+    type: "number"
+    description: "Position of this subtree in the focus order; lower comes first."
+  liveRegion:
+    type: "string"
+    enum: [polite, assertive, status, alert]
+    description: |
+      Announce updates inside the subtree without moving focus to it, at the
+      named urgency — `polite` waits for a pause, `assertive` interrupts,
+      `status` and `alert` carry the matching ARIA roles.
+  navigationMessage:
+    type: "string"
+    description: "Message announced when navigation reaches this subtree."
+  watchPath:
+    type: "string"
+    description: "State path whose changes are announced (with `announceOnChange`)."
   child:
     type: "Widget"
     required: true

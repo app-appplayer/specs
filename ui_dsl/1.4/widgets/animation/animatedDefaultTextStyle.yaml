@@ -19,7 +19,7 @@ properties:
     description: Animation duration in milliseconds.
   curve:
     type: AnimationCurve
-    default: "\"easeInOut\""
+    default: "easeInOut"
     description: Easing curve.
   onEnd:
     type: Action

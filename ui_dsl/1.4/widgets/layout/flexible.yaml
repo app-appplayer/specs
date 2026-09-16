@@ -10,7 +10,7 @@ properties:
     description: "Flex weight."
   fit:
     type: "string"
-    default: "\"loose\""
+    default: "loose"
     description: "`\"loose\"` or `\"tight\"`."
   child:
     type: "Widget"

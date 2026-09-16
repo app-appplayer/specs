@@ -1,16 +1,19 @@
 type: table
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Layout table for arranging widgets in rows and columns. Not data-bound; each cell is a widget.
 properties:
+  textBaseline:
+    type: "string"
+    description: "Baseline used to align cells in a baseline-aligned row."
   rows:
-    type: "`{ cells: Widget[] }[]`"
+    type: "array<TableRow>"
     required: true
-    description: "Row definitions"
+    description: "Row definitions — each carries the widgets for its cells."
   border:
-    type: "`{ color, width }`"
+    type: "{ color, width }"
     default: null
     description: "Optional cell border"
   defaultColumnWidth:
@@ -26,6 +29,9 @@ properties:
     type: "object"
     default: null
     description: "Map `columnIndex` → width override"
+  textDirection:
+    type: "string"
+    description: "Resolution direction for `start`/`end` alignment."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

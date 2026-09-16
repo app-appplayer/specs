@@ -5,14 +5,15 @@ description: |
   Presents a prompt for one or more client capabilities (e.g., clipboard, filesystem). See [`07_Security.md`](07_Security.md) for the permission vocabulary.
 properties:
   permissions:
-    type: "string[]"
+    type: "array<string>"
     description: "Permission identifiers (e.g., `[\"client.clipboard\"]`). Required when `permissionType` is omitted."
   permissionType:
     type: "string"
     description: "Single-permission shorthand for `permissions: [permissionType]`."
   style:
     type: "string"
-    default: "\"inline\""
+    enum: [inline, dialog, banner]
+    default: "inline"
     description: "`inline`, `dialog`, `banner`."
   title:
     type: "string"
@@ -21,8 +22,8 @@ properties:
     type: "string"
     description: "Prompt body."
   icon:
-    type: "string"
-    description: "Icon shown alongside the prompt."
+    type: IconRef
+    description: "Icon shown alongside the prompt. Any `IconRef` form."
   allowPartial:
     type: "boolean"
     default: false

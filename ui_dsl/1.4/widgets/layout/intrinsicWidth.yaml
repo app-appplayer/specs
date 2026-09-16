@@ -4,6 +4,12 @@ profile: Core
 description: |
   Constrains a child to the intrinsic width required by its content.
 properties:
+  stepHeight:
+    type: Dimension
+    description: "Round the intrinsic height up to a multiple of this."
+  stepWidth:
+    type: Dimension
+    description: "Round the intrinsic width up to a multiple of this."
   child:
     type: "Widget"
     required: true

@@ -1,0 +1,49 @@
+type: pagination
+category: navigation
+profile: Core
+since: v1.4
+description: |
+  Page selector for a paged collection. `binding` holds the current page
+  (1-based).
+
+  The composed version is where off-by-one bugs live: first/last bounds,
+  the ellipsis window, and disabling prev/next at the ends are re-derived
+  by every author. Stating it once also fixes what a screen reader hears —
+  "page 3 of 12", not "3".
+properties:
+  current:
+    type: "number"
+    description: "Page currently shown, 1-based."
+  binding:
+    type: string
+    description: "State path holding the current page. 1-based."
+  total:
+    type: "number"
+    required: true
+    description: "Total item count (not page count) — the widget derives pages from `pageSize`."
+  pageSize:
+    type: "number"
+    default: 20
+    description: "Items per page."
+  siblingCount:
+    type: "number"
+    default: 1
+    description: "Page links shown either side of the current page before the trail is elided."
+  showSizeChanger:
+    type: "boolean"
+    default: false
+    description: "Offer a page-size selector."
+  pageSizeOptions:
+    type: "array<number>"
+    description: "Choices for the size selector. Ignored when `showSizeChanger` is false."
+  showTotal:
+    type: "boolean"
+    default: false
+    description: "Render a total-count summary."
+events:
+  onChange:
+    description: Fired when the page or page size changes.
+examples:
+  - name: basic
+    dsl: |
+      { "type": "pagination", "binding": "list.page", "total": 240, "pageSize": 20 }

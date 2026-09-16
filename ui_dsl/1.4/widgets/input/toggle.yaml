@@ -13,3 +13,11 @@ examples:
         "type": "toggle",
         "binding": "settings.darkMode"
       }
+
+properties:
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."

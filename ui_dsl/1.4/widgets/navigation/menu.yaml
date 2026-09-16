@@ -1,0 +1,48 @@
+type: menu
+category: navigation
+profile: Core
+since: v1.4
+description: |
+  Standing list of navigation destinations, optionally nested. Unlike
+  `popupMenuButton` (a trigger that opens a transient list) this one is part
+  of the layout — a sidebar or an inline section list.
+
+  `navigationRail` covers the icon-rail form on one axis with a flat item
+  set; this covers nesting, collapsing, and the expanded/collapsed sidebar
+  that admin screens are built from.
+properties:
+  items:
+    type: "array<object>"
+    required: true
+    description: "`{ key, label, icon?, route?, params?, children?, enabled? }`. `children` nests one or more levels; an item with `children` is a group, not a destination."
+  selectedKey:
+    type: "string | binding"
+    description: "Two-way bound key of the active item."
+  openKeys:
+    type: "array<string>"
+    description: "Two-way bound keys of expanded groups."
+  mode:
+    type: string
+    enum: [vertical, horizontal, inline]
+    default: "vertical"
+    description: "`inline` expands groups in place; `vertical`/`horizontal` open them as flyouts."
+  collapsed:
+    type: "boolean | binding"
+    description: "Collapse to icons only. Labels move into tooltips rather than disappearing."
+events:
+  onSelect:
+    description: Fired when a destination item is activated. Group items do not fire it.
+examples:
+  - name: sidebar
+    dsl: |
+      {
+        "type": "menu",
+        "mode": "inline",
+        "selectedKey": "nav.current",
+        "items": [
+          { "key": "home", "label": "Home", "icon": "home", "route": "/" },
+          { "key": "admin", "label": "Admin", "children": [
+            { "key": "users", "label": "Users", "route": "/admin/users" }
+          ]}
+        ]
+      }

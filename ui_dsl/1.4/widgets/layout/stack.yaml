@@ -4,18 +4,25 @@ profile: Core
 description: |
   Overlapping children. Non-positioned children align per `alignment`; positioned children use explicit offsets (see `positioned`).
 properties:
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
   alignment:
     type: Alignment
-    default: "\"topStart\""
+    default: "topStart"
     description: Alignment of non-positioned children.
   fit:
     type: "string"
-    default: "\"loose\""
+    enum: [loose, expand, passthrough]
+    default: "loose"
     description: "Sizing of non-positioned children: `loose`, `expand`, `passthrough`."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     required: true
     description: "Stacked children (rendered in order; later children render on top)."
+  textDirection:
+    type: "string"
+    description: "Resolution direction for `start`/`end` alignment."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

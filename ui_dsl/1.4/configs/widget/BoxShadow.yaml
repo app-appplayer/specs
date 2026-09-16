@@ -3,11 +3,16 @@ description: |
   A drop shadow painted beneath the box. Multiple shadows compose via
   `decoration.boxShadow: array<BoxShadow>` and stack from the first
   (closest to the box) outward.
+
+  The offset has two spellings: `offset: {dx, dy}` (canonical) and the
+  flat `offsetX` / `offsetY` pair kept from v1.0. Likewise `blurRadius`
+  and `spreadRadius` each accept a short legacy name (`blur`, `spread`).
+  Canonical wins when both are present.
 definition:
   {
     "type": "object",
     "properties": {
-      "color": { "type": "string" },
+      "color": { "$ref": "#/$defs/Color" },
       "offset": {
         "type": "object",
         "properties": {
@@ -17,8 +22,12 @@ definition:
         "required": ["dx", "dy"],
         "additionalProperties": false
       },
+      "offsetX": { "type": "number", "description": "Legacy flat offset; use `offset.dx`." },
+      "offsetY": { "type": "number", "description": "Legacy flat offset; use `offset.dy`." },
       "blurRadius": { "type": "number", "minimum": 0 },
-      "spreadRadius": { "type": "number" }
+      "blur": { "type": "number", "minimum": 0, "description": "Legacy alias of `blurRadius`." },
+      "spreadRadius": { "type": "number" },
+      "spread": { "type": "number", "description": "Legacy alias of `spreadRadius`." }
     },
     "required": ["color"],
     "additionalProperties": false

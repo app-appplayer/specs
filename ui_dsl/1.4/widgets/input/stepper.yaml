@@ -1,11 +1,18 @@
 type: stepper
 category: input
 profile: Core
+aliases: [steps]
 description: |
   Step-by-step wizard. Shared `binding` / `value` / `enabled` / `onChange` per §2.6.0 — the bound value is the **active step index** (integer). `binding` and `currentStep` are aliases: when `binding` is set, it takes effect; otherwise `currentStep` is read as a one-way property.
 properties:
+  margin:
+    type: EdgeInsets
+    description: "Space outside the surface."
+  physics:
+    type: "string"
+    description: "Scroll response: `bouncing`, `clamping`, `never`, `always`."
   steps:
-    type: "Step[]"
+    type: "array<Step>"
     required: true
     description: "Each step: `{ title, subtitle?, state?, content, isActive? }`."
   currentStep:
@@ -14,7 +21,7 @@ properties:
     description: "One-way legacy property. Use §2.6.0 `binding` for two-way behavior."
   stepperType:
     type: "string"
-    default: "\"vertical\""
+    default: "vertical"
     description: "`vertical` or `horizontal`."
   onStepTapped:
     type: "Action"

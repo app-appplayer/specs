@@ -4,6 +4,27 @@ profile: Core
 description: |
   Drag source widget that produces drag data and feedback visuals.
 properties:
+  affinity:
+    type: "string"
+    description: "Axis this drag claims before competing gestures: `horizontal`, `vertical`."
+  axis:
+    type: "string"
+    description: "Axis the drag is restricted to."
+  dragAnchorStrategy:
+    type: "string"
+    description: "Where the dragged feedback sits relative to the pointer: `child` or `pointer`."
+  onDragCompleted:
+    type: Action
+    description: "Fired when the drag ends on a target that accepted it."
+  onDragEnd:
+    type: Action
+    description: "Fired when the drag ends, wherever it ended."
+  onDragStarted:
+    type: Action
+    description: "Fired when the drag begins."
+  onDraggableCanceled:
+    type: Action
+    description: "Fired when the drag ends without a target accepting it."
   data:
     type: "any | binding"
     required: true

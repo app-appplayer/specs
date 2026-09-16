@@ -4,14 +4,23 @@ profile: Core
 description: |
   Dialog presenting a list of options.
 properties:
+  contentPadding:
+    type: EdgeInsets
+    description: "Space around the options."
+  titlePadding:
+    type: EdgeInsets
+    description: "Space around the title."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
   title:
     type: "string"
     description: "Dialog title."
   options:
-    type: "Option[]"
+    type: "array<Option>"
     description: "`{ value, label, icon? }` entries. Required when `children` is omitted."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: "Custom option widgets. Mutually exclusive with `options`."
   onSelect:
     type: "Action"
@@ -19,4 +28,10 @@ properties:
   onClose:
     type: "Action"
     description: "Fired when the dialog is dismissed without an option being selected."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the dialog surface."
 # examples migrated verbatim from prose JSON fences.

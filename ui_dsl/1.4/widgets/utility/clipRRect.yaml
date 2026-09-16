@@ -4,6 +4,9 @@ profile: Core
 description: |
   Clips a child to a rounded rectangle.
 properties:
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
   borderRadius:
     type: BorderRadius
     default: 0

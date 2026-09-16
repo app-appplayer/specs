@@ -1,0 +1,44 @@
+name: EdgeInsets
+description: |
+  Space around or inside a box. Four spellings, all accepted wherever insets
+  are expected:
+
+  - **Number** — one value applied to every edge.
+  - **`{value, unit}`** — the legacy v1.0 dimension object; `unit` is
+    informational and the runtime treats every inset as logical pixels.
+  - **Edge map** — `{all}` for every edge, `{horizontal, vertical}` for the
+    two axes, or `{top, right, bottom, left}` for individual edges. Each entry
+    is a `Dimension`, so one edge may be bound while its neighbours are
+    literal: `{ "left": "{{sidebar.width}}", "top": 8 }`.
+  - **Binding** — resolves to any of the above at render time.
+
+  A bare word is not an inset: the runtime resolves it to null and the widget
+  falls back to no padding, so validators reject it rather than let it render
+  as a silent zero.
+definition:
+  {
+    "anyOf": [
+      { "type": "number" },
+      {
+        "type": "object",
+        "properties": {
+          "value": { "type": "number" },
+          "unit": { "type": "string" }
+        },
+        "required": ["value"]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "all": { "$ref": "#/$defs/Dimension" },
+          "horizontal": { "$ref": "#/$defs/Dimension" },
+          "vertical": { "$ref": "#/$defs/Dimension" },
+          "top": { "$ref": "#/$defs/Dimension" },
+          "right": { "$ref": "#/$defs/Dimension" },
+          "bottom": { "$ref": "#/$defs/Dimension" },
+          "left": { "$ref": "#/$defs/Dimension" }
+        }
+      },
+      { "$ref": "#/$defs/Binding" }
+    ]
+  }

@@ -12,7 +12,7 @@ properties:
     default: 1
     description: "Line thickness."
   color:
-    type: "string"
+    type: Color
     description: "Line color."
   indent:
     type: "number"

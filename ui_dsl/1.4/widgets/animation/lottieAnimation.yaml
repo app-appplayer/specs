@@ -4,10 +4,23 @@ profile: Core
 description: |
   Embedded Lottie/JSON animation playback.
 properties:
-  src:
+  fit:
     type: "string"
+    description: "How the animation scales to its bounds."
+  onComplete:
+    type: Action
+    description: "Fired when a non-looping animation reaches its end."
+  speed:
+    type: "number"
+    description: "Playback rate; `1.0` is the authored speed."
+  height:
+    type: Dimension
+    description: "Fixed height."
+  src:
+    type: AssetRef
     required: true
-    description: "Animation source (`bundle://`, `client://`, URL)."
+    aliases: [source]
+    description: "Animation source. Any `AssetRef` form."
   autoPlay:
     type: "boolean"
     default: true
@@ -16,4 +29,10 @@ properties:
     type: "boolean"
     default: true
     description: "Loop playback."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  width:
+    type: Dimension
+    description: "Measured from real documents (2026-08-04): number, `{value, unit}`, a dimension string or a binding."
 # examples migrated verbatim from prose JSON fences.

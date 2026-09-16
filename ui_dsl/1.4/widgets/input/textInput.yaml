@@ -11,6 +11,18 @@ description: |
   override the shorthand.
 
 properties:
+  debounce:
+    type: "number"
+    description: "Milliseconds to wait after typing stops before `onChange` fires."
+  textInputAction:
+    type: "string"
+    description: "Keyboard action key: `done`, `next`, `search`, `send`, `go`, `newline`."
+  errorText:
+    type: "string"
+    description: "Error message shown under the field. Overrides validation output."
+  style:
+    type: TextStyle
+    description: "Text style applied to the label."
   # Shared per §2.6.0 — repeated here so the schema can discriminate directly.
   binding:
     type: string
@@ -57,13 +69,22 @@ properties:
     description: Maximum character length enforced at input time.
   inputType:
     type: string
-    enum: [text, number, email, phone, url, multiline]
+    enum: [text, number, email, phone, url, search, multiline]
     default: text
     description: Virtual keyboard hint / input semantics.
+  showToggle:
+    type: boolean
+    default: false
+    description: "Offer a reveal control alongside an obscured field. Ignored unless `obscureText` is true."
+  defaultCountry:
+    type: string
+    description: "ISO 3166-1 alpha-2 country seeding the dialling code. Ignored unless `inputType` is `phone`."
   validation:
     type: ValidationConfig
     description: Input constraints; see `../../07_Security.md` §7.2.1.
-
+  error:
+    type: "string | boolean | binding"
+    description: "Error state: a message to show, or `true` to mark the field with `errorText`."
 events:
   onChange:
     description: Fired when the value changes.

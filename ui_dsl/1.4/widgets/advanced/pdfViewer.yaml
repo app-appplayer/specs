@@ -1,0 +1,56 @@
+type: pdfViewer
+category: advanced
+profile: Advanced
+since: v1.4
+description: |
+  Renders a PDF document with page navigation and zoom.
+
+  `webView` can display a PDF where the host has a plugin for it, and that is
+  the substitution to avoid: the document then belongs to the browser, so
+  page position, zoom, and search are outside the DSL's reach and outside
+  the app's theme. A viewer widget keeps them addressable.
+
+  `src` is an `AssetRef`, so the same document works from a bundle, a URL, a
+  picked file (`fileInput` writes a `data:` URI), or a server resource.
+properties:
+  height:
+    type: Dimension
+    description: "Fixed height."
+  src:
+    type: AssetRef
+    required: true
+    description: "Document source. Any `AssetRef` form."
+  page:
+    type: "number | binding"
+    description: "Current page, 1-based. One-way — the embedded viewer reports no page change back."
+  zoom:
+    type: "number | binding"
+    description: "Zoom factor; `1.0` is fit-width. One-way — the embedded viewer reports no zoom change back."
+  showToolbar:
+    type: boolean
+    default: true
+    description: "Render the built-in toolbar. False leaves navigation entirely to bindings."
+  showPageNav:
+    type: boolean
+    default: true
+    description: "Page stepper within the toolbar."
+  showZoom:
+    type: boolean
+    default: true
+    description: "Zoom controls within the toolbar."
+  fit:
+    type: string
+    enum: [width, height, page]
+    default: "width"
+    description: "Initial fit."
+events:
+  onLoad:
+    description: Fired once the document is parsed. Carries the page count.
+  onPageChange:
+    description: Fired when the visible page changes, however it changed.
+  onError:
+    description: Fired when the document cannot be loaded or decoded.
+examples:
+  - name: basic
+    dsl: |
+      { "type": "pdfViewer", "src": "bundle://docs/manual.pdf", "page": "{{doc.page}}" }

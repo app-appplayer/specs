@@ -4,11 +4,23 @@ profile: Core
 description: |
   Side navigation drawer. Each item's text field is `label`.
 properties:
+  semanticLabel:
+    type: "string"
+    description: "Label announced by a screen reader in place of the content."
+  shadowColor:
+    type: Color
+    description: "Colour of the drop shadow cast by the surface."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
+  surfaceTintColor:
+    type: Color
+    description: "Elevation tint applied over the surface colour (M3)."
   items:
-    type: "DrawerItem[]"
+    type: "array<DrawerItem>"
     description: "`{ icon, label, route? }` entries. Required when `children` is omitted."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: "Custom drawer body widgets. Mutually exclusive with `items`."
   header:
     type: "Widget"
@@ -19,6 +31,15 @@ properties:
   onClose:
     type: "Action"
     description: "Fired when the drawer is dismissed (modal: scrim tap or escape; permanent: not fired)."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the drawer surface."
+  width:
+    type: Dimension
+    description: "Measured from real documents (2026-08-04): number, `{value, unit}`, a dimension string or a binding."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

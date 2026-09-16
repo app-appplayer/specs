@@ -14,7 +14,7 @@ description: |
   `view` widget (§2.13.1).
 definition:
   {
-    "oneOf": [
+    "anyOf": [
       {
         "type": "string",
         "pattern": "^\\{\\{.*\\}\\}$",

@@ -1,15 +1,21 @@
 type: signature
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Signature capture pad.
 properties:
+  onSignatureStart:
+    type: Action
+    description: "Fired when the first stroke begins."
+  borderWidth:
+    type: Dimension
+    description: "Thickness of the outline."
   binding:
     type: "binding"
     description: "Target binding for signature data (base64 PNG or SVG path). Required when capturing is needed; may be omitted for pure display."
   penColor:
-    type: "string"
+    type: Color
     default: "#000000"
     description: "Stroke color"
     aliases:
@@ -29,11 +35,11 @@ properties:
     default: null
     description: "Widget height"
   backgroundColor:
-    type: "string"
+    type: Color
     default: null
     description: "Pad background"
   borderColor:
-    type: "string"
+    type: Color
     default: null
     description: "Pad border"
   showClearButton:
@@ -42,8 +48,8 @@ properties:
     description: "Show a clear-signature button"
   showGuide:
     type: "boolean"
-    default: false
-    description: "Show a signing guide line"
+    default: true
+    description: "Show a signing guide line."
   onSignatureEnd:
     type: "Action"
     default: null

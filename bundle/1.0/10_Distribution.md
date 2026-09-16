@@ -4,15 +4,15 @@ This document defines how a bundle moves from authoring to a host's
 install root: pack `.mbd/` → optional sign → install (with policy
 gates).
 
-References:
-- `packages/mcp_bundle/dart/lib/src/install/mcp_bundle_packer.dart`
-- `packages/mcp_bundle/dart/lib/src/install/bundle_signer.dart`
-- `packages/mcp_bundle/dart/lib/src/install/mcp_bundle_installer.dart`
-- `packages/mcp_bundle/dart/lib/src/install/install_policy.dart`
-- `packages/mcp_bundle/dart/lib/src/install/installed_bundle.dart`
-- `packages/mcp_bundle/dart/lib/src/install/runtime_descriptor.dart`
-- `packages/mcp_bundle/dart/lib/src/install/trust_store.dart`
-- `packages/mcp_bundle/dart/lib/src/models/integrity.dart`
+References, in the `mcp_bundle` package:
+- `lib/src/install/mcp_bundle_packer.dart`
+- `lib/src/install/bundle_signer.dart`
+- `lib/src/install/mcp_bundle_installer.dart`
+- `lib/src/install/install_policy.dart`
+- `lib/src/install/installed_bundle.dart`
+- `lib/src/install/runtime_descriptor.dart`
+- `lib/src/install/trust_store.dart`
+- `lib/src/models/integrity.dart`
 
 ## 10.1 The Pack Step
 

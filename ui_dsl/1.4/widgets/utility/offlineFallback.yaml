@@ -14,8 +14,8 @@ properties:
     type: "string"
     description: "Message shown inside the offline state."
   icon:
-    type: "string"
-    description: "Icon rendered in the default offline state."
+    type: IconRef
+    description: "Icon rendered in the default offline state. Any `IconRef` form."
   showRetry:
     type: "boolean"
     default: true

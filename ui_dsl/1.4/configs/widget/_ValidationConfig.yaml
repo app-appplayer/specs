@@ -1,0 +1,90 @@
+# PARKED — not emitted. `_` prefix makes codegen skip this file.
+#
+# `textInput.validation` currently emits unconstrained, because this type was
+# referenced and never defined. Defining it therefore CONSTRAINS a slot that
+# accepted anything, and a runtime validates documents at load — so every
+# published bundle carrying a `validation` block the definition does not admit
+# would stop opening, not merely stop validating in an editor.
+#
+# That is a breaking change to the schema, which is not allowed as of
+# 2026-08-06. The definition is kept here, finished, for a release that is
+# allowed to break — or for an authoring-only consumer that reads the spec
+# tree directly without going through the emitted registry.
+#
+# The runtime half of this work shipped separately and is NOT parked: the
+# engine now applies what §7.2.1 documents declare (see the validation engine
+# CHANGELOG entry). That fix is additive and needs no registry change.
+
+name: ValidationConfig
+description: |
+  User-input constraints on an interactive widget. Two shapes, both normative
+  per `07_Security.md` §7.2.1 — a runtime MUST support each:
+
+  - **Shape A — constraint object.** Sanitization-oriented, one constraint set:
+    `{kind, sanitize, maxLength, pattern, message}`. One message covers the
+    whole block.
+  - **Shape B — rule array.** UX-oriented, each entry its own rule and its own
+    message: `[{rule, value, message}]`. Rules evaluate in declaration order.
+
+  The rule key is `rule`, not `type`. Runtimes may keep reading `type` for
+  documents authored before 1.4.1, but it is not part of the canonical
+  surface and is not accepted here.
+
+  **Four rules here are not in §7.2.1's table** — `oneOf`, `match`, `custom`,
+  and `async`. They are implemented, tested, and have no substitute in the
+  published set, so refusing them at authoring time would take away working
+  behaviour rather than tighten anything. They are listed so a document may
+  use them and a typo is still caught; whether §7.2.1 should publish them is
+  open, and until it does they are the one place this definition is wider
+  than the section it serves.
+definition:
+  {
+    "anyOf": [
+      {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["text", "number", "email", "url", "phone", "date"]
+          },
+          "sanitize": { "type": "boolean" },
+          "maxLength": { "type": "number" },
+          "pattern": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "rule": {
+              "type": "string",
+              "enum": [
+                "required",
+                "minLength",
+                "maxLength",
+                "min",
+                "max",
+                "pattern",
+                "email",
+                "url",
+                "phone",
+                "number",
+                "integer",
+                "date",
+                "oneOf",
+                "match",
+                "custom",
+                "async"
+              ]
+            },
+            "value": {},
+            "message": { "type": "string" }
+          },
+          "required": ["rule"]
+        }
+      },
+      { "$ref": "#/$defs/Binding" }
+    ]
+  }

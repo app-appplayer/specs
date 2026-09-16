@@ -1,0 +1,36 @@
+name: Marker
+description: |
+  One point marked on a map.
+
+  Keys the runtime reads are declared with their types; a document may carry
+  further keys, which the runtime ignores rather than refusing — an item shape
+  that rejected an unknown key would break every document that carries one for
+  its own bookkeeping.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "latitude": {
+        "type": "number"
+      },
+      "longitude": {
+        "type": "number"
+      },
+      "lat": {
+        "type": "number"
+      },
+      "lng": {
+        "type": "number"
+      },
+      "label": {
+        "type": "string"
+      },
+      "color": {
+        "$ref": "#/$defs/Color"
+      },
+      "icon": {
+        "$ref": "#/$defs/IconRef"
+      }
+    },
+    "additionalProperties": true
+  }

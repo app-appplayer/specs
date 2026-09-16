@@ -4,10 +4,29 @@ profile: Core
 description: |
   Standalone date picker surface. Shared rows per §2.6.0; `value` is an ISO date string.
 properties:
+  initialDate:
+    type: "string"
+    description: "Date the picker opens on when the bound value is empty (ISO 8601)."
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
   firstDate:
     type: "string"
     description: "Earliest allowed date."
   lastDate:
     type: "string"
     description: "Latest allowed date."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  dateFormat:
+    type: "string"
+    description: "Display pattern for the date portion. Display only — the bound value stays ISO-8601."
+  icon:
+    type: IconRef
+    description: "Icon shown. Any `IconRef` form."
+  variant:
+    type: "string"
+    enum: [elevated, filled, outlined, text, icon]
+    description: "`elevated`, `filled`, `outlined`, `text`, `icon`."
 # examples migrated verbatim from prose JSON fences.

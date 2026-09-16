@@ -187,3 +187,38 @@ For a multi-endpoint host (vibe_studio's multi-domain pool · user-arbitrary mul
 - Visual design of the chrome = host free
 - host policy (membership · billing · distribution) = out of scope (host domain)
 - This spec = **only the host's framework composition responsibilities**
+
+## Multi-Origin Composition (UI DSL v1.4 Composition Profile · 2026-07-28)
+
+For one bundle to compose several MCP servers into a single product (a temperature sensor + a humidity sensor + a controller = one app), the host must guarantee **per-origin isolation**. A host that cannot do this simply **does not claim** the Composition Profile — `view` then behaves fail-closed and the document degrades into a visible error, never a silently wrong render.
+
+What a host must satisfy in order to claim it ([`../ui_dsl/1.4/07_Security.md`](../ui_dsl/1.4/07_Security.md) §7.10.1 · [`../ui_dsl/1.4/18_Conformance.md`](../ui_dsl/1.4/18_Conformance.md) §18.7.1):
+
+| Obligation | Content |
+|---|---|
+| Scope | Each embedded definition gets **its own state tree · subscription registry · permission and storage identity**. No implicit access to embedder state |
+| Channel | Embedder→embedded data travels through `view.props` **only** — explicit and one-way |
+| Permissions | The **intersection** (what the embedder was granted for that origin ∩ what the embedded definition requires). Never escalated by embedding |
+| Dispatch | `tool` calls, resources and subscriptions in an embedded subtree go to **that scope's origin**. Never to the embedder's origin |
+| Unknown origin | **Refuse.** No fallback to one's own origin — that draws one server's UI under another server's identity |
+| Notification routing | `notifications/resources/updated` reaches only the scope bound to that connection |
+| Failure isolation | A dead origin affects only that `view`'s `fallback`. Siblings and the embedding page keep rendering |
+| Recursion | An embed depth limit plus origin cycle detection |
+| Definition cache | **Reuse** an origin's definitions while attached. Re-reading on every mount adds a round trip per re-entry, which looks like a tile reconnecting while the connection is in fact fine. One invalidation point — reopening the origin — is enough |
+| Lifecycle | An embedded definition runs its own hooks: `onInit→onMount→onReady`, and on unmount `onPause→onUnmount→onDestroy`. **Running the start and omitting the release** leaves a node streaming after its tile is gone ([`../ui_dsl/1.4/06_Runtime_Contract.md`](../ui_dsl/1.4/06_Runtime_Contract.md) §6.11.2b) |
+| Shared resources | When one device is used by both a standalone screen and a composed tile, connection, subscription and notification all become shared resources. Rules = [`17-device-discovery.md`](17-device-discovery.md) §7.6b |
+
+**All four capabilities must be wired for the claim to hold** (corrected 2026-07-29 — the first edition said three). "Dispatch" in the table above is wiring separate from the resolver, and the first implementation omitted it. The result is **a screen that looks finished and does nothing**: buttons in the embedded subtree went to the app's own session and landed where that device had no client (`session.tool.no_client`), leaving live values as labels. A host with only resolve **must not claim** the profile.
+
+The four runtime-side seams are `registerDefinitionResolver` (fetch) · `registerOriginToolCaller` (act) · `registerOriginResourceWatcher` (track) · `registerOriginResourceReader` (one-shot read).
+
+Missing the fourth produces **a wrong answer rather than a missing one** — the embedded document's uri reads the **embedder's** resource and shows that value as if it were the device's.
+
+On the host side the `composition_host` recipe (`buildCompositionHooks`) assembles the set in one piece, going through the kernel's `mcp.read_resource` / `call_tool` / `subscribe_resource` / `unsubscribe_resource` ([`06-tool-registry.md`](06-tool-registry.md) mode 1 as-is). AppPlayer, being a published package, **vendors** the recipe and wires them all behind `useKernelDefinitionResolver()`.
+
+**Two things the runtime must hold** (each broke silently in the field):
+
+- **A scope's lifetime is the mount, not the render.** Creating a fresh scope every frame means writing a value triggers a rebuild that discards the state just written — the value can never reach the screen while every layer below reports success.
+- **Bindings in an embedded subtree must re-evaluate on that scope's state changes.** Evaluating once at mount leaves live values as labels.
+
+**Opening an origin is deferred.** The document names an origin and the host opens it at first use. Holding a permanent connection per registered device means the last connection resets the earlier ones on a single-peer board (measured: `Connection reset by peer`).

@@ -4,9 +4,18 @@ profile: Core
 description: |
   Flow layout that wraps children to the next line when they exceed available width/height.
 properties:
+  runAlignment:
+    type: "string"
+    description: "How the runs (lines) are aligned along the cross axis."
+  verticalDirection:
+    type: "string"
+    description: "Order children are laid out vertically: `down` or `up`."
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
   direction:
     type: "string"
-    default: "\"horizontal\""
+    default: "horizontal"
     description: "Primary flow direction."
   spacing:
     type: "number"
@@ -18,10 +27,16 @@ properties:
     description: "Gap between runs."
   alignment:
     type: "string"
-    default: "\"start\""
+    default: "start"
     description: "Alignment within a run."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     required: true
     description: "Children to wrap."
+  crossAxisAlignment:
+    type: "string"
+    description: "Legacy alias of `alignment`."
+  textDirection:
+    type: "string"
+    description: "Resolution direction for `start`/`end` alignment."
 # examples migrated verbatim from prose JSON fences.

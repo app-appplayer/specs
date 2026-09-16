@@ -1,18 +1,20 @@
 type: terminal
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   ANSI-capable terminal emulator.
 properties:
   lines:
-    type: "binding"
+    type: array<string>
     default: null
-    description: "Output lines array (ANSI-escaped strings accepted)"
+    description: |
+      Output lines (ANSI-escaped strings accepted). Declared `binding`
+      before, which rejected a literal list of lines.
   prompt:
     type: "string"
-    default: "$"
-    description: "Input prompt prefix"
+    default: "$ "
+    description: "Input prompt prefix, including its trailing space."
   showInput:
     type: "boolean"
     default: true
@@ -34,21 +36,24 @@ properties:
     default: null
     description: "Font size (logical px)"
   backgroundColor:
-    type: "string"
+    type: Color
     default: null
     description: "Terminal background"
   textColor:
-    type: "string"
+    type: Color
     default: null
     description: "Default text color"
   promptColor:
-    type: "string"
+    type: Color
     default: null
     description: "Prompt color"
   onCommand:
     type: "Action"
     default: null
     description: "Fired on Enter; `event.value` is the submitted command"
+  theme:
+    type: "string"
+    description: "Editor color theme."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

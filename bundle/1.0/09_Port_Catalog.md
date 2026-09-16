@@ -6,14 +6,14 @@ catalog is part of the package surface — bundle declarations indirectly
 depend on these contracts because hosts back the JS host-bridge atoms
 (see [`04_Tools.md`](04_Tools.md) §4.8) with port implementations.
 
-This document is a **reference** — it lists every port defined under
-`packages/mcp_bundle/dart/lib/src/ports/`. The detailed Dart API
+This document is a **reference** — it lists every port the `mcp_bundle` package defines
+under `lib/src/ports/`. The detailed Dart API
 lives in source; this section anchors the names so they appear once
 in the spec and so adopters know which contracts are stable.
 
-References:
-- `packages/mcp_bundle/dart/lib/src/ports/ports.dart` (barrel export)
-- `packages/mcp_bundle/dart/lib/ports.dart` (top-level barrel)
+References, in the `mcp_bundle` package:
+- `lib/src/ports/ports.dart` (barrel export)
+- `lib/ports.dart` (top-level barrel)
 
 ## 9.1 Catalog Layout
 
@@ -112,10 +112,34 @@ barrel file's section headers.
 | Port | File | Role |
 |------|------|------|
 | `AnalysisPort` | `analysis_port.dart` | Analytical computation entry point. |
-| `AnalysisDatasourcePort` | `analysis_datasource_port.dart` | Source for analytical inputs. |
+| `AnalysisDataSourcePort` | `analysis_datasource_port.dart` | Source for analytical inputs. |
 | `AnalysisFunctionPort` | `analysis_function_port.dart` | Named analytical function. |
 
-### 9.1.10 UI / Flow / MCP Ports
+### 9.1.10 CeLM Ports
+
+A guarded local execution loop over structured state: decide, act,
+observe, verify, advance or stop. The contract exists to take planning
+load off a language model, locally.
+
+| Port | File | Role |
+|------|------|------|
+| `CelmPort` | `celm_port.dart` | Run a goal, observe, read progress, explain a conclusion. |
+| `CelmPerceptionPort` | `celm_port.dart` | Read the world under a coverage declaration. |
+| `CelmActuatorPort` | `celm_port.dart` | Perform a skill. |
+| `CelmInterlockPort` | `celm_port.dart` | Gate an irreversible skill. |
+
+A host supplies perception, actuators and — as soon as a loaded pack
+contains an irreversible skill — an interlock. `CelmPort` itself is what
+a caller holds.
+
+The contract separates what was **measured** from what was **inferred**
+in the type system (`ObservedConclusion` vs `JudgedConclusion`), and
+seals the outcome into four cases so that "blocked" cannot be read as
+"failed". Decoding refuses an unknown enum name rather than coercing it,
+because a judged record arriving from a store as an observation is the
+one corruption the separation exists to prevent.
+
+### 9.1.11 UI / Flow / MCP Ports
 
 | Port | File | Role |
 |------|------|------|
@@ -123,7 +147,7 @@ barrel file's section headers.
 | `FlowPort` | `flow_port.dart` | Flow execution entry point. |
 | `McpPort` | `mcp_port.dart` | Bridge to the MCP wire protocol. |
 
-### 9.1.11 Bundle Storage Ports
+### 9.1.12 Bundle Storage Ports
 
 Where a bundle's own bytes live. Distinct from `StoragePort` (§9.1.1),
 which is KV-style host storage for whatever a bundle wants to keep —
@@ -184,7 +208,7 @@ This spec does not freeze each port's method signature — that is owned
 by the Dart source. The spec freezes:
 
 1. Port **names** as they appear in the catalog.
-2. The package layout (`packages/mcp_bundle/dart/lib/src/ports/`).
+2. The package layout (`lib/src/ports/` within `mcp_bundle`).
 3. The barrel file (`ports.dart`) as the single import surface.
 
 Adopters may bind to ports by name knowing the catalog will grow but
@@ -201,7 +225,14 @@ Ports are implemented by:
 | `mcp_knowledge_ops` | `WorkflowPort`, `PipelinePort`, `RunbookPort`, `RunsPort`, `ScheduleTriggerPort`. |
 | `mcp_profile` | `AppraisalPort`, `DecisionPort`, `ExpressionPort`, `ProfileSummariesPort`. |
 | `mcp_skill` | `SkillRegistryPort`, `SkillRuntimePort`. |
-| Host (AppPlayer / Studio) | `StoragePort`, `EventPort`, `NotificationPort`, `ApprovalPort`, `UiPort`, `FlowPort`, `McpPort`, `IoDevicePort` family. |
+| `mcp_form` | `FormPort`, `FormRendererPort`, `FormTemplatePort`. |
+| `mcp_analysis` | `AnalysisPort`, `AnalysisDataSourcePort`, `AnalysisFunctionPort`. |
+| `mcp_celm` | `CelmPort`. Perception, actuator and interlock ports are supplied by the host. |
+| `mcp_channel` | `ChannelPort`, `ExtendedChannelPort`. |
+| `mcp_ingest` | `AsrPort`, `OcrPort`, `BinaryStoragePort`. |
+| `mcp_io` | `IoDevicePort`, `IoRegistryPort`, `IoStreamPort`, `IoPolicyPort`, `IoAuditPort`. |
+| `mcp_browser` | `BrowserEnginePort`, `BrowserContextPort`, `BrowserSearchPort`, `BrowserExtractionTemplatePort`, `BrowserDownloadPort`, `BrowserAuthProfilePort`, `BrowserPolicyPort`, `BrowserAuditPort`. |
+| Host (AppPlayer / Studio) | `StoragePort`, `EventPort`, `NotificationPort`, `ApprovalPort`, `UiPort`, `FlowPort`, `McpPort`. |
 
 This mapping is informational — implementers can re-shuffle ports
 across packages as needed.

@@ -7,13 +7,28 @@ description: |
   builds the runtime tweens between the old and new values over
   `duration` using `curve`.
 properties:
+  foregroundDecoration:
+    type: BoxDecoration
+    description: "Decoration painted over the child."
+  transform:
+    type: array<number>
+    description: "4×4 matrix applied to the box, in row-major order."
+  transformAlignment:
+    type: Alignment
+    description: "Origin the transform is applied about."
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
+  constraints:
+    type: "object"
+    description: "Minimum / maximum width and height the box may take."
   duration:
     type: Dimension
     default: 300
     description: Animation duration in milliseconds.
   curve:
     type: AnimationCurve
-    default: "\"easeInOut\""
+    default: "easeInOut"
     description: Easing curve.
   width:
     type: Dimension

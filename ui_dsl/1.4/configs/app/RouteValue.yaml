@@ -1,6 +1,6 @@
 name: RouteValue
 description: |
-  Route target. Three accepted forms:
+  Route target. Accepted forms:
 
   1. **Inline page** — full PageDefinition object embedded in the
      routes map.
@@ -12,15 +12,39 @@ description: |
      book chapter routes use `slide`, modal pages use
      `fadeThrough`). Authors who want to override per-call can
      still pass `transition` on the `navigate` action.
+  4. **Qualified reference** *(since v1.4)* — `{$ref, from}` naming a
+     definition on another origin, so a whole route can be another
+     device's page. This is the same `DefinitionSource` the `view`
+     widget accepts (§1.9, §2.13.1): route-level and widget-level
+     composition are one mechanism, not two.
+
+  A route naming an origin makes that origin ambient for the page it
+  resolves to — its tool calls, resource reads, state, storage and
+  permissions all scope to it (§7.10).
 definition:
   {
     "oneOf": [
       {
-        "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.3/page.schema.json"
+        "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.4/page.schema.json"
       },
       {
         "type": "string",
         "pattern": "^ui://"
+      },
+      {
+        "type": "string",
+        "pattern": "^\\{\\{.*\\}\\}$",
+        "description": "Binding to a page definition held in state (since v1.4)."
+      },
+      {
+        "type": "object",
+        "description": "Qualified reference to a page on another origin (since v1.4).",
+        "properties": {
+          "$ref": { "type": "string" },
+          "from": { "$ref": "#/$defs/Origin" }
+        },
+        "required": ["$ref"],
+        "additionalProperties": false
       },
       {
         "type": "object",
@@ -28,7 +52,7 @@ definition:
           "page": {
             "oneOf": [
               {
-                "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.3/page.schema.json"
+                "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.4/page.schema.json"
               },
               {
                 "type": "string",

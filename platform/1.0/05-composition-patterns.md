@@ -157,7 +157,7 @@ Each dimension × dimension = a composition pattern.
 
 ## Ecosystem App Embedding (host-agnostic capability seam)
 
-If the 5 patterns above are *kernel · bundle · transport* composition, this is a different axis — **a host embeds a published ecosystem Flutter app as a widget** and fills the per-host differences via an **injection interface**. The first · canonical instance = AppPlayer **Marketplace** (`_meta/APPPLAYER_BASIS.md` §1 "the supply branches entering the stage").
+If the 5 patterns above are *kernel · bundle · transport* composition, this is a different axis — **a host embeds a published ecosystem Flutter app as a widget** and fills the per-host differences via an **injection interface**. The first · canonical instance = AppPlayer **Marketplace** (the "supply branches entering the stage" of the AppPlayer basis document).
 
 ### Principle
 
@@ -175,7 +175,7 @@ If the 5 patterns above are *kernel · bundle · transport* composition, this is
 
 ### Authoritative Contract
 
-This spec defines only the *pattern · rules*. The **single source of truth** for the interface · implementation table · IAP `accountToken` · payment flow = `saas_app/marketplace/app/docs/03_DDD/host-capabilities.md` (code `marketplace_app/lib/src/host.dart`). The topology of the supply branches = `_meta/APPPLAYER_BASIS.md` §1.
+This spec defines only the *pattern · rules*. The **single source of truth** for the interface · implementation table · IAP `accountToken` · payment flow is the Marketplace app's host-capabilities design document, and the topology of the supply branches is the AppPlayer basis document.
 
 ### Instances (current — summary, detail in the authoritative contract)
 

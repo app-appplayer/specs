@@ -4,6 +4,9 @@ profile: Core
 description: |
   Date range selection. Exception to §2.6.0: instead of a single `binding`, the range is bound via **two separate properties** — `startDate` and `endDate` — each independently following §2.6.0 two-way semantics (each accepts a literal ISO string, a `{{path}}` expression for read-only display, or a plain state-path string for two-way binding). `firstDate`/`lastDate` remain one-way constraints on the allowed range.
 properties:
+  errorText:
+    type: "string"
+    description: "Error message shown under the field. Overrides validation output."
   startDate:
     type: "string"
     description: "State path bound two-way to the range's start (ISO date)."
@@ -21,7 +24,7 @@ properties:
     description: "Latest allowed date (constraint, one-way)."
   format:
     type: "string"
-    default: "\"yyyy-MM-dd\""
+    default: "yyyy-MM-dd"
     description: "Display format."
   locale:
     type: "string"
@@ -33,6 +36,9 @@ properties:
   onChange:
     type: "Action"
     description: "Fired when the range changes. Receives `{{event.value}}` as `{ start, end }`."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

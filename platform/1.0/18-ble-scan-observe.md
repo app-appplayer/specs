@@ -3,7 +3,7 @@
 > status: **draft** (2026-07-19 new · realized + verified by the `ble_scan` recipe reference)
 > peer: [`16-ble-transport.md`](16-ble-transport.md) (byte pipe to ONE server) · [`17-device-discovery.md`](17-device-discovery.md) (MCP-UUID-filtered probe) — same physical radio, different consumption
 > binding: [`../../ui_dsl/1.3/08_Client_Extensions.md`](../../ui_dsl/1.3/08_Client_Extensions.md) §8.6.2 (`client.mcpStream` channel — how a bundle observes)
-> reference impl: `os/core/brain_kernel/recipes/ble_scan/` (`publish_to: none`, vendored)
+> reference impl: the `ble_scan` recipe shipped with `brain_kernel` (`publish_to: none`, vendored)
 
 A capability that lets a bundle app **sense** nearby BLE advertisements — the connection-less, session-less broadcasts every BLE device emits — and render them live (a list, a signal chart, a beacon monitor). The motivating case: a bundle wants to draw a graph of incoming Bluetooth advertisements. That is not a transport (no server to talk to) — it is a **sensing** capability the host exposes and the MCP UI DSL binds. This standard fixes the data model, the multiplex model over one shared radio, and the DSL binding contract so any Flutter host and any bundle interoperate without per-host dialects.
 

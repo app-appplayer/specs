@@ -23,7 +23,7 @@ definition:
       },
       "colors": {
         "type": "array",
-        "items": { "type": "string" },
+        "items": { "$ref": "#/$defs/Color" },
         "minItems": 2
       },
       "stops": {

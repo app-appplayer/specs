@@ -4,6 +4,30 @@ profile: Core
 description: |
   Interactive button. The canonical label field is `label`.
 properties:
+  fullWidth:
+    type: "boolean"
+    description: "Stretch the button to the available width."
+  iconPosition:
+    type: "string"
+    description: "Which side the icon sits on: `start` or `end`."
+  ariaLabel:
+    type: "string"
+    description: "Label announced by a screen reader in place of the content."
+  borderWidth:
+    type: Dimension
+    description: "Thickness of the outline."
+  size:
+    type: ["string", "number"]
+    enum: [small, medium, large]
+    default: "medium"
+    description: |
+      Rendered size: the named steps `small` / `medium` / `large`, which
+      the runtime's padding, icon size and spinner size are written
+      against. It was declared as a `Dimension` here — a number, which the
+      button reads as no size at all and falls back to `medium`, while the
+      named steps it does honour were rejected before the document loaded.
+      A number is still accepted so that documents carrying one keep
+      loading; the button renders at `medium`.
   label:
     type: "string"
     required: true
@@ -12,7 +36,8 @@ properties:
       - text
   variant:
     type: "string"
-    default: "\"elevated\""
+    enum: [elevated, filled, outlined, text, icon]
+    default: "elevated"
     description: "`elevated`, `filled`, `outlined`, `text`, `icon`."
     aliases:
       - style
@@ -24,8 +49,8 @@ properties:
       through `theme.elevation.<token>.shadow`. Honored only by the
       `elevated` variant; ignored by `filled`/`outlined`/`text`/`icon`.
   icon:
-    type: "string"
-    description: "Optional leading icon name."
+    type: IconRef
+    description: "Optional leading icon. Any `IconRef` form."
   enabled:
     type: "boolean"
     default: true
@@ -39,6 +64,24 @@ properties:
   onLongPress:
     type: "Action"
     description: "Long-press handler."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  borderColor:
+    type: Color
+    description: "Pad border"
+  foregroundColor:
+    type: Color
+    description: "Bar color."
+  loading:
+    type: "boolean"
+    description: "Show a progress indicator in place of the label and refuse taps."
+  onSubmit:
+    type: Action
+    description: "Fired when the button submits its enclosing form."
+  submit:
+    type: Action
+    description: "Legacy alias of `onSubmit`."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

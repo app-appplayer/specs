@@ -1,0 +1,27 @@
+name: Overlay
+description: |
+  A shape drawn over a map — a path or a filled area.
+
+  Keys the runtime reads are declared with their types; a document may carry
+  further keys, which the runtime ignores rather than refusing — an item shape
+  that rejected an unknown key would break every document that carries one for
+  its own bookkeeping.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "points": {
+        "type": "array"
+      },
+      "color": {
+        "$ref": "#/$defs/Color"
+      },
+      "type": {
+        "type": "string"
+      },
+      "width": {
+        "type": "number"
+      }
+    },
+    "additionalProperties": true
+  }

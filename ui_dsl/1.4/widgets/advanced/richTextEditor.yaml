@@ -1,0 +1,51 @@
+type: richTextEditor
+category: advanced
+profile: Advanced
+since: v1.4
+description: |
+  Formatted text entry. Shared rows per §2.6.0.
+
+  **The bound value is HTML**, a subset stated in `format` below. That choice
+  is the whole reason this widget needed a decision rather than a definition:
+  an editor's value format is a contract every consumer of the document
+  inherits, and a proprietary delta model would make the content unreadable
+  to anything but the editor that produced it. HTML is what `richText` and
+  `markdown` already sit beside, and a host that cannot edit can still
+  display it.
+
+  A runtime MUST sanitise on the way in and on the way out — §7.5 applies to
+  this value exactly as it applies to any other author-supplied markup. The
+  editor is not a licence to inject.
+properties:
+  format:
+    type: string
+    enum: [html, markdown]
+    default: "html"
+    description: "Value format. `html` is limited to inline marks (`strong`, `em`, `u`, `s`, `code`, `a`), block elements (`p`, `h1`-`h6`, `ul`, `ol`, `li`, `blockquote`, `pre`), and `img` whose `src` is an `AssetRef`. Anything else is stripped, not escaped."
+  toolbar:
+    type: "array<string>"
+    description: "Controls to show, e.g. `[bold, italic, link, bulletList, heading]`. Omitted means the runtime's default set. A control absent here MUST also be unreachable by keyboard shortcut, or the toolbar lies about what the document can contain."
+  placeholder:
+    type: string
+    description: "Shown while empty."
+  minHeight:
+    type: number
+    description: "Minimum editor height in logical pixels."
+  maxLength:
+    type: number
+    description: "Character ceiling, counted on the text content rather than the markup."
+  binding:
+    type: "string"
+    description: "State path bound two-way to the widget value (§2.6.0). Runtime reads/writes this path without requiring an explicit onChange."
+  onChange:
+    type: Action
+    description: "Fired as the document changes. `{{event.value}}` carries the current rich-text value."
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "richTextEditor",
+        "binding": "post.body",
+        "toolbar": ["bold", "italic", "link", "bulletList"],
+        "minHeight": 240
+      }

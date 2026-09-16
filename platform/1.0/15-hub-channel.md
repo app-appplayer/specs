@@ -38,14 +38,35 @@ endpoint ── gateway ── relay(hub) ── gateway ── endpoint
 ## 3. Frames (the relay is an opaque pipe)
 
 - A relay wire frame **is the gateway dispatch message itself**, as an opaque payload. The relay does not wrap it in a seq/sender envelope — ws already gives TCP ordering, so this is a **raw frame pipe**.
-- **Ordering is TCP's.** There is no replay buffer, and **a reconnect is fresh**. A use that needs durability solves it above the channel in its own way (server-side storage, for instance) — the channel is a live pipe.
+- **One exception, toward the node: an address envelope.** A single node socket carries **many consumer sessions**, so that direction alone is enveloped: relay → node `{type:'open'|'close', sessionId}` (a session beginning or ending) and `{type:'frame', sessionId, frame}` (where `frame` is the opaque payload, unchanged); node → relay `{sessionId, frame}`. **Toward the consumer there is no envelope** — a frame goes out exactly as it came in. What the envelope carries is an address and nothing else, so §0's "the relay does not open frames" still holds. The node-side endpoint reads this shape, which is why it is written here: it is a contract between two implementations.
+- **Ordering is TCP's, and there is no replay buffer.** When a transport drops, the frames that were on it do not carry over — **the session does** (§6).
+- **Delivery is at-most-once.** A frame the relay has handed over is never sent again. The channel cannot tell "received it and then died" from "never received it" (the `id` response of §8 is the only confirmation), and **a resend can run a tool twice** — MCP `tools/call` is not idempotent. An unanswered request is completed by the calling gateway's `dispatchTtl` as `-33004`, so the caller does learn of it. A use that needs durability solves it above the channel in its own way (server-side storage, for instance) — the channel is a live pipe.
 - The protocol carried inside a frame (gateway dispatch: request/result + event) is §8. The channel only passes it.
 
 ## 4. Transport = the relay ws, and it belongs to the host
 
 - The host attaches to the relay ws with a `HubRelayConnection` — self-contained given `relayUrl` / `sessionId` / `relayToken`. The mediating package takes no direct dependency on a websocket or a database client.
-- **relay-close**: ending a session **is closing the socket**. The relay signals the control-plane (`POST /hub/relay-close`, server-to-server), which sets `status: closed` and settles. **A host closes its socket normally and does nothing else.** A one-shot session ends the moment the host finishes its turn and closes. Because the relay never opens a frame, it observes closure as a socket close and not by parsing an MCP response.
+- **A closed socket is not a closed session.** The relay reports that the transport detached (`POST /hub/relay-detach`, server-to-server) and the control-plane keeps the session **open**, recording only that nothing is attached right now. **The one exception is `oneshot`** — in that mode alone a socket close is the end signal, because the relay never opens a frame and therefore cannot observe the response that completes the turn. Settlement happens once, when the session actually ends, however many times the transport dropped in between.
+- **Re-attaching**: an open session is re-entered **with the same `sessionId`** (relay-verify re-checks that it is still `open`). Two sockets cannot hold one session at once — while a live one is attached a second attempt is refused, so session hijacking stays closed off.
+- **A host only has to reconnect.** Redial with the same `sessionId` and `relayToken`; whatever was in flight on the old socket is cleaned up by `dispatchTtl` (§3 — there is no resend).
 - Metering is relay frame bytes → `POST /hub/relay-usage` (one path).
+
+## 4-1. Waiting and waking (when the exposed node is not attached)
+
+**An exposed node does not have to be attached all the time.** Not holding a physical connection open while there is no data *is* this channel's cost model, which makes "the node is not attached" a **normal state** rather than an error.
+
+| Step | What |
+|---|---|
+| 1 | A consumer request reaches the relay. That session's node is not attached |
+| 2 | The relay holds the request in **its own memory**, per session (count bounded by the same number as the gateway's `maxQueueDepth`; a byte bound is the relay's own guard). Anything past the bound is **not accepted** |
+| 3 | The relay asks the control-plane to wake the node — a push to the devices registered for that node's owner |
+| 4 | When the node attaches on the same `sessionId`, what was waiting is handed over **once** and cleared (§3, at-most-once) |
+| 5 | If the node does not arrive within `dispatchTtl`, the caller gets `-33004` and the waiting frames are dropped |
+
+- **The waiting lives only in the relay's memory.** Frames are never written into the mediator's database (§0 and §5 stand unchanged). It exists only while a caller is waiting for an answer, so when the relay dies the consumer's socket dies with it and **the caller redials on its own**.
+- **Waking is not a guarantee.** A device that cannot receive a push (a browser, say) is reachable only while already attached; that case ends at step 5.
+- **The relay does not manufacture errors.** It never opens a frame, so it does not know a JSON-RPC `id`, and without one it cannot invent a response. `-33004` and `-33011` are codes the **calling gateway** completes with, out of its own deadline and its own queue (§3). The relay's job is narrower — **hold, bound, hand over once, and drop when the deadline passes.** Blurring that line would force the relay to open frames, and at that moment §0's "the mediator stays out of the data path" is gone.
+- **A node that stays attached is equally valid** (devices that need immediacy). Steps 1–3 simply do not occur; the contract is the same.
 
 ## 5. The control / data boundary
 
@@ -56,7 +77,8 @@ endpoint ── gateway ── relay(hub) ── gateway ── endpoint
 ## 6. Authentication · lifetime
 
 - **Authentication**: a `relayToken` — an opaque bearer signed by the control-plane and bound to the session. The relay stores no secret; on every connection it delegates with `POST /hub/relay-verify` and **fails closed**: the stored session token must match and the session must be `open`, after which the control-plane resolves the node id.
-- **Lifetime**: `open → closed/swept`. Closure is the host closing its socket (which triggers relay-close) or a policy-expiry sweep. A closed session's `relayToken` is refused at relay-verify.
+- **Lifetime is decided by policy, not by the transport**: `unlimited` (tidied only on inactivity) · `ttl` · `idle` · `oneshot`. The only other endings are an explicit `DELETE /hub/sessions/:id` and removal of the node. A closed session's `relayToken` is refused at relay-verify.
+- **The session document is the reconnection anchor.** It stays alive independently of any transport or server instance, and that is what makes "dropped, then re-attached, is the same session" true.
 
 ## 7. consume vs expose (the canonical statement of direction)
 
@@ -73,6 +95,20 @@ endpoint ── gateway ── relay(hub) ── gateway ── endpoint
 - **The topology is a reverse tunnel.** The relay is a cloud transport server and both ends dial out as `role=client`. **The node that exposes tools — the MCP server — is a dial-out client**, so there is no inbound path: it **pulls dispatch with a long poll** and returns results. That is why the protocol above the wire is gateway dispatch (request/result + event) rather than raw MCP JSON-RPC. Note the naming inversion this creates: `GatewayClientAdapter` says "Client" but is the provider (server role), and `GatewayServerAdapter` says "Server" but is the consumer (client role).
 - **Per app**: a node exposing a local surface (Studio, a factory machine, a local gateway app) runs the provider bridge. A pure consuming endpoint runs only the consumer bridge. Anything not listed is a subset.
 - **Implementation: no core modification, assembled from the public surface.** Ingress is `GatewayRuntime.handleConsumerRequest`; egress is `runtime.eventBus.onEventRelay` (the same hook the package itself uses in `GatewayServerAdapter`); provider registration and polling is `GatewayClientAdapter`. The relay transport is injected by the host. The reference implementation is the `gateway_node` recipe: **`HubGatewayProvider`** (expose), **`HubGatewayConsumer`** (consume), **`HubConsumerTransport`** (surfacing a consumer as an `mcp_client.ClientTransport`), and **`HubRelayConnection`** (the relay ws).
+
+## 9. A hub is the **market door** (and where the account door begins)
+
+What a hub opens is the **direction in which you publish to others** — which is exactly why listings, access lists, tenancy and wallets attach here. Devices signed in to the **same account** lending one another a connection is a **different door**, and it is not layered on top of a hub's nodes and sessions: dragging publisher concepts into a place that has exactly one owner drags in everything that place will never use.
+
+| | Hub (the market door) | Account peer (the account door) |
+|---|---|---|
+| To whom | Someone else | My own devices |
+| Introduction | Node registration · session grant | A directory and an offer, held by the account service |
+| Data | Through the relay | **Device to device**; where that is blocked, a **shared TURN** — not a hub session. The relay is borrowed as a temporary detour only until TURN is standing |
+| Frames | Gateway dispatch (§8) | **Plain MCP** |
+| Rule for what you expose | One re-exposure rule governs **both** |
+
+What the account door borrows from this document is **the relay, and only that** — a last resort on networks where a direct path is blocked. Even then §0 holds: a direct path only moves the mediator further out of the data path.
 
 ---
 

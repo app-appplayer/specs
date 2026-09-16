@@ -1,6 +1,7 @@
 type: placeholder
 category: display
 profile: Core
+aliases: [skeleton]
 description: |
   Empty placeholder widget with optional dimensions and color.
 properties:
@@ -11,7 +12,7 @@ properties:
     type: "number"
     description: "Height when unconstrained."
   color:
-    type: "string"
+    type: Color
     description: "Fill color."
   strokeWidth:
     type: "number"

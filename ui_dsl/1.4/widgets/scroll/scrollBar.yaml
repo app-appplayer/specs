@@ -22,6 +22,6 @@ properties:
     type: "Widget"
     description: "Scrollable child. Required when `children` is omitted."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: "Multiple widgets; runtime wraps them in a linear column. Mutually exclusive with `child`."
 # examples migrated verbatim from prose JSON fences.

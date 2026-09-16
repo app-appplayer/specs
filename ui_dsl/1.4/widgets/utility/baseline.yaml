@@ -10,7 +10,7 @@ properties:
     description: "Distance from the top to the child's baseline."
   baselineType:
     type: "string"
-    default: "\"alphabetic\""
+    default: "alphabetic"
     description: "`alphabetic` or `ideographic`."
   child:
     type: "Widget"

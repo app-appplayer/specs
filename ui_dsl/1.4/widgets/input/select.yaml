@@ -6,8 +6,23 @@ aliases:
 description: |
   Single-value dropdown selection. Shared rows per §2.6.0.
 properties:
+  disabledHint:
+    type: "string"
+    description: "Text shown in place of the value while the control is disabled."
+  isExpanded:
+    type: "boolean"
+    description: "Let the control fill the available width."
+  itemHeight:
+    type: Dimension
+    description: "Height of one option row."
+  iconSize:
+    type: Dimension
+    description: "Rendered size of the icon."
+  style:
+    type: TextStyle
+    description: "Text style applied to the label."
   options:
-    type: "Option[]"
+    type: "array<Option>"
     required: true
     description: "`{ value, label, icon? }` entries."
     aliases:
@@ -15,6 +30,18 @@ properties:
   placeholder:
     type: "string"
     description: "Placeholder shown when nothing is selected."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the open option list."
+  hint:
+    type: "string"
+    description: "Legacy alias of `placeholder`."
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

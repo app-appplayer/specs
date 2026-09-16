@@ -1,0 +1,35 @@
+name: Tab
+description: |
+  One tab of a tab bar.
+
+  Keys the runtime reads are declared with their types; a document may carry
+  further keys, which the runtime ignores rather than refusing — an item shape
+  that rejected an unknown key would break every document that carries one for
+  its own bookkeeping.
+
+  A tab that names none of `label` / `text` / `icon` shows nothing, and that
+  is accepted: it was briefly required here, and requiring it rejects the
+  document at load rather than drawing an empty tab (§1.7.5). The runtime
+  draws the empty tab.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "label": {
+        "type": "string"
+      },
+      "text": {
+        "type": "string"
+      },
+      "icon": {
+        "$ref": "#/$defs/IconRef"
+      },
+      "iconMargin": {
+        "$ref": "#/$defs/EdgeInsets"
+      },
+      "height": {
+        "$ref": "#/$defs/Dimension"
+      }
+    },
+    "additionalProperties": true
+  }

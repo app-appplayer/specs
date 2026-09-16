@@ -1,10 +1,22 @@
 type: tree
 category: advanced
-profile: Core
+profile: Advanced
+aliases: [treeView]
 since: v1.0
 description: |
   Hierarchical tree view with expandable nodes.
 properties:
+  checkable:
+    type: boolean
+    default: false
+    description: "Render a checkbox per node. Checked keys bind through `checkedKeys`."
+  checkedKeys:
+    type: "array<string> | binding"
+    description: "Two-way bound checked node keys."
+  draggable:
+    type: boolean
+    default: false
+    description: "Allow reordering/reparenting by drag. Reports through `onDrop`; the widget does not mutate the tree itself."
   data:
     type: "array | binding"
     required: true
@@ -51,6 +63,15 @@ properties:
   height:
     type: "number"
     description: "Fixed widget height in logical pixels."
+  onDrop:
+    type: Action
+    default: null
+    description: |
+      Fired when a dragged node is released on another. `event.item` is the
+      node that moved, `event.target` the node it was released on, and
+      `event.position` one of `before` / `inside` / `after` — which edge of
+      the target it landed on. The widget does not mutate the tree; the
+      document decides what a move means.
   onNodeTap:
     type: "Action"
     default: null

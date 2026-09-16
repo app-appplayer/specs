@@ -1,0 +1,45 @@
+type: otpInput
+category: input
+profile: Core
+since: v1.4
+description: |
+  Fixed-length one-time-code entry. Shared rows per §2.6.0; `binding` holds
+  the concatenated string, not per-cell values.
+
+  This exists because the composed version is reliably broken. A row of
+  `textInput`s loses: pasting a full code (it lands entirely in the first
+  cell), forward focus movement on entry and backward on delete, and the
+  platform's one-time-code autofill, which needs a single field declaring
+  that intent. None of the three can be recovered by the author.
+properties:
+  length:
+    type: "number"
+    default: 6
+    description: "Number of cells."
+  inputType:
+    type: "string"
+    enum: [numeric, alphanumeric]
+    default: "numeric"
+    description: "Restricts accepted characters and selects the on-screen keyboard."
+  onComplete:
+    type: Action
+    description: |
+      Fired once every digit is filled. Canonical §17.1.4 spelling; the older
+      `autoSubmit` name is still accepted and does the same thing.
+  masked:
+    type: "boolean"
+    default: false
+    description: "Obscure entered characters."
+  autofill:
+    type: "boolean"
+    default: true
+    description: "Declare one-time-code autofill to the platform. A runtime without it renders normally rather than failing."
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "otpInput",
+        "binding": "auth.code",
+        "length": 6,
+        "autoSubmit": { "type": "tool", "tool": "verifyCode", "params": { "code": "{{auth.code}}" } }
+      }

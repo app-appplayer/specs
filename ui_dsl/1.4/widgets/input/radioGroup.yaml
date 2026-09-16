@@ -4,16 +4,22 @@ profile: Core
 description: |
   Single-selection radio group. Shared rows per §2.6.0.
 properties:
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
   options:
-    type: "Option[]"
+    type: "array<Option>"
     required: true
     description: "`{ value, label }` entries."
     aliases:
       - items
   orientation:
     type: "string"
-    default: "\"vertical\""
+    default: "vertical"
     description: "`vertical` or `horizontal`."
+  direction:
+    type: "string"
+    description: "`horizontal` or `vertical`."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

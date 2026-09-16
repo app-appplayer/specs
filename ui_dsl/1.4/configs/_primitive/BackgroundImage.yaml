@@ -20,7 +20,7 @@ definition:
       "colorFilter": {
         "type": "object",
         "properties": {
-          "color": { "type": "string" },
+          "color": { "$ref": "#/$defs/Color" },
           "blendMode": {
             "enum": [
               "srcIn", "color", "screen", "overlay", "multiply"

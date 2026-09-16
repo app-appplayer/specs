@@ -4,10 +4,28 @@ profile: Core
 description: |
   Insets children so they avoid system UI overlaps (notch, status bar, home indicator).
 properties:
+  maintainBottomViewPadding:
+    type: "boolean"
+    description: "Keep the bottom inset while the keyboard is up."
+  minimum:
+    type: EdgeInsets
+    description: "Padding applied even where the system intrusion is smaller."
   child:
     type: "Widget"
     required: true
     description: "Child widget."
+  bottom:
+    type: "boolean"
+    description: "Distance from the parent stack's bottom edge."
+  left:
+    type: "boolean"
+    description: "Distance from the parent stack's left edge."
+  right:
+    type: "boolean"
+    description: "Distance from the parent stack's right edge."
+  top:
+    type: "boolean"
+    description: "Distance from the parent stack's top edge."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

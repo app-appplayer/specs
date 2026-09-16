@@ -1,21 +1,24 @@
 type: fileExplorer
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   File and directory browser.
 properties:
+  iconColor:
+    type: Color
+    description: "Colour applied to the icon."
   items:
-    type: "binding"
+    type: "array<object> | binding"
     description: "Hierarchical `{ name, path, type, children? }` tree. Required when `rootPath`/`files`/`directories` legacy props are omitted."
   rootPath:
     type: "string"
     description: "Legacy: root path string; pairs with flat `files` / `directories`."
   files:
-    type: "string[]"
+    type: "array<string>"
     description: "Legacy: flat file list (alternative to hierarchical `items`)."
   directories:
-    type: "string[]"
+    type: "array<string>"
     description: "Legacy: flat directory list (alternative to hierarchical `items`)."
   showIcons:
     type: "boolean"
@@ -38,7 +41,7 @@ properties:
     default: null
     description: "Widget height"
   selectedColor:
-    type: "string"
+    type: Color
     default: null
     description: "Background color for selected entry"
   onSelect:
@@ -49,6 +52,9 @@ properties:
     type: "Action"
     default: null
     description: "Fired on activation (double-tap / Enter); `event.value` is the path"
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

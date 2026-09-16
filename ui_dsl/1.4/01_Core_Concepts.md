@@ -109,10 +109,10 @@ The `navigation` field on ApplicationDefinition declares the global navigation c
 | Field | Type | Required | Since | Description |
 |-------|------|:--------:|:-----:|-------------|
 | `type` | enum (`drawer` / `bottomBar` / `rail` / `tabs`) | yes | v1.0 | Chrome style. `drawer` = side drawer; `bottomBar` = bottom navigation; `rail` = vertical rail; `tabs` = tab strip. |
-| `items` | NavItem[] | no | v1.0 | Navigation entries. Each entry: `{ label, icon?, route, badge?, children?, onTap?, style? }`. |
+| `items` | NavItem[] | no | v1.0 | Navigation entries. Each entry: `{ label, icon?, activeIcon?, route, badge?, children?, onTap?, style? }` — `activeIcon` is shown in place of `icon` while that entry is selected. |
 | `header` | Widget | no | v1.0 | Optional header widget rendered above `items` (used by `drawer` / `rail`). |
 | `footer` | Widget | no | v1.0 | Optional footer widget rendered below `items` (used by `drawer` / `rail`). |
-| `style` | `NavigationStyle` | no | v1.3 | Visual styling for the navigation surface (backgroundColor / backgroundImage / indicatorColor / indicatorShape / dividerColor+thickness+indent / labelStyle / iconStyle / selectedColor / unselectedColor / elevation). Per-item overrides via `NavItem.style`. |
+| `style` | `NavigationStyle` | no | v1.3 | Visual styling for the navigation surface (backgroundColor / backgroundImage / indicatorColor / indicatorShape / `dividerColor` / `dividerThickness` / `dividerIndent` / labelStyle / iconStyle / selectedColor / unselectedColor / elevation). Per-item overrides via `NavItem.style`. |
 
 ```json
 {
@@ -251,6 +251,10 @@ onInit → onMount → onReady → (onPause ↔ onResume)* → onUnmount → onD
 
 `onReady` always fires after `onMount`. Paused instances may cycle `onPause`/`onResume` any number of times before unmount. Runtimes MUST guarantee `onUnmount` runs even when removal is caused by conditional rendering. See [`06_Runtime_Contract.md`](06_Runtime_Contract.md) §6.8 for the normative contract.
 
+**"A given definition instance" is the whole of it.** Navigating away from a page destroys that page's instance; navigating back builds a new one, and a new instance starts at `onInit` again. Returning to a page is therefore *not* a resume — an author who fetches in a page's `onInit` is writing "fetch every time this page is opened", which is a reasonable thing to want and an expensive surprise when it was not.
+
+`onPause`/`onResume` cover the other case: an instance that is kept alive while it loses focus. Two navigations do keep it — a stack that pushes over a page keeps the one underneath, and a shell that switches between pages (tab bar, rail, bottom bar) keeps every page already visited. A navigation that *replaces* a page does not, so a document MUST NOT assume either. Work that should happen once per *document* belongs in the application's `onInit`/`onReady`, which run once for the application instance no matter how many times its pages are opened.
+
 ### 1.5.3 Placement: Definition-Level vs Instance-Level
 
 Lifecycle hooks appear in two distinct positions, and the placement is not interchangeable:
@@ -356,11 +360,28 @@ A runtime MAY use `version` to decide whether to accept version-gated fields (e.
 
 ### 1.7.3 Relationship to Profiles
 
-The `version` field is informational for feature introduction. It is **not** the conformance dimension. A runtime's support surface is declared in terms of Profiles (Core, Client, Bundle, Advanced, Template), defined in [`18_Conformance.md`](18_Conformance.md). A document carrying `version: "1.3"` may be served to a runtime that claims Core Profile only; the runtime accepts the parts inside its profile and rejects or ignores the rest per its documented policy.
+The `version` field is informational for feature introduction. It is **not** the conformance dimension. A runtime's support surface is declared in terms of Profiles (Core, Client, Bundle, Advanced, Template, Composition, Payment), defined in [`18_Conformance.md`](18_Conformance.md). A document carrying `version: "1.3"` may be served to a runtime that claims Core Profile only; the runtime accepts the parts inside its profile and rejects or ignores the rest per its documented policy.
 
 ### 1.7.4 `since:` Markers
 
 Features introduced after v1.0 carry a `since: vX.Y` marker on their heading or schema row throughout this specification. The marker tells implementers which DSL version first introduced the feature, independently of which profile governs it.
+
+### 1.7.5 Backward Compatibility *(since v1.4.1)*
+
+§1.7.2 governs the forward direction — a document that names an older version may still carry newer fields. This section governs the other one, which costs more when it is wrong.
+
+**A published document MUST keep opening.** Within a major version, the set of values a slot accepts MAY grow and MUST NOT shrink. A validator MUST NOT reject a value that was legal in the version the document declares.
+
+This is not a style preference. **A runtime validates a document at load, not at authoring time** (§18.2.6), so a slot that stops accepting a spelling does not merely refuse a new author — it stops every already-distributed bundle carrying that spelling from opening at all. A bundle in a marketplace is not re-authored when this specification changes; it is a fixed artifact that must still run. "Tightened the schema" and "broke the installed base" are the same event described from two ends.
+
+Consequently:
+
+- **Retiring a spelling is a documentation change, not a validation change.** Remove it from the canonical surface — the prose, the examples, the emitters, the authoring tools — so new documents are written the new way. The validator keeps accepting the old spelling, and the runtime keeps rendering it. §17.3 already describes this arrangement for aliases; §1.7.5 makes it the general rule.
+- **Where a slot must genuinely become stricter, gate the strictness on `version`.** The declared version says which contract the document was written against, and that contract is what it is judged by. A document declaring `1.0` is judged by 1.0's rules even on a runtime that implements a later version.
+- **A value that resolves to nothing is reported, not rejected.** When a document carries something the runtime cannot make sense of — a spacing token no theme declares, an asset scheme it does not implement — the answer is a diagnostic and the slot's declared fallback, never a refusal to open the document. §6.12.4 says this for assets; it generalizes.
+- **Implementation cost is not a reason to break a bundle.** Accepting two spellings is untidy in a way that is confined to one file. A bundle that no longer opens is a failure the author cannot see, cannot reproduce from the document, and cannot fix without republishing.
+
+A narrowing that cannot be expressed any of these ways requires a **major version**, where the break is declared rather than discovered.
 
 ## 1.8 Required Runtime Behavior
 

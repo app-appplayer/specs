@@ -24,7 +24,7 @@ properties:
     description: The widget that morphs across the route boundary.
   transitionOnUserGestures:
     type: boolean
-    default: "false"
+    default: false
     description: |
       When true, also morphs during gesture-driven back navigation
       (iOS swipe-from-edge). Adds slight render cost.

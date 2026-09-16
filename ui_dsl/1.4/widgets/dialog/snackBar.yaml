@@ -1,9 +1,31 @@
 type: snackBar
 category: dialog
 profile: Core
+aliases: [toast]
 description: |
   Transient notification at the bottom of the screen.
 properties:
+  behavior:
+    type: "string"
+    description: "Placement: `fixed` (attached to the bottom) or `floating`."
+  closeIconColor:
+    type: Color
+    description: "Colour of the dismiss control."
+  dismissDirection:
+    type: "string"
+    description: "Swipe direction that dismisses it: `up`, `down`, `startToEnd`, `endToStart`, `horizontal`."
+  showCloseIcon:
+    type: "boolean"
+    description: "Show the dismiss control."
+  margin:
+    type: EdgeInsets
+    description: "Space outside the surface."
+  padding:
+    type: EdgeInsets
+    description: "Space inside the surface, around its content."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
   content:
     type: "string"
     required: true
@@ -18,6 +40,18 @@ properties:
   onClose:
     type: Action
     description: "Fired when the snackbar is dismissed (timeout, swipe-away, or `action.onTap` complete)."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the bar."
+  textColor:
+    type: Color
+    description: "Default text color"
+  width:
+    type: Dimension
+    description: "Measured from real documents (2026-08-04): number, `{value, unit}`, a dimension string or a binding."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

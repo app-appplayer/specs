@@ -1,9 +1,28 @@
 type: customDialog
 category: dialog
 profile: Core
+aliases: [modal, dialog]
 description: |
   Dialog with arbitrary widget content.
 properties:
+  actions:
+    type: array<Widget>
+    description: "Action row along the bottom of the dialog."
+  insetPadding:
+    type: EdgeInsets
+    description: "Space between the dialog and the screen edges."
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
+  shadowColor:
+    type: Color
+    description: "Colour of the drop shadow cast by the surface."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
+  surfaceTintColor:
+    type: Color
+    description: "Elevation tint applied over the surface colour (M3)."
   child:
     type: "Widget"
     required: true
@@ -15,4 +34,19 @@ properties:
   onClose:
     type: Action
     description: "Fired when the dialog is dismissed (outside-tap when `dismissible: true`, escape key)."
+  alignment:
+    type: Alignment
+    description: "Where the dialog sits in the screen."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  content:
+    type: "string"
+    description: "Body text. Use `children` when the body is more than a string."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the dialog surface."
+  title:
+    type: "string"
+    description: "Dialog title shown at the top."
 # examples migrated verbatim from prose JSON fences.

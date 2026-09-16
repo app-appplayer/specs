@@ -1,9 +1,25 @@
 type: text
 category: display
 profile: Core
+aliases: [label]
 description: |
   Renders a string. The canonical content field is `text`.
 properties:
+  textTransform:
+    type: "string"
+    description: "Case transform applied before rendering: `uppercase`, `lowercase`, `capitalize`, `none`."
+  ariaLabel:
+    type: "string"
+    description: "Label announced by a screen reader in place of the content."
+  semanticsLabel:
+    type: "string"
+    description: "Label announced by a screen reader in place of the content."
+  softWrap:
+    type: "boolean"
+    description: "Whether the text breaks at soft line boundaries."
+  textScaleFactor:
+    type: "number"
+    description: "Multiplier applied to the text size."
   text:
     type: "string"
     required: true
@@ -53,12 +69,20 @@ properties:
     description: "Maximum rendered lines."
   overflow:
     type: "string"
-    default: "\"clip\""
+    enum: [clip, ellipsis, fade, visible]
+    default: "clip"
     description: "`clip`, `ellipsis`, `fade`, `visible`."
   textAlign:
     type: "string"
-    default: "\"start\""
-    description: "`start`, `center`, `end`, `justify`."
+    enum: [start, center, end, justify, left, right]
+    default: "start"
+    description: "`start`, `center`, `end`, `justify` follow the text\ndirection (`start` is right-hand in an RTL locale). `left` and `right`\nare absolute and do not — they are the way to pin a column of numbers\nto one side whatever the locale, so they are values, not aliases."
+  textDirection:
+    type: "string"
+    description: "Resolution direction for `start`/`end` alignment."
+  value:
+    type: "string | number | boolean | object | array"
+    description: "Measured from real documents (2026-08-04): any literal or binding — the §2.6.0 input contract shape."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

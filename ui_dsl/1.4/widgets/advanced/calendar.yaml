@@ -1,18 +1,45 @@
 type: calendar
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Calendar view for date selection and event display.
 properties:
+  eventColor:
+    type: Color
+    description: "Colour of the marker drawn on a day that has events."
+  firstDayOfWeek:
+    type: "number"
+    description: "Weekday the grid starts on, `0` = Sunday."
+  onMonthChange:
+    type: Action
+    description: "Fired when the visible month changes."
+  primaryColor:
+    type: Color
+    description: "Colour of the selection and header accents."
+  showHeader:
+    type: "boolean"
+    description: "Show the month header with its navigation controls."
+  showWeekNumbers:
+    type: "boolean"
+    description: "Show the ISO week number beside each row."
+  todayColor:
+    type: Color
+    description: "Colour marking the current day."
+  height:
+    type: Dimension
+    description: "Fixed height."
   selectedDate:
     type: "string | binding"
     default: null
     description: "Currently selected date (ISO 8601 string, or binding to a string)."
   events:
-    type: "binding"
+    type: array<object>
     default: null
-    description: "Array of `{ date, title, color? }`"
+    description: |
+      Array of `{ date, title, color? }`. Declared `binding` before — a
+      calendar could only take its events through a state path, never as the
+      list the description names.
   firstDate:
     type: "string"
     default: null
@@ -30,6 +57,18 @@ properties:
     type: "Action"
     default: null
     description: "Fired on date selection; `event.value` is ISO date"
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  selectedColor:
+    type: Color
+    description: "Foreground color (icon + label) for the selected item."
+  width:
+    type: Dimension
+    description: "Measured from real documents (2026-08-04): number, `{value, unit}`, a dimension string or a binding."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

@@ -1,0 +1,35 @@
+type: breadcrumb
+category: navigation
+profile: Core
+since: v1.4
+description: |
+  Trail of ancestor locations ending at the current one. Composable from
+  `linear` + `text` + navigate actions, but composing it loses the landmark
+  role assistive technology uses to skip to it, and every author re-decides
+  where the separator goes and whether the last item is a link (it is not).
+properties:
+  items:
+    type: "array<object>"
+    required: true
+    description: "`{ label, route?, params?, icon? }` in ancestor-first order. The final entry is the current location and MUST NOT be rendered as a link even if it carries a `route`."
+  separator:
+    type: "string"
+    default: "/"
+    description: "Glyph between entries. Decorative — hidden from assistive technology."
+  maxItems:
+    type: "number"
+    description: "Collapse the middle of a long trail behind an overflow control, keeping the first and last."
+events:
+  onClick:
+    description: Fired when an entry is activated. Carries the entry.
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "breadcrumb",
+        "items": [
+          { "label": "Home", "route": "/" },
+          { "label": "Orders", "route": "/orders" },
+          { "label": "#1042" }
+        ]
+      }

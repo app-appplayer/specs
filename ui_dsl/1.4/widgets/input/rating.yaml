@@ -4,15 +4,30 @@ profile: Core
 description: |
   Discrete rating control (e.g., star rating). Shared rows per §2.6.0; `value` is `number`.
 properties:
+  allowHalf:
+    type: "boolean"
+    description: "Allow half-unit ratings."
+  emptyColor:
+    type: Color
+    description: "Colour of the unfilled portion."
+  readOnly:
+    type: "boolean"
+    description: "Display only — the value cannot be changed by touch."
+  size:
+    type: Dimension
+    description: "Rendered size."
   max:
     type: "number"
     default: 5
     description: "Maximum rating value."
   icon:
-    type: "string"
-    default: "\"star\""
-    description: "Icon name for each unit."
+    type: IconRef
+    default: "star"
+    description: "Icon for each unit. Any `IconRef` form."
   color:
-    type: "string"
+    type: Color
     description: "Icon color."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
 # examples migrated verbatim from prose JSON fences.

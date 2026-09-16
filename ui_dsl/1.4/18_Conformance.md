@@ -18,6 +18,8 @@ A runtime implementation declares the set of **Profiles** it supports. Each Prof
 | **Advanced** *(since v1.0)* | Core | Advanced widgets (chart, canvas, code editor, terminal, etc.). |
 | **Template** *(since v1.1 / v1.3)* | Core | Template system — static invocation (v1.1), stateful + lifecycle + remote libraries (v1.3). |
 | **Composition** *(since v1.4)* | Core | Rendering definitions sourced from other origins — `DefinitionSource`, the `view` widget, origin-scoped dispatch, per-origin isolation. |
+| **Payment** *(since v1.4.2)* | Core | Taking payment for a declared item through a host-owned payment surface — the `payment` action, the outbound and return-link rules of [`07_Security.md`](07_Security.md) §7.3.5. Requirements in §18.11. |
+| **Location** *(since v1.4.3)* | Core | Answering where this device is, once, at a precision the document declared and the host may reduce — the `location` action and the rules of [`07_Security.md`](07_Security.md) §7.3.6. Requirements in §18.12. |
 
 ### 18.1.2 Implication Rule
 
@@ -39,21 +41,36 @@ Required for every conformant implementation.
 
 ### 18.2.1 Required Widget Types
 
-Runtimes MUST parse and render every widget in [`17_Naming.md`](17_Naming.md) §17.2.1 that is tagged *Core Profile*. This comprises:
+Runtimes MUST parse and render every widget in [`17_Naming.md`](17_Naming.md) §17.2.1 that is tagged *Core Profile*, and MUST satisfy [`06_Runtime_Contract.md`](06_Runtime_Contract.md) §6.13 for any behaviour those widgets declare — **rendering a facsimile of a behaviour succeeding is non-conformant**, and is not made conformant by the widget being drawn. This comprises:
 
-- **Layout:** `box`, `linear`, `stack`, `center`, `align`, `padding`, `expanded`, `flexible`, `spacer`, `sizedBox`, `wrap`, `positioned`, `safeArea`, `visibility`, `conditional`, `margin`, `aspectRatio`, `constrained`, `fractionallySized`, `intrinsicHeight`, `intrinsicWidth`
+- **Layout:** `box`, `linear`, `stack`, `center`, `align`, `padding`, `expanded`, `flexible`, `spacer`, `sizedBox`, `wrap`, `positioned`, `safeArea`, `visibility`, `conditional`, `margin`, `aspectRatio`, `fractionallySized`, `intrinsicHeight`, `intrinsicWidth`, `accordion` *(since v1.4)* — `constrained` used to be listed here as if it were a widget of its own; it is a legacy alias of `box` (§17.3.1), and required sets name canonical types only.
 - **Display:** `text`, `richText`, `image`, `icon`, `card`, `divider`, `verticalDivider`, `badge`, `chip`, `avatar`, `tooltip`, `placeholder`, `progressBar`, `banner`
-- **Input:** `button`, `iconButton`, `textInput`, `toggle`, `select`, `checkbox`, `checkboxGroup`, `radio`, `radioGroup`, `slider`, `rangeSlider`, `numberField`, `form`, `rating`
+- **Input:** `button`, `iconButton`, `textInput`, `toggle`, `select`, `checkbox`, `checkboxGroup`, `radio`, `radioGroup`, `slider`, `rangeSlider`, `numberField`, `form`, `rating`, `fileInput` *(since v1.4)*, `multiSelect` *(since v1.4)*, `combobox` *(since v1.4)*, `otpInput` *(since v1.4)*, `dateTimePicker` *(since v1.4)*
 - **Date/time input:** `dateField`, `timeField`, `datePicker`, `timePicker`, `dateRangePicker`, `colorPicker`, `segmentedControl`, `stepper`, `numberStepper`
 - **List:** `list`, `grid`, `listItem`
-- **Navigation:** `headerBar`, `bottomNavigation`, `tabBar`, `tabBarView`, `drawer`, `navigationRail`, `floatingActionButton`, `popupMenuButton`
+- **Navigation:** `headerBar`, `bottomNavigation`, `tabBar`, `tabBarView`, `drawer`, `navigationRail`, `floatingActionButton`, `popupMenuButton`, `menu` *(since v1.4)*, `contextMenu` *(since v1.4)*, `breadcrumb` *(since v1.4)*, `pagination` *(since v1.4)*, `link` *(since v1.4)*
 - **Scroll:** `scrollView`, `singleChildScrollView`, `scrollBar`, `pageView`
 - **Interaction:** `gestureDetector`, `inkWell`, `draggable`, `dragTarget`
-- **Dialog:** `alertDialog`, `simpleDialog`, `customDialog`, `snackBar`, `bottomSheet`
+- **Dialog:** `alertDialog`, `simpleDialog`, `customDialog`, `snackBar`, `bottomSheet`, `popover` *(since v1.4)*
 - **Animation:** `animatedContainer`, `opacity` *(since v1.3)*, `transform` *(since v1.3)*, `lottieAnimation`
 - **Utility:** `fittedBox`, `clipOval`, `clipRRect`, `decoration`, `accessibleWrapper`, `lazy`
 
-Unknown widget types MUST NOT crash the runtime; the runtime MUST render an error placeholder and continue. See [`02_Widgets.md`](02_Widgets.md).
+Unknown widget types MUST NOT crash the runtime; the runtime MUST continue
+rendering the rest of the document, and MUST **report** the failure through a
+channel the host can observe (log, error hook, or the consumer's declared
+error surface).
+
+What it MUST NOT do is put developer text on an end user's screen. An earlier
+reading of this clause — "render an error placeholder" — was implemented as a
+red box carrying the message and the widget type in *every* build, so a single
+typo in a served document reached a customer as `Unknown widget type: …` while
+the operator, the one person who could fix it, got nothing. A runtime SHOULD
+draw the reason only where a developer is looking (a debug build), and collapse
+the slot in a release build.
+
+This is §6.13 applied one level up: a capability that is absent is reported and
+not faked, and a widget that cannot be built is reported and not narrated on
+the page. See [`02_Widgets.md`](02_Widgets.md).
 
 ### 18.2.2 Required Action Types
 
@@ -69,6 +86,7 @@ Runtimes MUST support every navigation sub-action in [`17_Naming.md`](17_Naming.
 
 - `push`, `replace`, `pop`, `popToRoot`, `pushAndClear`, `setIndex` — core.
 - `openApp`, `exitApp` *(since v1.3)* — runtimes claiming Core at v1.3+ MUST support both; `exitApp` MUST invoke the host-registered `onExit` callback as described in [`06_Runtime_Contract.md`](06_Runtime_Contract.md) §6.6.1.
+- `openUrl` *(since v1.4)* — runtimes claiming Core at v1.4+ MUST attempt to open the URL through the host and MUST report failure via `onError` rather than no-op ([`04_Actions.md`](04_Actions.md) §4.3.3).
 
 ### 18.2.4 Required State Sub-Actions
 
@@ -157,6 +175,33 @@ Runtimes MUST accept every alias registered in [`17_Naming.md`](17_Naming.md) §
 - Expression parse results SHOULD be cached.
 - Large lists SHOULD be rendered with lazy/viewport strategies.
 
+### 18.2.12 Required Asset Resolution *(since v1.4)*
+
+Collected from [`06_Runtime_Contract.md`](06_Runtime_Contract.md) §6.12. Applies to every slot typed `AssetRef`.
+
+**MUST — the floor.** These need no I/O capability, so a runtime on any host can meet them:
+
+- `data:` — inline bytes, base64 and url-encoded.
+- `assets/` — local asset paths declared by the consumer app.
+- A **binding** in any `AssetRef` position, resolved before scheme dispatch (§6.12.2).
+- One resolution path shared by all `AssetRef` slots — two widgets given the same reference MUST resolve it identically (§6.12).
+- Unresolvable assets take the slot's declared fallback and never render an implementation detail on screen (§6.12.4).
+- A published set of the forms the runtime resolves.
+
+**SHOULD — expected of any runtime with I/O:**
+
+- `bundle://` — resolved against the ambient origin (§6.12.3).
+- `https://` / `http://`.
+- Asynchronous resolution with a pending state distinct from failure (§6.12.5).
+
+**MAY:**
+
+- `client://` — host-served resources, gated on the Client Profile's permission system (§18.3.3).
+- `AssetRef` object form — `{uri, origin?}` read via `resources/read`. A runtime claiming this MUST resolve a missing `origin` to the ambient origin, never the embedder's.
+- Schemes not named in this document.
+
+A runtime claims **Core Profile** on the MUST list alone. Claiming more than it resolves is the failure this section exists to prevent: a host cannot route around a gap it was told does not exist.
+
 ---
 
 ## 18.3 Client Profile *(since v1.1)*
@@ -187,6 +232,10 @@ Runtimes MUST implement [`08_Client_Extensions.md`](08_Client_Extensions.md) §8
 - `permission.revoke` action (§8.4.6, §8.7).
 
 Runtimes MUST reject `client.*` action calls whose required permission has not been granted, returning the standard error envelope.
+
+### 18.3.3a Required Client Widgets *(since v1.4)*
+
+A runtime claiming the Client Profile at v1.4+ MUST render `voiceInput` and MUST gate microphone capture behind the permission system of §18.3.3. Denial, absence of a device, and transcription failure MUST all reach the widget's `onError` — a control that renders and then does nothing is worse than one that reports it cannot run.
 
 ### 18.3.4 Required Channel Support
 
@@ -245,12 +294,17 @@ Required for runtimes that expose advanced visualization or editor widgets.
 
 ### 18.5.1 Required
 
-Runtimes claiming the Advanced Profile MUST parse and render every widget in [`10_Advanced_Widgets.md`](10_Advanced_Widgets.md) §10.1, subject to the version gating in §18.5.2:
+Runtimes claiming the Advanced Profile MUST parse and render every widget in [`10_Advanced_Widgets.md`](10_Advanced_Widgets.md) §10.1, subject to the version gating in §18.5.2, and MUST satisfy §6.13 for the behaviour each declares. Most of this catalogue is behavioural — media plays, a web view loads, a map draws tiles, a document paginates — so "render" alone is not the test: a runtime that draws the chrome of a player, a browser or a map without performing what it depicts is **not conformant at this level**, and MUST instead declare the capability absent (§6.13.2) and report through `onError`.
 
-`chart`, `table`, `dataTable`, `map`, `mediaPlayer`, `calendar`, `timeline`, `gauge`, `heatmap`, `tree`, `graph`, `networkGraph`, `codeEditor`, `terminal`, `fileExplorer`, `markdown`, `webView`, `signature`.
+Declaring a capability absent is not a failure of conformance. Faking it is.
+
+`chart`, `table`, `dataTable`, `map`, `mediaPlayer`, `calendar`, `timeline`, `gauge`, `heatmap`, `tree`, `graph`, `networkGraph`, `codeEditor`, `terminal`, `fileExplorer`, `markdown`, `webView`, `signature`, `canvas`, `lightbox`, `qrCode`, `barcode`, `pdfViewer`, `diffViewer`, `richTextEditor`, `splitter`, `resizable`, `kanban`, `gantt`, `spreadsheet`.
+
+The list is the §10.1 catalog. It had drifted — `canvas` and `lightbox` were in the catalog and gated in §18.5.2 but absent here, so a reader checking only this section saw a shorter obligation than the one §18.5.1 states.
 
 ### 18.5.2 Version-Gated Widgets
 
+- `qrCode`, `barcode`, `pdfViewer`, `diffViewer`, `richTextEditor`, `splitter`, `resizable`, `kanban`, `gantt`, `spreadsheet` — required only for runtimes claiming Advanced at **v1.4+**. A runtime claiming Advanced at v1.0–v1.3 MAY omit them.
 - `canvas` — required only for runtimes claiming Advanced at v1.3+ (see [`10_Advanced_Widgets.md`](10_Advanced_Widgets.md) §10.3). A runtime claiming Advanced at v1.0 / v1.1 / v1.2 MAY omit `canvas`.
 
 Note: `opacity` and `transform` *(since v1.3)* are Core-Profile animation widgets, not Advanced — see §18.2.1 and [`16_Animations.md`](16_Animations.md) §16.11.
@@ -372,6 +426,7 @@ Each Profile has an associated test suite. Test IDs are prefixed:
 | `BND-*` | Bundle | Metadata parsing, `bundle://` resolution, `ui://app/info`, adapters, dashboard. |
 | `ADV-*` | Advanced | Each advanced widget; canvas at v1.3+. |
 | `TPL-*` | Template | Static invocation (v1.1) and stateful / lifecycle / remote libraries (v1.3). |
+| `PAY-*` | Payment | The `payment` action, envelope mapping, return-link matching, and refusal when unclaimed. |
 
 A runtime passes a Profile suite when every MUST-level test returns green and SHOULD-level tests either pass or are documented as deliberate deviations. A runtime claiming multiple Profiles MUST pass every suite it claims.
 
@@ -412,4 +467,60 @@ Quick lookup of which profile each feature section belongs to.
 | [`14_Responsive_Events.md`](14_Responsive_Events.md) | Core |
 | [`15_Offline_Sync.md`](15_Offline_Sync.md) | Client |
 | [`16_Animations.md`](16_Animations.md) | Core (all animation widgets + `animation` action; optional advanced drivers degrade per §16.11) |
+| [`04_Actions.md`](04_Actions.md) §4.24 — `payment` | Payment (v1.4.2+) |
+| [`07_Security.md`](07_Security.md) §7.3.5 — Payment and return links | Payment (v1.4.2+) |
 | [`17_Naming.md`](17_Naming.md) — Canonical vocabulary and alias registry | Core (alias acceptance is a Core MUST) |
+
+---
+
+## 18.11 Payment Profile *(since v1.4.2)*
+
+### 18.11.1 Required
+
+A runtime claiming the Payment Profile MUST:
+
+1. **Dispatch `payment`** ([`04_Actions.md`](04_Actions.md) §4.24) — resolve the declared fields from bindings and hand them to a host payment port.
+2. **Own the destination** — assemble the payment address in the host, from a payment surface the host is configured against. A runtime MUST NOT accept a URL, an origin or a provider name from the document ([`07_Security.md`](07_Security.md) §7.3.5).
+3. **Resolve the receiving party** — use `seller` where the document names one; where it does not, resolve it from the verified identity of the serving origin and refuse with `PAYMENT_UNAVAILABLE` when that is not possible (§4.24.2). Falling back to a default party is non-conformant.
+4. **Carry an amount only where the item takes one** — send `amount` for customer-priced items only, refuse an out-of-range value rather than clamping it, and never present the document's number as the price of an item priced elsewhere (§4.24.3).
+5. **Present the provider choice** — where the receiving party offers several, the host renders the choice. A runtime MUST NOT let the document name the provider, and an abandoned choice is `PAYMENT_CANCELLED`.
+6. **Mint and match the return** — a custom-scheme return address carrying a fresh unguessable request token per dispatch, and discard returns that match no outstanding request.
+7. **Map the outcome to the §4.17 envelope** — `success` to `onSuccess` with `data.status`; cancel, unreadable return and host failure to `onError` with `PAYMENT_CANCELLED`, `PAYMENT_UNKNOWN` and `PAYMENT_UNAVAILABLE` respectively. Routing cancel or unknown to `onSuccess` is non-conformant.
+8. **Refuse visibly** — an unwired payment port MUST produce `onError` with `PAYMENT_UNAVAILABLE`. A no-op is non-conformant.
+9. **Refuse at `untrusted`** — MUST NOT dispatch `payment` from a document at trust level `untrusted`.
+10. **Claim no more than it does** — a runtime that presents the payment surface but cannot receive the return MUST NOT claim this Profile. Half of this feature is a payment the application never learns the outcome of.
+
+### 18.11.2 Not required
+
+The Profile says nothing about how payment is confirmed, because confirmation does not happen in the runtime ([`04_Actions.md`](04_Actions.md) §4.24.4). A conformant runtime delivers an outcome to a callback; whether the value behind that callback is released is decided server-side by whoever released it.
+
+### 18.11.3 Without the Payment Profile
+
+A runtime that does not claim it MUST fail `payment` through `onError` with `PAYMENT_UNAVAILABLE` per §18.2.2 — logged, graceful, no crash, and never silent.
+
+## 18.12 Location Profile *(since v1.4.3)*
+
+### 18.12.1 Required
+
+A runtime claiming the Location Profile MUST:
+
+1. **Dispatch `location`** ([`04_Actions.md`](04_Actions.md) §4.25) — resolve the declared fields from bindings and hand them to a host location port.
+2. **Own the prompt** — the host asks, in its own words, through the platform's own mechanism. A runtime MUST NOT render a consent prompt of its own and MUST NOT proceed on a prompt the document drew.
+3. **Treat `precision` as a ceiling** — MAY answer coarser, MUST NOT answer finer than asked, and MUST report what actually arrived in `precision` and `accuracyMeters` (§4.25.2).
+4. **Answer only to an act** — MUST NOT dispatch from a lifecycle hook, a timer or a binding evaluation, and MUST NOT read a position while the document is not being rendered (§4.25.3).
+5. **Not cache across dispatches** — a second dispatch is a second question. Returning a stored position to avoid asking again is non-conformant, because a stale position presented as current is a wrong answer that looks like a fast one.
+6. **Keep a refusal a refusal** — `LOCATION_DENIED` goes to `onError`, and the runtime MUST NOT re-ask on its own.
+7. **Map the outcome to the §4.17 envelope** — a position to `onSuccess` with `data.latitude`, `data.longitude`, `data.accuracyMeters`, `data.precision`, `data.at`; refusal and every host-side failure to `onError` with `LOCATION_DENIED` and `LOCATION_UNAVAILABLE` respectively.
+8. **Refuse visibly** — an unwired location port MUST produce `onError` with `LOCATION_UNAVAILABLE`. A no-op is non-conformant.
+9. **Refuse at `untrusted`** — MUST NOT dispatch `location` from a document at trust level `untrusted`.
+10. **Never answer identity with it** — MUST NOT derive a principal from a position or use one to satisfy an identity requirement (§4.25.4).
+
+### 18.12.2 Not required
+
+The Profile says nothing about **accuracy** — how close the answer is depends on the device, the sky and the platform, and a runtime that reports what it was given is conformant even when that is poor. What it may not do is report an accuracy it did not measure.
+
+Nor does it require a continuous form. There is none to require: §4.25 defines a single question, and a runtime that added a feed would be claiming something this Profile does not define.
+
+### 18.12.3 Without the Location Profile
+
+A runtime that does not claim it MUST fail `location` through `onError` with `LOCATION_UNAVAILABLE` per §18.2.2 — logged, graceful, no crash, and never silent. A host that can answer but is configured never to report position uses the same code: the document is told it cannot have one, never told that it asked wrongly.

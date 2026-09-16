@@ -4,9 +4,18 @@ profile: Core
 description: |
   Lightweight scrollable wrapper for a single child.
 properties:
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
+  physics:
+    type: "string"
+    description: "Scroll response: `bouncing`, `clamping`, `never`, `always`."
+  primary:
+    type: "boolean"
+    description: "Whether this is the primary scroll view of the page."
   direction:
     type: "string"
-    default: "\"vertical\""
+    default: "vertical"
     description: "Scroll direction."
   padding:
     type: "EdgeInsets"
@@ -15,8 +24,14 @@ properties:
     type: "Widget"
     description: "Scrolled content. Required when `children` is omitted."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: "Multiple widgets; runtime wraps them in a linear column along `direction`. Mutually exclusive with `child`."
+  reverse:
+    type: "boolean"
+    description: "When true, run the transition in reverse direction (for back navigation)."
+  scrollDirection:
+    type: "string"
+    description: "Scroll axis."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

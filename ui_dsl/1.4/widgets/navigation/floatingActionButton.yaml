@@ -4,15 +4,70 @@ profile: Core
 description: |
   Floating action button (FAB).
 properties:
-  icon:
+  disabledElevation:
+    type: Dimension
+    description: "Shadow depth while disabled."
+  focusElevation:
+    type: Dimension
+    description: "Shadow depth while focused."
+  heroTag:
     type: "string"
-    description: "Icon name."
+    description: "Tag used to animate the button between routes; distinct tags let two coexist."
+  highlightElevation:
+    type: Dimension
+    description: "Shadow depth while held down."
+  hoverElevation:
+    type: Dimension
+    description: "Shadow depth while hovered."
+  isExtended:
+    type: "boolean"
+    description: "Render the extended form, with a label beside the icon."
+  materialTapTargetSize:
+    type: "string"
+    description: "Minimum tap target: `padded` (48dp) or `shrinkWrap`."
+  mini:
+    type: "boolean"
+    description: "Render the smaller button size."
+  autofocus:
+    type: "boolean"
+    description: "Take focus when the surface first appears."
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
+  focusColor:
+    type: Color
+    description: "Overlay while the surface holds focus."
+  hoverColor:
+    type: Color
+    description: "Overlay while a pointer rests on the surface."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
+  splashColor:
+    type: Color
+    description: "Colour of the ripple that expands from the touch point."
+  icon:
+    type: IconRef
+    description: "Icon shown. Any `IconRef` form."
   label:
     type: "string"
     description: "Extended FAB label."
   onTap:
     type: "Action"
     description: "Tap handler. Omitted FABs render as inert."
+    aliases: [click, onPressed]
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  elevation:
+    type: Dimension
+    description: "Shadow depth at rest."
+  foregroundColor:
+    type: Color
+    description: "Bar color."
+  onLongPress:
+    type: Action
+    description: "Fired on a long press."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

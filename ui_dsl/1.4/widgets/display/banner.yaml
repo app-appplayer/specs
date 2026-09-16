@@ -10,10 +10,11 @@ properties:
     description: "Banner text."
   severity:
     type: "string"
-    default: "\"info\""
+    enum: [info, success, warning, error]
+    default: "info"
     description: "`info`, `success`, `warning`, `error`."
   actions:
-    type: "BannerAction[]"
+    type: "array<BannerAction>"
     description: "Action buttons `{ label, onTap }`."
   onClose:
     type: Action

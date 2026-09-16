@@ -4,19 +4,26 @@ profile: Core
 description: |
   Time input. Shared rows per §2.6.0; `value` is a time string (e.g., `"14:30"`).
 properties:
+  errorText:
+    type: "string"
+    description: "Error message shown under the field. Overrides validation output."
   label:
     type: "string"
     description: "Field label."
   format:
     type: "string"
-    default: "\"HH:mm\""
+    default: "HH:mm"
     description: "Display format."
   use24HourFormat:
     type: "boolean"
-    default: true
-    description: "24-hour clock."
+    default: false
+    description: |
+      24-hour clock. The default follows what this field has drawn since it
+      shipped; `timePicker` defaults the other way, and unifying them would
+      change every screen that never set the property.
   mode:
     type: "string"
-    default: "\"spinner\""
+    enum: [spinner, input, dial]
+    default: "spinner"
     description: "`spinner`, `input`, `dial`."
 # examples migrated verbatim from prose JSON fences.

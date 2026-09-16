@@ -4,11 +4,38 @@ profile: Core
 description: |
   Vertical navigation rail for tablet/desktop layouts. Each item's text field is `label`.
 properties:
+  extended:
+    type: "boolean"
+    description: "Show labels beside the icons instead of under them."
+  groupAlignment:
+    type: "number"
+    description: "Where the destination group sits vertically, `-1.0` (top) to `1.0` (bottom)."
+  labelType:
+    type: "string"
+    description: "When labels appear: `none`, `selected`, `all`."
+  minExtendedWidth:
+    type: Dimension
+    description: "Width of the rail once `extended` is set."
+  minWidth:
+    type: Dimension
+    description: "Width of the rail in its collapsed form."
+  selectedIconTheme:
+    type: "object"
+    description: "Icon size / colour for the selected destination."
+  selectedLabelTextStyle:
+    type: TextStyle
+    description: "Text style for the selected label."
+  unselectedIconTheme:
+    type: "object"
+    description: "Icon size / colour for destinations that are not selected."
+  unselectedLabelTextStyle:
+    type: TextStyle
+    description: "Text style for labels that are not selected."
   selectedIndex:
     type: "number | binding"
     description: "Currently selected item."
   items:
-    type: "NavItem[]"
+    type: "array<NavItem>"
     required: true
     description: "`{ icon, label, route? }` entries."
     aliases:
@@ -16,6 +43,24 @@ properties:
   onChange:
     type: "Action"
     description: "Fired when selection changes."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the rail surface."
+  leading:
+    type: Widget
+    description: "Widget pinned above the destinations."
+  onSelect:
+    type: Action
+    description: "Fired when a destination is chosen. `{{event.value}}` carries its index."
+  trailing:
+    type: Widget
+    description: "Widget pinned below the destinations."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

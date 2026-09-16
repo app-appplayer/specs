@@ -98,7 +98,7 @@ Outside the framework spec — host's freedom. Only the following conventions:
 
 ### Step 1 — follow the manifest spec
 
-The schema of `specs/mcp_bundle/`. The category table of this spec's `02-bundle-interface.md`.
+The schema of the [bundle spec](../../bundle/). The category table of this spec's `02-bundle-interface.md`.
 
 ```json
 {
@@ -278,7 +278,7 @@ Future<RegistrationResult> registerTool(ToolEntry tool) async {
 }
 ```
 
-Changing mcp_bundle's ToolKind = package domain (`packages/mcp_bundle`).
+Changing mcp_bundle's ToolKind = the `mcp_bundle` package's domain.
 
 ## 6. Adding a New Facade (knowledge category)
 

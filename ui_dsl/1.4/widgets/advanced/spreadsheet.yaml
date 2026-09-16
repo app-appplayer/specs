@@ -1,0 +1,64 @@
+type: spreadsheet
+category: advanced
+profile: Advanced
+since: v1.4
+description: |
+  Editable grid of cells addressed by row and column, with optional formulas.
+
+  Distinct from `dataTable`, which presents records: a table's unit is a row
+  with typed fields, a spreadsheet's unit is a cell with a coordinate. That
+  difference is why one cannot be a mode of the other — selection, editing,
+  and paste all address different things.
+
+  **Formulas are evaluated by the runtime's expression engine under §7.1**,
+  not by a spreadsheet language of the DSL's own. A runtime that cannot meet
+  that sandbox MUST render formulas as their last computed value rather than
+  evaluating them loosely: a cell that runs arbitrary text is the one place
+  this widget could become an injection surface.
+properties:
+  data:
+    type: "array<array> | binding"
+    required: true
+    description: "Rows of cell values. A cell is a scalar, or `{ value, formula?, format?, style? }` when it carries more than a value."
+  columns:
+    type: "array<object>"
+    description: "`{ key?, label?, width?, type?, readOnly? }` per column. Omitted derives columns from the widest row and labels them A, B, C…"
+  rowHeaders:
+    type: boolean
+    default: true
+    description: "Show the row-number gutter."
+  columnHeaders:
+    type: boolean
+    default: true
+    description: "Show the column-letter header."
+  editable:
+    type: boolean
+    default: true
+    description: "Allow cell editing."
+  formulas:
+    type: boolean
+    default: false
+    description: "Evaluate `formula` fields. Off by default — a document that does not need computation should not carry an evaluator."
+  frozenRows:
+    type: number
+    default: 0
+    description: "Rows pinned at the top while scrolling."
+  frozenColumns:
+    type: number
+    default: 0
+    description: "Columns pinned at the start while scrolling."
+events:
+  onChange:
+    description: "Fired when a cell's value is committed. Carries `{ row, column, value, previous }`."
+  onCellSelect:
+    description: "Fired when the selection moves. Carries the anchor and the range."
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "spreadsheet",
+        "data": "{{sheet.rows}}",
+        "editable": true,
+        "frozenRows": 1,
+        "onChange": { "type": "tool", "tool": "setCell", "params": { "r": "{{event.row}}", "c": "{{event.column}}", "v": "{{event.value}}" } }
+      }

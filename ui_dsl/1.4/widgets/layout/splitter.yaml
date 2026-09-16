@@ -1,0 +1,49 @@
+type: splitter
+category: layout
+profile: Advanced
+since: v1.4
+description: |
+  Panes separated by draggable gutters.
+
+  Distinct from `resizable`, which resizes one box against the layout around
+  it. This divides a fixed area between siblings: dragging a gutter takes
+  space from one pane and gives it to the next, so the total never changes.
+properties:
+  children:
+    type: "array<Widget>"
+    required: true
+    description: "Panes, in order. Gutters appear between adjacent panes."
+  orientation:
+    type: string
+    enum: [horizontal, vertical]
+    default: "horizontal"
+    description: "Direction panes are laid along."
+  sizes:
+    type: "array<number> | binding"
+    description: "Pane sizes as fractions summing to 1. Two-way bindable so a layout can be restored. Omitted distributes evenly."
+  minSizes:
+    type: "array<number>"
+    description: "Per-pane minimum fractions. A drag stops at them rather than collapsing a pane the author did not mark collapsible."
+  gutterSize:
+    type: number
+    default: 8
+    description: "Gutter thickness in logical pixels. Keep it large enough to hit with a finger where touch is possible."
+  collapsible:
+    type: "array<boolean>"
+    description: "Per-pane: whether dragging past its minimum collapses it entirely."
+events:
+  onDragEnd:
+    description: Fired when a gutter is released. Carries the resulting sizes.
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "splitter",
+        "orientation": "horizontal",
+        "sizes": [0.3, 0.7],
+        "minSizes": [0.15, 0.3],
+        "children": [
+          { "type": "menu", "items": [] },
+          { "type": "text", "content": "Detail" }
+        ]
+      }

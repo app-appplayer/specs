@@ -1,0 +1,40 @@
+type: contextMenu
+category: interaction
+profile: Core
+since: v1.4
+description: |
+  Menu raised by secondary activation on its `child` — right-click, long
+  press, or the platform's context key.
+
+  This cannot be composed: the gesture that raises it is platform-specific
+  (and on touch competes with scroll and text selection), and the menu must
+  appear at the pointer rather than against the child's box. A
+  `gestureDetector` wrapping a `popupMenuButton` gets neither.
+properties:
+  child:
+    type: Widget
+    required: true
+    description: "Widget the gesture applies to."
+  items:
+    type: "array<object>"
+    required: true
+    description: "`{ key, label, icon?, enabled?, divider?, children? }`. `divider: true` renders a separator and carries no action."
+  enabled:
+    type: boolean
+    default: true
+    description: "When false the child renders normally and the gesture falls through to the platform."
+events:
+  onSelect:
+    description: Fired with the chosen item's key.
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "contextMenu",
+        "child": { "type": "text", "content": "{{item.name}}" },
+        "items": [
+          { "key": "rename", "label": "Rename", "icon": "edit" },
+          { "key": "sep", "divider": true },
+          { "key": "delete", "label": "Delete", "icon": "delete" }
+        ]
+      }

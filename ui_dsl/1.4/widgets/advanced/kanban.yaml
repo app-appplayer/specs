@@ -1,0 +1,60 @@
+type: kanban
+category: advanced
+profile: Advanced
+since: v1.4
+description: |
+  Cards in columns, moved between columns by dragging.
+
+  Composable from `grid` + `draggable` + `dragTarget` in the sense that the
+  pieces exist — and that composition is where the work actually is. Drop
+  targets must be the gaps between cards rather than the cards themselves,
+  the column must auto-scroll while a card hovers near its edge, and a drop
+  must report *where* in the destination the card landed, not just that it
+  moved. Authors composing this get a board that looks right and reorders
+  wrongly.
+
+  The widget owns presentation and gesture. It does **not** own the move:
+  `onCardMove` reports the intent and the author's action decides, so a
+  server-rejected move is not silently already applied on screen.
+properties:
+  columns:
+    type: "array<object> | binding"
+    required: true
+    description: "`{ key, title, items, limit?, color? }`. `limit` caps a column's card count — a drop that would exceed it is refused at the gesture, not after."
+  itemTemplate:
+    type: Widget
+    required: true
+    description: "Card body. Rendered per item with `item` in scope, exactly as `list.itemTemplate`."
+  itemKey:
+    type: string
+    default: "id"
+    description: "Field identifying a card. Stable identity is what makes a move addressable."
+  draggable:
+    type: boolean
+    default: true
+    description: "Whether cards can be moved at all. False renders a read-only board."
+  columnWidth:
+    type: Dimension
+    description: "Fixed column width. Omitted distributes available width."
+  height:
+    type: Dimension
+    description: "Fixed board height. Omitted, the board fills its parent, which must then be bounded (§2.15) — the columns scroll, so the board has no height of its own to report."
+  optimistic:
+    type: boolean
+    default: false
+    description: "Move the card on screen before `onCardMove` resolves. False keeps the board as the truth the server confirmed — the safer default when a move can be rejected."
+events:
+  onCardMove:
+    description: "Fired on drop. Carries `{ item, from: {column, index}, to: {column, index} }` — the destination index matters, since a board without ordering is a list of columns."
+  onCardClick:
+    description: Fired when a card is activated without dragging.
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "kanban",
+        "columns": "{{board.columns}}",
+        "itemKey": "id",
+        "itemTemplate": { "type": "card", "child": { "type": "text", "content": "{{item.title}}" } },
+        "onCardMove": { "type": "tool", "tool": "moveCard", "params": { "id": "{{event.item.id}}", "to": "{{event.to.column}}", "index": "{{event.to.index}}" } }
+      }

@@ -1,0 +1,52 @@
+type: accordion
+category: layout
+profile: Core
+since: v1.4
+aliases:
+  - collapsible
+description: |
+  Sections that expand and collapse. `children` are the panels; each panel
+  declares its own `title` (or a `header` widget) and body.
+
+  Composing this from `conditional` + `inkWell` renders correctly and loses
+  two things the author cannot add back: the expand/collapse transition, and
+  the accessibility state a screen reader announces (expanded / collapsed,
+  and which control owns which region). A collapsed section that is merely
+  absent from the tree reads to assistive technology as content that does
+  not exist rather than content that is hidden.
+
+  `collapsible` is an alias for the single-section case — one panel with
+  `allowMultiple` irrelevant. It is the same widget, not a smaller one.
+properties:
+  panels:
+    type: "array<object>"
+    required: true
+    description: "`{ id, title?, header?, content, expanded?, enabled? }` entries. `header` (a Widget) wins over `title` when both are set."
+  allowMultiple:
+    type: "boolean"
+    default: false
+    description: "Allow more than one panel open at once. False collapses the previously open panel."
+  expandedIds:
+    type: "array<string>"
+    description: "Two-way bound list of open panel ids. Binding it makes expansion state addressable from actions."
+  bordered:
+    type: "boolean"
+    default: true
+    description: "Draw dividers between panels."
+  icon:
+    type: IconRef
+    description: "Expand indicator. Rotates on toggle."
+events:
+  onChange:
+    description: Fired when a panel opens or closes.
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "accordion",
+        "allowMultiple": false,
+        "panels": [
+          { "id": "shipping", "title": "Shipping", "content": { "type": "text", "content": "Ships in 2 days" } },
+          { "id": "returns", "title": "Returns", "content": { "type": "text", "content": "30 day window" } }
+        ]
+      }

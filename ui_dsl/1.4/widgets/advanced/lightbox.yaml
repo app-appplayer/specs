@@ -1,6 +1,6 @@
 type: lightbox
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.3
 description: |
   Full-screen modal image viewer with pinch-zoom and swipe-between-
@@ -18,7 +18,7 @@ properties:
     description: Index of the image shown first.
   allowZoom:
     type: boolean
-    default: "true"
+    default: true
     description: Enable pinch-zoom (and double-tap-to-zoom). When false the lightbox shows the image at fit-bounds only.
   maxZoom:
     type: number
@@ -26,11 +26,11 @@ properties:
     description: Maximum zoom factor (1.0 = fit-bounds).
   allowSwipe:
     type: boolean
-    default: "true"
+    default: true
     description: Enable swipe-between-images. When false the lightbox shows only `images[initialIndex]`.
   backgroundColor:
     type: Color
-    default: "\"#FF000000\""
+    default: "#FF000000"
     description: Backdrop color behind the image (typically black or theme.scrim).
   onIndexChanged:
     type: Action

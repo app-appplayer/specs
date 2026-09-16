@@ -1,0 +1,120 @@
+name: Color
+description: |
+  A color value. Three spellings, all accepted wherever a color is
+  expected:
+
+  - **Hex** — `#RGB`, `#RRGGBB`, or `#AARRGGBB`. The 8-digit form puts
+    alpha **first**, matching the runtime's parse order.
+  - **Theme scheme slot** — a bare Material 3 role name from §5.3.1
+    (`primary`, `onSurfaceVariant`, `error`, …), the three semantic pairs
+    this spec adds (`success`, `warning`, `info` and their `on*`), and the
+    four legacy spellings §5.3.1 keeps (`background`, `onBackground`,
+    `surfaceVariant`, `inverseOnSurface`).
+    Resolved against the active theme, so it follows light / dark mode.
+    This is the preferred form: it is the only one that adapts.
+  - **CSS basic name** — the ten colors a document can name without a
+    theme (`red`, `blue`, `green`, `yellow`, `orange`, `purple`,
+    `black`, `white`, `grey`/`gray`). Matched case-insensitively.
+  - **Functional** — `rgb(r, g, b)` / `rgba(r, g, b, a)`. §5.3.4 rates
+    this SHOULD where hex is MUST; it is accepted so that a theme
+    written in that notation validates, but it adapts to neither mode
+    nor palette.
+
+  Bindings are accepted in all three positions.
+
+  A bare word that is neither a scheme slot nor a basic name is **not**
+  a color: the runtime resolves it to null and the widget falls back to
+  its default. Validators reject it rather than let it render as a
+  silent default.
+usage: |
+  Every `color`-typed widget property, plus `Gradient` stops,
+  `BoxDecoration.color`, `TextStyle.color`, and theme definitions.
+definition:
+  {
+    "oneOf": [
+      {
+        "type": "string",
+        "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+        "description": "Hex — `#RGB`, `#RRGGBB`, or `#AARRGGBB` (alpha first)."
+      },
+      {
+        "description": "Material 3 scheme slot (§5.3) — adapts to light / dark mode.",
+        "enum": [
+          "primary",
+          "onPrimary",
+          "primaryContainer",
+          "onPrimaryContainer",
+          "secondary",
+          "onSecondary",
+          "secondaryContainer",
+          "onSecondaryContainer",
+          "tertiary",
+          "onTertiary",
+          "tertiaryContainer",
+          "onTertiaryContainer",
+          "error",
+          "onError",
+          "errorContainer",
+          "onErrorContainer",
+          "surface",
+          "onSurface",
+          "onSurfaceVariant",
+          "surfaceTint",
+          "surfaceBright",
+          "surfaceDim",
+          "surfaceContainerLowest",
+          "surfaceContainerLow",
+          "surfaceContainer",
+          "surfaceContainerHigh",
+          "surfaceContainerHighest",
+          "outline",
+          "outlineVariant",
+          "inverseSurface",
+          "onInverseSurface",
+          "inverseOnSurface",
+          "background",
+          "onBackground",
+          "surfaceVariant",
+          "inversePrimary",
+          "scrim",
+          "shadow",
+          "success",
+          "onSuccess",
+          "warning",
+          "onWarning",
+          "info",
+          "onInfo",
+          "divider",
+          "foreground",
+          "textOnPrimary",
+          "textOnSecondary",
+          "textOnBackground",
+          "textOnSurface",
+          "textOnError"
+        ],
+        "x-legacy": [
+          "divider",
+          "foreground",
+          "textOnPrimary",
+          "textOnSecondary",
+          "textOnBackground",
+          "textOnSurface",
+          "textOnError"
+        ],
+        "x-legacy-note": "Pre-M3 slot names (\u00a717.3). Accepted so documents written before \u00a75.3.1's roles keep loading and painting; \u00a75.3.1 lists what to write now."
+      },
+      {
+        "type": "string",
+        "pattern": "^([Rr][Ee][Dd]|[Bb][Ll][Uu][Ee]|[Gg][Rr][Ee][Ee][Nn]|[Yy][Ee][Ll][Ll][Oo][Ww]|[Oo][Rr][Aa][Nn][Gg][Ee]|[Pp][Uu][Rr][Pp][Ll][Ee]|[Bb][Ll][Aa][Cc][Kk]|[Ww][Hh][Ii][Tt][Ee]|[Gg][Rr][Ee][Yy]|[Gg][Rr][Aa][Yy])$",
+        "description": "CSS basic color name. Spelled as a character class per\nletter because JSON Schema regexes are ECMA-262, which has no\ninline `(?i:)` flag — writing one makes the whole branch\nunconstrained instead of case-insensitive, and it accepted every\nstring."
+      },
+      {
+        "type": "string",
+        "pattern": "^[Rr][Gg][Bb][Aa]? *\\( *[0-9]{1,3} *, *[0-9]{1,3} *, *[0-9]{1,3} *(, *([01]|[01]?[.][0-9]+) *)?\\) *$",
+        "description": "Functional notation — `rgb(r, g, b)` or `rgba(r, g, b, a)`,\nchannels 0-255 and alpha 0-1. §5.3.4 rates it SHOULD, below hex:\nit carries no alpha in the three-channel form and does not adapt\nto light / dark mode the way a scheme slot does."
+      },
+      {
+        "$ref": "#/$defs/Binding"
+      }
+    ]
+  }

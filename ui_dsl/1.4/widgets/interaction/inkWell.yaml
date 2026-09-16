@@ -4,6 +4,54 @@ profile: Core
 description: |
   Material-style touch feedback with ripple effect.
 properties:
+  onHighlightChanged:
+    type: Action
+    description: "Fired when the pressed state changes."
+  onHover:
+    type: Action
+    description: "Fired when a pointer enters or leaves. `{{event.value}}` is the hover state."
+  onTapCancel:
+    type: Action
+    description: "Fired when the press is abandoned before it becomes a tap."
+  onTapDown:
+    type: Action
+    description: "Fired when the pointer goes down."
+  onTapUp:
+    type: Action
+    description: "Fired when the pointer lifts."
+  autofocus:
+    type: "boolean"
+    description: "Take focus when the surface first appears."
+  canRequestFocus:
+    type: "boolean"
+    description: "Whether the surface is reachable by focus traversal at all."
+  customBorder:
+    type: "object"
+    description: "Shape the ripple and highlight are clipped to."
+  enableFeedback:
+    type: "boolean"
+    description: "Play the platform tap sound / haptic on activation."
+  excludeFromSemantics:
+    type: "boolean"
+    description: "Keep the surface out of the accessibility tree."
+  focusColor:
+    type: Color
+    description: "Overlay while the surface holds focus."
+  highlightColor:
+    type: Color
+    description: "Overlay while the surface is held down."
+  hoverColor:
+    type: Color
+    description: "Overlay while a pointer rests on the surface."
+  overlayColor:
+    type: Color
+    description: "Overlay used for the focus / hover / press states together."
+  splashColor:
+    type: Color
+    description: "Colour of the ripple that expands from the touch point."
+  splashRadius:
+    type: Dimension
+    description: "Radius the ripple expands to."
   child:
     type: "Widget"
     required: true
@@ -17,4 +65,7 @@ properties:
   onLongPress:
     type: "Action"
     description: "Long-press handler."
+  onDoubleTap:
+    type: Action
+    description: "Fired on a double tap."
 # examples migrated verbatim from prose JSON fences.

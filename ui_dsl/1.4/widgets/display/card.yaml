@@ -4,6 +4,18 @@ profile: Core
 description: |
   Elevated single-child container.
 properties:
+  semanticContainer:
+    type: "boolean"
+    description: "Treat the card and its contents as one node in the accessibility tree."
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
+  shadowColor:
+    type: Color
+    description: "Colour of the drop shadow cast by the surface."
+  surfaceTintColor:
+    type: Color
+    description: "Elevation tint applied over the surface colour (M3)."
   elevation:
     type: ["string", "number"]
     default: 1

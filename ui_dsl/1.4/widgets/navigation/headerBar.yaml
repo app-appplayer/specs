@@ -6,6 +6,30 @@ aliases:
 description: |
   Application header / toolbar at the top of a page.
 properties:
+  automaticallyImplyLeading:
+    type: "boolean"
+    description: "Insert a back / drawer control when the route provides one."
+  bottomHeight:
+    type: Dimension
+    description: "Height reserved for the bottom area (tabs, search, …)."
+  bottomOpacity:
+    type: "number"
+    description: "Opacity of the bottom area, `0.0`–`1.0`."
+  flexibleSpace:
+    type: Widget
+    description: "Widget stretched behind the bar contents, used for collapsing headers."
+  toolbarHeight:
+    type: Dimension
+    description: "Height of the bar itself, excluding any bottom area."
+  toolbarOpacity:
+    type: "number"
+    description: "Opacity of the toolbar contents, `0.0`–`1.0`."
+  shadowColor:
+    type: Color
+    description: "Colour of the drop shadow cast by the surface."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
   title:
     type: "string | Widget"
     description: "Header title."
@@ -13,13 +37,13 @@ properties:
     type: "Widget"
     description: "Leading widget (hamburger, back arrow)."
   actions:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: "Trailing action widgets."
   exitButton:
     type: "ExitButtonConfig | boolean"
     description: "Override the host-inserted close button on the root route; see below."
   backgroundColor:
-    type: "string"
+    type: Color
     description: "Header background."
   elevation:
     type: "number"
@@ -29,6 +53,12 @@ properties:
     type: "boolean"
     default: false
     description: "Whether to center the title."
+  bottom:
+    type: Dimension
+    description: "Distance from the parent stack's bottom edge."
+  foregroundColor:
+    type: Color
+    description: "Bar color."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

@@ -1,0 +1,45 @@
+name: BoxSpacing
+description: |
+  An inset on `box`, which additionally accepts an **M3 spacing token**.
+
+  Every other inset slot in the DSL is a plain `EdgeInsets`. `box` is the one
+  that also resolves a token through `theme.spacing.<token>` to a uniform
+  inset, in two spellings:
+
+  - **Token** — `"md"`. The nine standard slots are `xxs` / `xs` / `sm` / `md`
+    / `lg` / `xl` / `2xl` / `3xl` / `4xl`, and a theme may declare its own
+    (`05_Theme.md` §5.5), so the form is a bare word rather than a closed set.
+  - **`{token}` object** — `{"token": "md"}`, the same lookup written as an
+    object. Kept because it composes with the responsive override map.
+  - Everything `EdgeInsets` accepts — number, `{value, unit}`, the edge map,
+    and a binding.
+
+  **The string branch is deliberately open.** A value that was never a token
+  (`"16px"`, `"1rem"`) resolves to no inset, and catching it here would be
+  better than catching it on screen — but `box.padding` has admitted any
+  string since 1.4, and a runtime validates documents *at load*, so
+  narrowing this pattern would stop an already-published bundle from opening
+  rather than merely warning its author. The unresolved value is reported by
+  the runtime instead, once per distinct value. Tightening it needs a
+  release allowed to break bundles; until then the report is the answer.
+
+  `margin` takes the same spellings as `padding`. It did not until the 1.4.1
+  follow-up — the widget has always resolved both through one helper, so the
+  narrower declaration only made the token unauthorable, never unrenderable.
+definition:
+  {
+    "anyOf": [
+      {
+        "type": "string",
+        "description": "M3 spacing token resolved through `theme.spacing.<token>`. Any other string resolves to no inset and is reported at runtime."
+      },
+      {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" }
+        },
+        "required": ["token"]
+      },
+      { "$ref": "#/$defs/EdgeInsets" }
+    ]
+  }

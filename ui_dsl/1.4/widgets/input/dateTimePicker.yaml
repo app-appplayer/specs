@@ -1,0 +1,38 @@
+type: dateTimePicker
+category: input
+profile: Core
+since: v1.4
+description: |
+  Single instant — date and time chosen together. Shared rows per §2.6.0;
+  `binding` holds one ISO-8601 timestamp.
+
+  Not `datePicker` + `timePicker` side by side: those bind two values the
+  author must then recombine, and the recombination is where time zones get
+  lost. One widget, one instant, one binding.
+properties:
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
+  min:
+    type: string
+    description: "Earliest selectable instant (ISO-8601)."
+  max:
+    type: string
+    description: "Latest selectable instant (ISO-8601)."
+  dateFormat:
+    type: string
+    description: "Display pattern for the date portion. Display only — the bound value stays ISO-8601."
+  timeFormat:
+    type: string
+    description: "Display pattern for the time portion. Display only."
+  minuteInterval:
+    type: number
+    default: 1
+    description: "Granularity of the minute wheel."
+  timeZone:
+    type: string
+    description: "IANA zone the picker presents in. Absent means the host's zone. The bound value carries its offset either way — a timestamp without one is not an instant."
+examples:
+  - name: basic
+    dsl: |
+      { "type": "dateTimePicker", "binding": "booking.startsAt", "minuteInterval": 15 }

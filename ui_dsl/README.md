@@ -68,7 +68,7 @@ For 1.3:
 
 ## Conformance
 
-Conformance is declared by **Profile** (Core / Client / Bundle / Advanced / Template / Composition), not by version. See [`1.4/18_Conformance.md`](1.4/18_Conformance.md).
+Conformance is declared by **Profile** (Core / Client / Bundle / Advanced / Template / Composition / Payment), not by version. See [`1.4/18_Conformance.md`](1.4/18_Conformance.md).
 
 ## Language
 

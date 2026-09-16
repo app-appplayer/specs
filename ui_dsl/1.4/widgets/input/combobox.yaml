@@ -1,0 +1,52 @@
+type: combobox
+category: input
+profile: Core
+since: v1.4
+aliases:
+  - autocomplete
+description: |
+  Text entry with suggestions. Shared rows per §2.6.0; `binding` holds the
+  **typed string**, not an option id.
+
+  The defining property is that a value outside `options` is legal — that
+  is what separates it from `select` / `multiSelect`, where the option list
+  is the domain. Composing it from `textInput` + a list loses focus
+  ownership: the list must not steal focus from the field, arrow keys must
+  move a highlight without moving the caret, and Escape must close the list
+  without clearing the text. Those are one widget's job.
+properties:
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
+  options:
+    type: "array<Option>"
+    description: "Suggestions. Optional — a combobox with none is a plain text field until `onSearch` supplies them."
+    aliases:
+      - items
+  allowCustom:
+    type: "boolean"
+    default: true
+    description: "Accept a value not present in `options`. Setting it false makes this a searchable `select`."
+  onSearch:
+    type: Action
+    description: "Fired as the user types, for server-side suggestion lookup. The action writes `options`; the runtime does not re-filter what it returns."
+  minChars:
+    type: "number"
+    default: 1
+    description: "Characters typed before suggestions are requested or shown."
+  debounceMs:
+    type: "number"
+    default: 250
+    description: "Idle time before `onSearch` fires."
+  placeholder:
+    type: "string"
+    description: "Placeholder text."
+examples:
+  - name: server_backed
+    dsl: |
+      {
+        "type": "combobox",
+        "binding": "form.city",
+        "minChars": 2,
+        "onSearch": { "type": "tool", "tool": "searchCities", "params": { "q": "{{event.query}}" } }
+      }

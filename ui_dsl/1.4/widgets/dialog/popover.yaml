@@ -1,0 +1,66 @@
+type: popover
+category: dialog
+profile: Core
+since: v1.4
+aliases:
+  - hoverCard
+description: |
+  Transient surface anchored to a trigger. `child` is the trigger; `content`
+  is what appears.
+
+  Distinct from `tooltip` (text only, no focusable content) and from
+  `customDialog` (modal, centred, takes the whole screen's attention). A
+  popover keeps the page usable behind it and is positioned against its
+  anchor, which is the part composition cannot supply: flipping to the other
+  side when it would overflow the viewport, and returning focus to the
+  trigger on dismiss.
+
+  `hoverCard` is the same widget with `trigger: "hover"`.
+properties:
+  content:
+    type: Widget
+    required: true
+    description: "Surface contents. May contain focusable widgets — that is what separates this from `tooltip`."
+  child:
+    type: Widget
+    required: true
+    description: "Anchor. The popover positions against this widget's box."
+  open:
+    type: "boolean | binding"
+    description: "Two-way open state. Bind it to drive the popover from actions instead of the trigger."
+  trigger:
+    type: string
+    enum: [tap, hover, focus, manual]
+    default: "tap"
+    description: "`manual` means only `open` controls it."
+  placement:
+    type: string
+    enum: [top, bottom, start, end, auto]
+    default: "auto"
+    description: "Preferred side. `auto` picks the side with room; any value flips when it would overflow."
+  openDelay:
+    type: number
+    default: 0
+    description: "Milliseconds before opening. Chiefly for `hover`."
+  closeDelay:
+    type: number
+    default: 0
+    description: "Milliseconds before closing after the trigger is released."
+  dismissOnOutside:
+    type: boolean
+    default: true
+    description: "Close when the user interacts outside the surface."
+events:
+  onOpen:
+    description: Fired after the surface appears.
+  onClose:
+    description: Fired after it is dismissed.
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "popover",
+        "trigger": "tap",
+        "child": { "type": "button", "label": "Details" },
+        "content": { "type": "text", "content": "Ships in 2 days" }
+      }

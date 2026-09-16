@@ -10,10 +10,10 @@ A bundle exists in two physical forms:
 Both forms carry the same logical bundle. Authoring tools read /
 write `.mbd/`; marketplaces ship `.mcpb`.
 
-References:
-- `packages/mcp_bundle/dart/lib/src/io/bundle_resources.dart`
-- `packages/mcp_bundle/dart/lib/src/io/mcp_bundle_loader.dart`
-- `packages/mcp_bundle/dart/lib/src/install/mcp_bundle_packer.dart`
+References, in the `mcp_bundle` package:
+- `lib/src/io/bundle_resources.dart`
+- `lib/src/io/mcp_bundle_loader.dart`
+- `lib/src/install/mcp_bundle_packer.dart`
 
 ## 7.1 Reserved Folders
 

@@ -4,13 +4,17 @@ profile: Core
 description: |
   Scales and aligns its child to fit available space.
 properties:
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
   fit:
     type: "string"
-    default: "\"contain\""
+    enum: [cover, contain, fill, scaleDown, none]
+    default: "contain"
     description: "`cover`, `contain`, `fill`, `scaleDown`, `none`."
   alignment:
     type: Alignment
-    default: "\"center\""
+    default: "center"
     description: "Alignment within the fitted bounds."
   child:
     type: "Widget"

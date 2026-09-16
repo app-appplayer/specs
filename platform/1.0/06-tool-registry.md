@@ -205,7 +205,7 @@ The capability already stands as layers:
 | layer | place | content |
 |---|---|---|
 | **port contract** | `mcp_bundle` port catalog (`package:mcp_bundle/ports.dart`) | per-capability contracts such as `llm_port` · `channel_port` · `storage_port` · `ingest_ports` · `workflow_port` · `pipeline_port` |
-| **implementation** | capability package | `mcp_browser` (`BrowserOperations` 9 kinds) · `mcp_form` (`form_tool_handler` + 5 renderers) · `mcp_io` (`IoTools` + `IoRuntime` 4-primitive) · `mcp_ingest` (`IngestPipeline`) · `mcp_channel` (9 connectors · `ChannelPort` bidirectional messaging) · `mcp_canvas` (pure-Dart `Canvas` + CDL) · `mcp_analysis` (`AnalysisPort` + spec/execution engine) · `mcp_datastore` (`DatastoreTools` — `fs.*`/`db.*` data interface layer, separate from io. Canon `13-datastores.md`) · `appplayer_secure` (`facade/appplayer_secure` — merged single package: domain-neutral primitive modules + AppPlayer domain layer) |
+| **implementation** | capability package | `mcp_browser` (`BrowserOperations` 9 kinds) · `mcp_form` (`form_tool_handler` + 5 renderers) · `mcp_io` (`IoTools` + `IoRuntime` 4-primitive) · `mcp_ingest` (`IngestPipeline`) · `mcp_channel` (9 connectors · `ChannelPort` bidirectional messaging) · `mcp_canvas` (pure-Dart `Canvas` + CDL) · `mcp_analysis` (`AnalysisPort` + spec/execution engine) · `mcp_celm` (`CelmPort` + guarded loop runtime — perception, actuators and interlock are host-supplied) · `mcp_datastore` (`DatastoreTools` — `fs.*`/`db.*` data interface layer, separate from io. Canon `13-datastores.md`) · `appplayer_secure_core` (pure Dart — 7 domain-neutral primitive modules) + `appplayer_secure` (which re-exports it plus the Flutter bindings: OS keychain · biometrics · asset Root CA · the `AppPlayerSecure` facade) |
 
 → a capability tool = **the implementation package's operation wrapped as a `KernelToolHandler` and registered via path 3**. The wrapped target is an implementation satisfying the port, so the capability is replaceable.
 
@@ -217,14 +217,16 @@ The capability already stands as layers:
 
 3. **tool-pack place = brain_kernel's single reference (the method) + the host core (real adoption).** `mcp_browser`, etc., must not know `KernelToolHandler` (a brain_kernel type) (staying kernel-agnostic). The canonical ***method*** of the conversion wiring **is presented as one unified reference `recipes/capability_tools/`** — not a separate package per capability but **one universal registration pattern + capability examples**:
    - `registerCapabilityTools(registry, capabilityId, tools)` = a capability-agnostic registration pattern. The single function the host (vibe_studio · AppPlayer) calls.
-   - capability examples = two shapes. **shape A** (the package holds its own MCP surface — `mcp_form` · `mcp_io`[`IoTools.tools`+`call`]): map declared tools as-is. **shape B** (runtime only — `mcp_ingest` pipeline · `mcp_browser` 9 ops · `mcp_channel` `ChannelPort`(`channel.send`) · `mcp_canvas` CDL↔JSON(`canvas.*`) · `mcp_analysis` `AnalysisPort`(`analysis.*`) · kernel-canonical `KvStoragePortAdapter`(`kv.*`) · **`mcp_client` itself**): wrap operations per verb. External MCP connection is separated by its own contract (see "External MCP Servers — Two Modes" below).
+   - capability examples = two shapes. **shape A** (the package holds its own MCP surface — `mcp_form` · `mcp_io`[`IoTools.tools`+`call`] · `mcp_celm`[`CelmToolHandler.tools`, 7 tools + argument schemas, `celm.*`]): map declared tools as-is. **shape B** (runtime only — `mcp_ingest` pipeline · `mcp_browser` 9 ops · `mcp_channel` `ChannelPort`(`channel.send`) · `mcp_canvas` CDL↔JSON(`canvas.*`) · `mcp_analysis` `AnalysisPort`(`analysis.*`) · kernel-canonical `KvStoragePortAdapter`(`kv.*`) · **`mcp_client` itself**): wrap operations per verb. External MCP connection is separated by its own contract (see "External MCP Servers — Two Modes" below).
    - same self-contained contract as `recipes/claude_code/` (`publish_to: none` · the brain_kernel main lib·barrel·pubspec unmodified · the capability dependency only in the reference pubspec).
    - the real host brings this *pattern* into its own core wiring. A bespoke tool (not a package) is also fed to the same function by directly constructing a `CapabilityTool`.
-   - a Flutter-bound capability (`appplayer_secure` — secure storage) is a **separate recipe `recipes/secure_capability/`** (flutter dep, separate from the pure-Dart `capability_tools`) — `secure.*` (at-rest seal/open, facade wrap) · `secret.*` (keyed credential vault, `SecureStorage` wrap) · the credential migration core (`CredentialMigrator`, passphrase). Same `registerCapabilityTools` pattern, Flutter house. Detail = "secret capability — credential vault + asset convention" below.
+   - The credential capability is a **separate recipe `recipes/secure_capability/`** — `secure.*` (at-rest seal/open, an `AtRestSealer` wrap) · `secret.*` (a keyed credential vault, a `SecureStorage` wrap) · the credential migration core (`CredentialMigrator`, passphrase). The same `registerCapabilityTools` pattern. **Pure Dart** — the host injects the store, so a headless host adopts it unchanged (server = in-memory / file, Flutter = the platform keychain). Detail = "secret capability — credential vault + asset convention" below.
+     - *(Corrected 2026-07-30: this previously read "Flutter-bound, hence separate from the pure-Dart `capability_tools`". That premise disappeared when the primitives of `appplayer_secure` were split out as the pure-Dart `appplayer_secure_core`. The separation itself stays — credentials are a distinct subject.)*
 
    → brain_kernel core = capability-agnostic (the reference is a sibling folder). host/AppPlayer core = free to adopt.
 
-4. **secure = expose only the `appplayer_secure` facade, not the internal primitive modules directly.** The capability tool pack wraps the `appplayer_secure` facade. The internal primitive modules (`package:appplayer_secure/src/...`) are reachable only through the facade — preserving the facade/primitive separation. (2026-06: the former `secure` primitive package + the `appplayer_secure` wrapper were merged into a single `appplayer_secure` — the separation shifted from *inter-package* → *intra-package module*. The facade-first principle is identical.)
+4. **Expose the public surface only, never `src/...` directly.** A capability tool pack wraps only the types a package's public barrel exports; an implementation import such as `package:appplayer_secure/src/...` is forbidden. (2026-06: the former `secure` primitive package + the `appplayer_secure` wrapper were merged into a single `appplayer_secure`. 2026-07-30: those primitives were split out again as the pure-Dart `appplayer_secure_core`, which `appplayer_secure` re-exports — a Flutter host still sees only one package.)
+   - `secure.*` **takes an `AtRestSealer`**, not the `AppPlayerSecure` facade. seal/open delegate to the sealer, so the facade is unnecessary, and requiring it would tie that recipe to Flutter.
 
 5. **policy · consent gates remain inside the capability package.** browser's `PolicyEngine` (URL allow/deny · robots · resource cap) · `AuditTrail`, secure's encryption = the package's responsibility. The tool pack only exposes, never bypassing policy.
 
@@ -242,6 +244,7 @@ The capability already stands as layers:
 | io | adoptable | adoptable | adoptable | adopted (mcp_io) |
 | canvas | adoptable | adoptable | adoptable | optional (mcp_canvas) |
 | analysis | adoptable | adoptable | adoptable | adopted (mcp_analysis) |
+| celm | adoptable | adoptable | adoptable | adoptable (mcp_celm — the host supplies the perception and actuator ports) |
 | kv | adoptable | adoptable | adoptable | adopted (kernel `KvStoragePortAdapter` — `workspaceId` injected) |
 
 adoption = the host adds the capability package dependency + tool-pack registration. A non-adopting host does not have that capability's tools in its catalog.
@@ -259,7 +262,7 @@ The `io` capability surface (`io.*`) is fixed, and device behavior enters as a *
 - ❌ adding a capability to `standardTools()` (the `bk.*` knowledge facade surface) — pollutes the knowledge domain (`KnowledgeSystem`) + drags a capability dependency onto every kernel host.
 - ❌ registering via `BundleSessionBridge.registerTool` — the `bk.` enforcement validator throws ArgumentError. A capability is not a knowledge tool.
 - ❌ a capability package depending on `brain_kernel` — breaks kernel-agnosticism. The conversion is the host layer.
-- ❌ exposing the `appplayer_secure` internal primitive modules (`src/...`) directly, bypassing the facade — violates the facade/primitive separation.
+- ❌ exposing the internal modules (`src/...`) of `appplayer_secure` / `appplayer_secure_core` directly — use the public barrel only.
 
 ### Incorporation Gate — What Goes in the Package / What Goes in the Host
 
@@ -353,7 +356,7 @@ Two grounds for a bundle keeping working even when it moves hosts:
 | host | expose the set of embedded capabilities + verify `requires` on activation + explicitly reject if unmet. |
 | capability/recipe | a stable `<namespace>.<verb>` name + confine tool-boundary exceptions (`{ok:false}` envelope). |
 
-reference implementation = `os/core/brain_kernel/recipes/capability_tools/` — the universal `registerCapabilityTools()` + form(shape A) · ingest(shape B) examples, host-usage README, tests 8 PASS, brain_kernel core unmodified.
+reference implementation = the `capability_tools` recipe shipped with `brain_kernel` — the universal `registerCapabilityTools()` + form(shape A) · ingest(shape B) examples, host-usage README, tests 8 PASS, brain_kernel core unmodified.
 
 ## Stateful Tool Lifecycle for Re-mount · Multi-Instance Domains
 

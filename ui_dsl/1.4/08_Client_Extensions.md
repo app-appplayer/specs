@@ -186,6 +186,10 @@ Common error codes: `PERMISSION_DENIED`, `CANCELED` (user-cancelled dialog), `NO
 
 The `client://` URI scheme exposes client-side resources declaratively (e.g., as `image.src` or as a `resource` action target).
 
+**`client://` is the host's side of the wire, not the server's.** It reaches files the *client process* holds — the user's disk, the workspace, the app's cache. An asset the connected server holds is addressed by the `AssetRef` object form (`{uri, origin?}`, read via `resources/read`) or inlined as `data:`; see [`06_Runtime_Contract.md`](06_Runtime_Contract.md) §6.12. The distinction is a permission boundary, not a stylistic one: `client://file/…` spends the user's `file.read` grant, and a document that could reach the host's disk by naming a server resource would spend it without asking.
+
+As an asset source, `client://` is **MAY** (§18.2.12) — a runtime with no filesystem is conformant without it, and a document that names it MUST degrade per §6.12.4 rather than fail.
+
 ### 8.3.1 URI Format
 
 ```
@@ -325,7 +329,15 @@ All prefixes below appear in [`17_Naming.md`](17_Naming.md) §17.2.5 and resolve
 |---------|---------|
 | `client.workingDirectory` | Current working directory (absolute path) |
 | `client.userName` | Logged-in user name |
-| `client.platform` | One of `macos`, `linux`, `windows`, `ios`, `android`, `web` |
+| `client.platform` | Device class the client belongs to: `mobile`, `desktop`, `web`, or `unknown`. **This is a class, not an OS name** — a document choosing between a touch layout and a pointer layout branches here. |
+| `client.platform.os` | The operating system itself: `macos`, `linux`, `windows`, `ios`, `android`, `web`, or `unknown`. A document choosing a file path or an OS-specific affordance branches here. |
+| `client.platform.category` | Alias of `client.platform`. |
+| `client.isWeb` | `true` in a browser. Equivalent to `client.platform.os == "web"`, and answered from the same reading so the two cannot disagree. |
+| `client.orientation` | `portrait` or `landscape`. |
+| `client.network.status` / `client.network.type` | Connectivity state and transport. |
+| `client.file.separator` | Path separator for the client filesystem (`/` in a browser). |
+| `client.system.os` / `client.system.version` | OS name and version string. |
+| `client.isDebug` / `client.isRelease` / `client.isProfile` | Which build this is. |
 | `client.locale` | IETF BCP 47 locale tag (e.g., `en-US`) |
 | `client.theme.*` | Host environment theme tokens — 11 slots matching the theme schema in [`05_Theme.md`](05_Theme.md) §5.3: `background`, `foreground`, `primary`, `secondary`, `surface`, `onSurface`, `error`, `success`, `warning`, `info`, `muted` |
 | `client.env.*` | Environment variables — allowlist-restricted and requires `system.info` permission |
@@ -333,6 +345,15 @@ All prefixes below appear in [`17_Naming.md`](17_Naming.md) §17.2.5 and resolve
 | `client.system.*` | System info populated by `client.getSystemInfo` results |
 | `permissions.<category>.status` | Live permission grant status per §8.4.5 |
 | `channels.<name>.*` | Channel state and latest payload (see §8.6.6) |
+
+> **`client.platform` is a device class (2026-08-10).** Earlier text defined
+> `client.platform` as the OS name. Every runtime and every document in the
+> field reads it as the device *class* — it is what a layout branches on — and
+> the OS name has been reachable as `client.platform.os` throughout. The table
+> above records what is implemented; a document that needs the OS name asks for
+> it by that name. Runtimes MUST answer both from one reading of the host, so
+> `client.platform`, `client.platform.os` and `client.isWeb` cannot contradict
+> each other.
 
 Resolution follows the order in [`03_Data_Binding.md`](03_Data_Binding.md); `client.*` bindings read through to the runtime capability layer and are inert on non-Client-Profile runtimes (they resolve to `null`, never throwing).
 
@@ -353,7 +374,7 @@ Channels are long-lived bidirectional streams declared at the page or applicatio
 > `resources/subscribe` → `notifications/resources/updated` (≤2025-11-25). The
 > former makemind `CallToolResult.isStreaming` hint is **deprecated** (honored
 > nowhere; retained for backward compatibility until the next major, removed
-> thereafter). See `packages/mcp_server/docs/STATELESS-COEXISTENCE-DESIGN.md` §11.
+> thereafter). See the `mcp_server` package design notes on stateless coexistence, §11.
 
 ### 8.6.1 Channel Declaration
 
@@ -424,13 +445,15 @@ The channel declares its source and its per-push handler; buttons only start /
 stop it:
 
 ```json
-"channels": {
-  "advertisements": {
-    "type": "client.mcpStream",
-    "params": { "uri": "ble://scan", "params": { "minRssi": -70 } },
-    "onMessage": {
-      "type": "state", "action": "append",
-      "binding": "advertisements", "value": "{{data}}"
+{
+  "channels": {
+    "advertisements": {
+      "type": "client.mcpStream",
+      "params": { "uri": "ble://scan", "params": { "minRssi": -70 } },
+      "onMessage": {
+        "type": "state", "action": "append",
+        "binding": "advertisements", "value": "{{data}}"
+      }
     }
   }
 }
@@ -667,3 +690,88 @@ An action MAY carry an explicit `origin` to dispatch outside its ambient scope. 
 ### 8.8.4 Declaring the need
 
 A document that composes origins needs no new declaration in this specification. It reaches other origins through the host's outbound MCP client tool surface ([`06_Runtime_Contract.md`](06_Runtime_Contract.md) §6.11.1), and hosts already gate that surface through their existing capability-declaration mechanism. Adding a parallel declaration here would duplicate a contract that already exists.
+
+---
+
+## 8.9 Entry & Identity *(since v1.4)*
+
+A definition is frequently reached from **outside** the app: a scanned code, a tag, a link. The host resolves that entry and opens the definition at a page, sometimes with a person signed in and sometimes not. This section defines what the definition may read about how it was entered, and the one thing it may ask the host to change.
+
+The entry mechanism itself — link form, resolution, custody of the scanned medium — is a host and platform concern, not a document concern. A document only consumes the result.
+
+### 8.9.1 What a document may assume
+
+Two things, and no more:
+
+- **It may have been entered from somewhere.** `entry.*` describes that arrival. On a definition opened normally (a launcher tile, a navigation action) the whole tree is absent.
+- **A viewer may or may not be identified.** `identity.*` describes the current principal, which is `guest` when nobody signed in.
+
+A document MUST render usefully with `identity.state == "guest"`. Requiring identification is the host's decision, taken before the definition renders; a definition that renders only for a signed-in viewer has moved a host policy into a layout.
+
+### 8.9.2 Bindings
+
+All read-only. Absent values resolve to `null` and never throw, exactly like §8.5.
+
+| Binding | Content |
+|---------|---------|
+| `identity.state` | `guest` · `identified` |
+| `identity.subject.kind` | `guest` · `user` · `tenant` · `service` |
+| `identity.subject.ref` | Opaque reference to the current principal, stable for that principal |
+| `identity.canPromote` | `true` when the host can offer sign-in here |
+| `entry.route` | The route this entry resolved to |
+| `entry.params.*` | Parameters carried by the entry |
+| `entry.issuer.name` · `entry.issuer.verified` | Who stands behind the scanned medium |
+| `entry.grant.scope` | What this entry is permitted to attempt (string list) |
+| `entry.canSteward` | `true` when the current principal may manage the medium |
+| `entry.notice` | `{ kind, message }` disclosure supplied by the host, when present |
+
+`entry.params` is **not** `route.params`. Route parameters say where in the document the viewer is; entry parameters say what was scanned to get here, and they survive internal navigation that changes the route. A document that reads one where it means the other loses its context on the first `navigation.push`.
+
+`entry.params` values are **untrusted input**. They arrive from outside the document and MUST NOT be treated as authority — see §8.9.5.
+
+`identity.subject.kind` exists so one document serves people, organizations, and machines without forking. It is descriptive, not permissive: a document that wants to know whether *this* viewer may manage *this* medium reads `entry.canSteward`, which the host answers, rather than inferring it from the subject kind.
+
+### 8.9.3 Actions
+
+| Action | Effect |
+|--------|--------|
+| `identity.promote` | Ask the host to identify the current viewer. No-op when `identity.canPromote` is `false` |
+| `identity.release` | Return to `guest`, or end the session when the host requires identification |
+
+Neither action takes credentials, and neither returns any. The result reports `outcome` from a closed vocabulary, plus `changed` and the resulting `state`:
+
+| `outcome` | meaning | offering again is |
+|---|---|---|
+| `promoted` | the principal changed | — |
+| `declined` | the viewer was asked and said no | reasonable |
+| `unavailable` | this host cannot identify anyone here | not |
+| `failed` | the attempt broke | a host decision |
+
+A document that cannot tell `declined` from `unavailable` cannot phrase either honestly — one invites a second try, the other must stop asking. A failure's reason stays with the host: the message belongs to whoever knows what broke.
+
+```json
+{
+  "type": "button",
+  "label": "Sign in to manage",
+  "visible": "{{identity.canPromote}}",
+  "action": { "type": "identity.promote" }
+}
+```
+
+### 8.9.4 Reactivity
+
+Identity can change **while the document is mounted**. When it does, a runtime MUST re-evaluate `identity.*` and `entry.*` bindings in place. The document is not rebuilt from scratch, its state is not discarded, and no lifecycle hook is required for the transition — a declarative surface expresses the difference as bindings.
+
+A document MAY additionally observe the change through its normal state-driven mechanisms; it MUST NOT depend on an event to stay correct.
+
+### 8.9.5 These bindings are not authority
+
+`identity.*` and `entry.*` decide what a screen **offers**. They decide nothing about what the system **permits**.
+
+Every privileged operation is authorized where it executes — at the serving origin, against the credential on the connection. A document that guards a capability with `visible` or `enabled` has built an affordance, not a control: the same tool call dispatched by other means is refused by the origin or it was never protected at all.
+
+This mirrors §8.4's separation of a permission prompt from the capability behind it.
+
+### 8.9.6 Inert without host support
+
+A runtime that does not implement this section resolves every binding above to `null` and treats both actions as unsupported (§8.2.5 `unsupported`). A document written against §8.9 therefore degrades to its guest rendering rather than failing, which is the same rendering it must already provide.

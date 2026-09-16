@@ -4,6 +4,9 @@ profile: Core
 description: |
   Clips a child to an oval.
 properties:
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
   child:
     type: "Widget"
     required: true

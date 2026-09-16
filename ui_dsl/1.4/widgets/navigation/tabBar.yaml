@@ -4,17 +4,71 @@ profile: Core
 description: |
   Horizontal tab selector. Each tab's text field is `label`.
 properties:
+  indicator:
+    type: "object"
+    description: "Decoration drawn as the selection indicator, replacing the default underline."
+  indicatorPadding:
+    type: EdgeInsets
+    description: "Space between the indicator and the tab bounds."
+  indicatorSize:
+    type: "string"
+    description: "What the indicator spans: `tab` (the whole tab) or `label` (the text only)."
+  indicatorWeight:
+    type: Dimension
+    description: "Thickness of the default underline indicator."
+  isScrollable:
+    type: "boolean"
+    description: "Let the tabs scroll horizontally instead of sharing the width."
+  labelPadding:
+    type: EdgeInsets
+    description: "Space around each tab label."
+  mouseCursor:
+    type: "string"
+    description: "Pointer cursor shown over a tab."
+  unselectedLabelColor:
+    type: Color
+    description: "Colour of labels that are not selected."
+  unselectedLabelStyle:
+    type: TextStyle
+    description: "Text style for labels that are not selected."
+  enableFeedback:
+    type: "boolean"
+    description: "Play the platform tap sound / haptic on activation."
+  labelColor:
+    type: Color
+    description: "Colour applied to the label text."
+  overlayColor:
+    type: Color
+    description: "Overlay used for the focus / hover / press states together."
+  padding:
+    type: EdgeInsets
+    description: "Space inside the surface, around its content."
+  physics:
+    type: "string"
+    description: "Scroll response: `bouncing`, `clamping`, `never`, `always`."
   selectedIndex:
     type: "number | binding"
     default: 0
     description: "Currently selected index. Defaults to 0 when omitted."
   tabs:
-    type: "Tab[]"
+    type: "array<Tab>"
     required: true
     description: "`{ label, icon? }` entries."
   onChange:
     type: "Action"
     description: "Fired when selection changes."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  indicatorColor:
+    type: Color
+    description: "Selection indicator pill color (rail / drawer / tabs)."
+  labelStyle:
+    type: TextStyle
+    description: "Default text style for item labels (selected and unselected). Per-item override via NavItem.style.labelStyle."
+  onTap:
+    type: Action
+    description: "Fired when a tab is tapped. `{{event.value}}` carries its index."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

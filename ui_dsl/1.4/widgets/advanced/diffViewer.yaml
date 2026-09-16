@@ -1,0 +1,41 @@
+type: diffViewer
+category: advanced
+profile: Advanced
+since: v1.4
+description: |
+  Side-by-side or unified comparison of two texts.
+
+  Separate from `codeEditor` rather than a mode on it, because the input is
+  two documents: a `mode` flag on a single-value widget would leave one of
+  the two with nowhere to bind. Read-only by design — editing a diff means
+  editing one side, which is `codeEditor`'s job.
+properties:
+  oldValue:
+    type: "string | binding"
+    required: true
+    description: "Left / base text."
+  newValue:
+    type: "string | binding"
+    required: true
+    description: "Right / changed text."
+  splitView:
+    type: boolean
+    default: true
+    description: "Two columns when true, unified single column when false."
+  language:
+    type: string
+    description: "Syntax highlighting language, same vocabulary as `codeEditor.language`."
+  showLineNumbers:
+    type: boolean
+    default: true
+    description: "Gutter line numbers."
+  contextLines:
+    type: number
+    description: "Unchanged lines kept around each change. Omitted shows the whole document."
+  highlightLines:
+    type: "array<number>"
+    description: "Extra emphasis on specific new-side lines."
+examples:
+  - name: basic
+    dsl: |
+      { "type": "diffViewer", "oldValue": "{{rev.before}}", "newValue": "{{rev.after}}", "language": "json" }

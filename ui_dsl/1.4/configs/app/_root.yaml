@@ -4,8 +4,8 @@ description: |
 definition:
   {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://specs.makemind.com/mcp_ui_dsl/1.3/app.schema.json",
-    "title": "MCP UI DSL 1.3 — ApplicationDefinition",
+    "$id": "https://specs.makemind.com/mcp_ui_dsl/1.4/app.schema.json",
+    "title": "MCP UI DSL 1.4 — ApplicationDefinition",
     "type": "object",
     "properties": {
       "type": {
@@ -52,7 +52,7 @@ definition:
         "$ref": "#/$defs/Routes"
       },
       "theme": {
-        "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.3/theme.schema.json"
+        "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.4/theme.schema.json"
       },
       "navigation": {
         "$ref": "#/$defs/NavigationConfig"
@@ -115,7 +115,7 @@ definition:
         "type": "object",
         "description": "Page definitions keyed by id. Routes referencing `ui://pages/<id>` resolve against this map. Pages MAY also be inlined directly inside `routes` (see RouteValue); this map is the canonical home when pages are persisted alongside the application.",
         "additionalProperties": {
-          "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.3/page.schema.json"
+          "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.4/page.schema.json"
         }
       }
     },

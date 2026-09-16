@@ -1,14 +1,20 @@
 type: graph
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Time-series / numeric data graph (line, bar, area, scatter) drawn on a single set of axes. For node/edge topology visualization use `networkGraph` (§10.13).
 properties:
+  labelColor:
+    type: Color
+    description: "Colour applied to the label text."
   data:
-    type: "`Point[]` "
-    default: "binding"
-    description: "required | Array of `{ x, y }` points (or `{ label, value }`)."
+    type: ["array<Point>", "array<number>"]
+    required: true
+    description: |
+      Points as `{ x, y }` or `{ label, value }`, or bare numbers when the
+      x axis is just the position in the list — which is what a sparkline
+      fed from a rolling buffer carries.
   chartType:
     type: "string"
     enum: ["line", "bar", "area", "scatter"]

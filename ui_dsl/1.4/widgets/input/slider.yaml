@@ -4,6 +4,24 @@ profile: Core
 description: |
   Continuous single-value selection. Shared rows per §2.6.0; `value` is `number`.
 properties:
+  onChangeEnd:
+    type: Action
+    description: "Fired when the thumb is released."
+  onChangeStart:
+    type: Action
+    description: "Fired when the thumb starts moving."
+  thumbColor:
+    type: Color
+    description: "Colour of the thumb."
+  activeColor:
+    type: Color
+    description: "Colour of the selected / active portion."
+  inactiveColor:
+    type: Color
+    description: "Colour of the unselected / inactive portion."
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
   value:
     type: "number"
     description: "Current numeric value (overrides shared contract to register `values` legacy alias)."
@@ -20,6 +38,9 @@ properties:
   divisions:
     type: "number"
     description: "Number of discrete steps."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

@@ -1,9 +1,28 @@
 type: chip
 category: display
 profile: Core
+aliases: [tag]
 description: |
   Compact element representing an attribute, action, or filter.
 properties:
+  deleteIcon:
+    type: IconRef
+    description: "Icon for the delete control."
+  onDeleted:
+    type: Action
+    description: "Fired when the delete control is used."
+  side:
+    type: "object"
+    description: "Outline drawn around the chip, as `{ color, width }`."
+  padding:
+    type: EdgeInsets
+    description: "Space inside the surface, around its content."
+  shadowColor:
+    type: Color
+    description: "Colour of the drop shadow cast by the surface."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
   label:
     type: "string"
     required: true
@@ -17,7 +36,7 @@ properties:
     description: "Selected state."
   variant:
     type: "string"
-    default: "\"filled\""
+    default: "filled"
     description: "`filled` or `outlined`."
   onDelete:
     type: "Action"
@@ -25,6 +44,18 @@ properties:
   onTap:
     type: "Action"
     description: "Action when chip is tapped."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the chip."
+  labelStyle:
+    type: TextStyle
+    description: "Default text style for item labels (selected and unselected). Per-item override via NavItem.style.labelStyle."
+  onPressed:
+    type: Action
+    description: "Legacy alias of `onTap`."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

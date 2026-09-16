@@ -4,11 +4,17 @@ profile: Core
 description: |
   Content area that displays widgets corresponding to the currently selected tab.
 properties:
+  dragStartBehavior:
+    type: "string"
+    description: "When a drag is recognised: `start` or `down`."
+  physics:
+    type: "string"
+    description: "Scroll response: `bouncing`, `clamping`, `never`, `always`."
   selectedIndex:
     type: "number | binding"
     description: "Displayed index (usually bound to the same state as a `tabBar`)."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     required: true
     description: "One child per tab."
 # examples migrated verbatim from prose JSON fences.

@@ -1,10 +1,28 @@
 type: chart
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Data visualization widget with multiple chart types.
 properties:
+  colors:
+    type: array<Color>
+    description: "Series colours, applied in order."
+  primaryColor:
+    type: Color
+    description: "Colour of the first series when `colors` is not given."
+  showGrid:
+    type: "boolean"
+    description: "Draw the background grid."
+  showLabels:
+    type: "boolean"
+    description: "Draw the axis labels."
+  showLegend:
+    type: "boolean"
+    description: "Draw the series legend."
+  labelColor:
+    type: Color
+    description: "Colour applied to the label text."
   chartType:
     type: "string"
     enum: ["line", "bar", "pie", "donut", "scatter", "area", "radar", "polar", "bubble"]
@@ -19,7 +37,7 @@ properties:
     default: null
     description: "Dataset label shown in legend"
   data.datasets[].data:
-    type: "number[]"
+    type: "array<number>"
     required: true
     description: "Data points"
   data.datasets[].borderColor:
@@ -55,6 +73,15 @@ properties:
     type: "number"
     default: null
     description: "Fixed height (logical pixels)"
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  gridColor:
+    type: Color
+    description: "Grid color."
+  title:
+    type: "string"
+    description: "Dialog title shown at the top."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

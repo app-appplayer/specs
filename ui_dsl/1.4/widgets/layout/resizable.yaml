@@ -1,0 +1,54 @@
+type: resizable
+category: layout
+profile: Advanced
+since: v1.4
+description: |
+  A box the user can resize by dragging its edges or corners.
+
+  Distinct from `splitter`, which divides a fixed area between siblings.
+  This changes one widget's own size against whatever surrounds it.
+properties:
+  child:
+    type: Widget
+    required: true
+    description: "Content being sized."
+  width:
+    type: "number | binding"
+    description: "Two-way bound width. Bind it to persist the size."
+  height:
+    type: "number | binding"
+    description: "Two-way bound height."
+  minWidth:
+    type: number
+    description: "Lower bound on width."
+  maxWidth:
+    type: number
+    description: "Upper bound on width."
+  minHeight:
+    type: number
+    description: "Lower bound on height."
+  maxHeight:
+    type: number
+    description: "Upper bound on height."
+  handles:
+    type: "array<string>"
+    description: "Draggable edges/corners: `top`, `bottom`, `start`, `end`, `topStart`, `topEnd`, `bottomStart`, `bottomEnd`. Omitted means `[bottomEnd]`."
+  keepAspectRatio:
+    type: boolean
+    default: false
+    description: "Constrain to the starting ratio."
+events:
+  onResize:
+    description: Fired continuously during a drag.
+  onResizeEnd:
+    description: Fired once on release. Prefer this for persistence — `onResize` fires per frame.
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "resizable",
+        "width": "{{panel.width}}",
+        "minWidth": 200,
+        "handles": ["end"],
+        "child": { "type": "text", "content": "Panel" }
+      }

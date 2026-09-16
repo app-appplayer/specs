@@ -130,6 +130,51 @@ For `client.httpRequest`:
 - Non-localhost traffic MUST require HTTPS unless the permission explicitly allows HTTP.
 - Request and response sizes MUST be bounded by the permission's `maxRequestSize` / `maxResponseSize`.
 
+### 7.3.4 External URL Handling *(since v1.4)*
+
+`{"type": "navigation", "action": "openUrl"}` ([`04_Actions.md`](04_Actions.md) §4.3.3) hands control to software outside the runtime. Through 1.4.1 it was the only construct that did; `payment` ([`04_Actions.md`](04_Actions.md) §4.24) is the second, and §7.3.5 governs it. `location` ([`04_Actions.md`](04_Actions.md) §4.25) hands control nowhere but brings the person's position in, which is why §7.3.6 governs it separately. `openUrl` is Core — a document must not need the Client Profile to link outward — so the check belongs here rather than in the permission system.
+
+- The URL MUST be absolute and MUST be resolved from bindings **before** any policy check. A policy applied to `"{{link}}"` checks a literal, not the value that will open.
+- A runtime MUST NOT open a scheme it cannot reason about. Maintain an allowed-scheme set; `https` SHOULD be in it, `http` MAY be, and anything else (`mailto`, `tel`, custom app schemes) SHOULD require either an explicit host policy or user confirmation. `javascript:`, `data:`, and `file:` MUST NOT be opened.
+- Opening MUST NOT carry the application's credentials, tokens, or state. A URL assembled from state is the author's to sanitise, but the runtime MUST NOT append session material of its own.
+- A blocked or failed open MUST surface through the action's `onError`. Silent refusal teaches an author that their document is broken when it is the policy that refused.
+
+In a composed document the URL belongs to the definition that declared it (§7.10): an embedded subtree's link opens under the embedded origin's policy, never a wider one inherited from the embedder.
+
+
+### 7.3.5 Payment and Return Links *(since v1.4.2, Payment Profile)*
+
+`{"type": "payment"}` ([`04_Actions.md`](04_Actions.md) §4.24) is the second construct that hands control outside the document, and the only one that expects something to come back. Where the surface is presented varies — the host's browser, or a payment front end the host renders itself — and none of the rules below vary with it: card entry always ends on the provider's own domain, and a runtime MUST NOT frame a provider page inside the application to simulate an in-app surface.
+
+**Outbound — the document does not choose the destination.**
+
+- The payment address MUST be assembled by the host, against a payment surface configured in the host. A runtime MUST NOT accept a URL, an origin or a provider name from the document. This is what makes `payment` narrower than `openUrl`: `openUrl` opens what the author wrote, `payment` opens where the host already points.
+- **The receiving party is named by the document or verified by the host, never guessed.** Where the document omits `seller` the host resolves the party from the verified identity of the origin that served the document, and refuses when it cannot (§4.24.2). A default party is not a fallback; it is a payment to the wrong person.
+- **A price the document sends is accepted only where the item says the payer sets it** (§4.24.3), and out-of-range values are refused rather than clamped. Everywhere else the price is derived where the item lives, because a document that could set the price could set it to zero.
+- A runtime MUST NOT dispatch `payment` from a document at trust level `untrusted` ([`08_Client_Extensions.md`](08_Client_Extensions.md) §8.4.3 — display-only). The seller is the document's to name, and an untrusted document naming a seller is a request to collect money on behalf of a stranger.
+- §7.3.4's rule that the runtime appends no session material of its own applies unchanged. The payment surface authenticates its own payer; it never inherits the application's credentials.
+
+**Inbound — the return address is minted, matched, and not believed.**
+
+- The return address MUST be a custom scheme registered by the host. `http(s)` MUST NOT be used: any other installed handler for that domain intercepts it. A custom scheme is the correct form here because the link is minted inside the application for a peer already installed on the same device — the case where a custom scheme cannot fail silently for want of a handler.
+- The host MUST mint a fresh, unguessable request token into the return address on every dispatch, and MUST discard a return whose token matches no outstanding request. Without it, any inbound link resolves some payment; with it, a blind forgery is discarded before the document ever sees it.
+- A returned outcome MUST NOT be treated as proof of payment. It selects which callback fires and carries no more authority than that (§4.24.4). Confirmation stronger than a callback comes from the payment surface, server-side.
+- A discarded return MUST NOT be resolved as an application entry. A payment return is not an entry code, and a host that routes both MUST distinguish them before resolution rather than after.
+
+### 7.3.6 Position *(since v1.4.3, Location Profile)*
+
+`{"type": "location"}` ([`04_Actions.md`](04_Actions.md) §4.25) hands nothing outward. It brings something in, and that is the reason it needs rules of its own: where the two above ask what a document may reach, this one asks **what a document may learn about the person holding the device**.
+
+- **The host owns the prompt.** Consent is asked in the host's words, through the platform's own mechanism, and recorded where the platform records it. A runtime MUST NOT render a prompt of its own, and MUST NOT proceed on one a document drew — a consent dialog written by the party that benefits from the answer is not consent.
+- **`precision` is a ceiling.** The host MAY answer coarser and MUST NOT answer finer than asked (§4.25.2). Without the ceiling a document collects precision by asking quietly, and the ask is the only place anyone can weigh it.
+- **Coarse means never having read fine.** Where the platform can supply a reduced-accuracy fix, a host claiming this Profile SHOULD request one. Rounding a precise reading at the client is a smaller number, not a smaller disclosure — the fine value existed in the process that the document is running in.
+- **A position is read in response to an act, while the document is on screen** (§4.25.3). No lifecycle hook, no timer, no binding evaluation, and no background form. A document that can ask where someone is at a moment they chose is a different power from one that can watch.
+- **Nothing is cached across dispatches.** A second dispatch is a second question, and a stored answer returned to avoid asking again is a stale position wearing the look of a current one.
+- A runtime MUST NOT dispatch `location` from a document at trust level `untrusted` ([`08_Client_Extensions.md`](08_Client_Extensions.md) §8.4.3 — display-only).
+- **A position MUST NOT stand in for identity** (§4.25.4). It says where a device was, not who was holding it, and the guess is worst exactly where it matters.
+
+A refusal is an answer. `LOCATION_DENIED` reaches `onError` and the runtime MUST NOT re-ask on its own; a document that becomes unusable because someone declined has made the ask mandatory after the fact.
+
 ---
 
 ## 7.4 State Isolation

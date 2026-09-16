@@ -1,6 +1,6 @@
 type: webView
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Embedded web view.
@@ -45,6 +45,9 @@ properties:
     type: "Action"
     default: null
     description: "Fired on load error; `event.error`"
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

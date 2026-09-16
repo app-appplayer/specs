@@ -1,9 +1,43 @@
 type: networkGraph
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Network topology graph. Same node/edge model as `graph`, with topology-oriented defaults (hierarchical layout, directed edges).
+properties:
+  onNodeTap:
+    type: Action
+    description: "Fired when a node is tapped. `{{event.value}}` carries its id."
+  edgeColor:
+    type: Color
+    description: "Default colour for an edge with no colour of its own."
+  edges:
+    type: "array<object> | binding"
+    description: "Edges as `{ from, to, label?, color? }`. Literal array or binding — a topology that comes from the server is bound like any other data (`heatmap.data`, `dataTable.rows`, `kanban.columns` all read this way)."
+  layout:
+    type: "string"
+    description: "Placement algorithm: `force`, `circular`, `grid`, `tree`."
+  nodeColor:
+    type: Color
+    description: "Default fill for a node with no colour of its own."
+  nodes:
+    type: "array<object> | binding"
+    description: "Nodes as `{ id, label?, color? }`. Literal array or binding."
+  onEdgeTap:
+    type: Action
+    description: "Fired when an edge is tapped."
+  height:
+    type: Dimension
+    description: "Fixed height."
+  interactive:
+    type: "boolean"
+    description: "Whether the surface responds to pointer input."
+  labelColor:
+    type: Color
+    description: "Colour applied to the label text."
+  width:
+    type: Dimension
+    description: "Measured from real documents (2026-08-04): number, `{value, unit}`, a dimension string or a binding."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

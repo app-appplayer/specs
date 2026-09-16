@@ -6,6 +6,13 @@ description: |
   fontSize, fontWeight, lineHeight, letterSpacing, fontFeatureSettings)
   and adds the per-instance fields a content app needs: color,
   decoration, shader (gradient fill), and shadow stack.
+
+  The object stays open. Documents in the field carry keys this style
+  never had — `textAlign` inside `style` is the common one, written by
+  hand before it moved onto the widget — and the runtime simply ignores
+  them. Rejecting them here would not correct anything: validation runs
+  when the document loads, so a stray key inside `style` would stop the
+  whole page instead of being ignored the way the runtime ignores it.
 definition:
   {
     "oneOf": [
@@ -25,8 +32,13 @@ definition:
       },
       "fontSize": { "$ref": "#/$defs/Dimension" },
       "fontWeight": {
-        "oneOf": [
+        "anyOf": [
           { "type": "number" },
+          {
+            "type": "string",
+            "pattern": "^[1-9]00$",
+            "description": "CSS numeric spelling (`\"700\"`). Documents written against CSS habits use it, and the runtime reads it the same as the number."
+          },
           {
             "enum": [
               "thin", "extraLight", "light", "normal",
@@ -100,7 +112,7 @@ definition:
         "description": "Gradient/shader fill applied to the rendered text via a shader mask. When set, `color` is ignored."
       }
         },
-        "additionalProperties": false
+        "additionalProperties": true
       }
     ]
   }

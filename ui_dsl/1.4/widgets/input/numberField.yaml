@@ -1,9 +1,17 @@
 type: numberField
 category: input
 profile: Core
+aliases: [numberInput]
 description: |
   Specialized input for numeric values. Shared rows per §2.6.0; `value` is `number`.
 properties:
+  error:
+    type: "string"
+    description: "Error message shown under the field."
+  showStepper:
+    type: boolean
+    default: true
+    description: "Render increment/decrement controls. False leaves keyboard entry only."
   label:
     type: "string"
     description: "Field label."
@@ -28,6 +36,18 @@ properties:
     type: "string"
     description: "Trailing display text."
   thousandSeparator:
-    type: "string"
+    type: ["boolean", "string"]
     description: "Thousands separator for display."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  format:
+    type: "string"
+    description: "Display format."
+  helperText:
+    type: "string"
+    description: "Helper text shown below the field."
+  hint:
+    type: "string"
+    description: "Legacy alias of `placeholder`."
 # examples migrated verbatim from prose JSON fences.

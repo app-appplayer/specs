@@ -1,0 +1,24 @@
+name: BannerAction
+description: |
+  One action offered on a banner.
+
+  Keys the runtime reads are declared with their types; a document may carry
+  further keys, which the runtime ignores rather than refusing — an item shape
+  that rejected an unknown key would break every document that carries one for
+  its own bookkeeping.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "label": {
+        "type": "string"
+      },
+      "click": {
+        "$ref": "#/$defs/Action"
+      },
+      "onTap": {
+        "$ref": "#/$defs/Action"
+      }
+    },
+    "additionalProperties": true
+  }

@@ -1,14 +1,25 @@
 type: codeEditor
 category: advanced
-profile: Core
+profile: Advanced
+aliases: [code]
 since: v1.0
 description: |
   Syntax-highlighted code editor.
 properties:
+  lineNumberColor:
+    type: Color
+    description: "Colour of the line-number gutter."
+  copyable:
+    type: boolean
+    default: false
+    description: "Offer a copy-to-clipboard control. Useful with `readOnly`."
+  expandAll:
+    type: boolean
+    default: false
+    description: "Expand every collapsible region on load. Chiefly for structured languages such as JSON."
   code:
     type: "string | binding"
-    required: true
-    description: "Code content — literal string or binding."
+    description: "Code content — literal string or binding. Required unless `binding` supplies the content."
   language:
     type: "string"
     enum: ["plaintext", "javascript", "typescript", "dart", "python", "java", "kotlin", "swift", "go", "rust", "c", "cpp", "csharp", "ruby", "php", "sql", "json", "yaml", "xml", "html", "css", "markdown", "shell"]
@@ -17,7 +28,8 @@ properties:
   theme:
     type: "string"
     enum: ["vsLight", "vsDark", "monokai", "solarizedLight", "solarizedDark", "github", "dracula"]
-    default: "vsLight"
+    legacyValues: ["light", "dark"]
+    default: "vsDark"
     description: "Editor color theme."
   readOnly:
     type: "boolean"
@@ -48,17 +60,23 @@ properties:
     default: null
     description: "Widget height"
   backgroundColor:
-    type: "string"
+    type: Color
     default: null
     description: "Override theme background"
   textColor:
-    type: "string"
+    type: Color
     default: null
     description: "Override theme default text color"
   onChange:
     type: "Action"
     default: null
     description: "Fired on code change; `event.value` is current code"
+  binding:
+    type: "string"
+    description: "State path bound two-way to the widget value (§2.6.0). Runtime reads/writes this path without requiring an explicit onChange."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

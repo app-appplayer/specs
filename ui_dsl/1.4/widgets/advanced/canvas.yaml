@@ -1,9 +1,16 @@
 type: canvas
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.3
 description: |
   General-purpose vector drawing via an ordered command array. All numeric and color properties support binding expressions, enabling data-driven graphics (progress rings, custom indicators, composable chart primitives).
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+properties:
+  width:
+    type: Dimension
+    description: "Measured from real documents (2026-08-04): number, `{value, unit}`, a dimension string or a binding."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

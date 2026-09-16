@@ -4,6 +4,13 @@ profile: Core
 description: |
   Incremental numeric input with plus/minus buttons. Shared rows per §2.6.0; `value` is `number`.
 properties:
+  size:
+    type: "string"
+    enum: [small, medium, large]
+    description: "Control size preset. Defaults to `medium`."
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
   min:
     type: "number"
     description: "Minimum value."
@@ -14,4 +21,10 @@ properties:
     type: "number"
     default: 1
     description: "Increment size."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  color:
+    type: Color
+    description: "Colour of the increment / decrement controls."
 # examples migrated verbatim from prose JSON fences.

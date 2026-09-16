@@ -63,6 +63,11 @@ In `system` mode the runtime MUST track host brightness and switch schemes witho
 
 ### 5.3.1 Color roles (28 + 6 semantic)
 
+Every role below derives from `seed` when the bundle does not declare it —
+**except the six semantic roles**, which have no Material 3 counterpart to
+derive from and resolve to the widget's own default until the theme declares
+them.
+
 #### Primary family
 
 | Role | Description |
@@ -105,16 +110,27 @@ In `system` mode the runtime MUST track host brightness and switch schemes witho
 |---|---|
 | `surface` | Default surface (cards, sheets, dialogs) |
 | `onSurface` | Foreground on surface |
-| `surfaceVariant` | Lower-emphasis surface |
-| `onSurfaceVariant` | Foreground on surfaceVariant |
+| `onSurfaceVariant` | Foreground on the lower-emphasis surface |
 | `surfaceTint` | Tint applied at elevation (M3 elevation tinting) |
+| `surfaceBright` | Brightest surface in the family |
+| `surfaceDim` | Dimmest surface in the family |
+| `surfaceContainerLowest` | Container surface, lowest emphasis |
+| `surfaceContainerLow` | Container surface, low emphasis |
+| `surfaceContainer` | Container surface, default emphasis |
+| `surfaceContainerHigh` | Container surface, high emphasis |
+| `surfaceContainerHighest` | Container surface, highest emphasis |
+| `surfaceVariant` | **Legacy** — Material 3 retired this role. Resolves as `surfaceContainerHighest`. |
 
-#### Background family
+#### Background family *(legacy)*
+
+Material 3 folded the background family into the surface family. Both names
+resolve to their surface counterpart so documents written against earlier
+drafts keep working; new documents SHOULD use `surface` / `onSurface`.
 
 | Role | Description |
 |---|---|
-| `background` | Page background |
-| `onBackground` | Foreground on background |
+| `background` | **Legacy** — resolves as `surface` |
+| `onBackground` | **Legacy** — resolves as `onSurface` |
 
 #### Outline family
 
@@ -128,7 +144,8 @@ In `system` mode the runtime MUST track host brightness and switch schemes witho
 | Role | Description |
 |---|---|
 | `inverseSurface` | Inverse of surface (snackbars, etc.) |
-| `inverseOnSurface` | Foreground on inverseSurface |
+| `onInverseSurface` | Foreground on `inverseSurface` |
+| `inverseOnSurface` | **Legacy** spelling of `onInverseSurface` |
 | `inversePrimary` | Inverse of primary |
 
 #### Misc
@@ -178,13 +195,25 @@ Override via `theme.color.stateLayer.<state>`.
 
 ### 5.3.4 Color format
 
-| Format | Pattern | Example |
-|---|---|---|
-| 6-digit hex | `#RRGGBB` | `#2196F3` |
-| 8-digit hex | `#AARRGGBB` | `#80000000` |
-| Functional rgba | `rgb(r, g, b)` / `rgba(r, g, b, a)` | `rgba(33, 150, 243, 0.5)` |
+| Format | Pattern | Example | Rating |
+|---|---|---|---|
+| Scheme slot | a role name from §5.3.1 | `primary`, `onSurfaceVariant` | MUST — **preferred** |
+| 3-digit hex | `#RGB` | `#fff` | MUST |
+| 6-digit hex | `#RRGGBB` | `#2196F3` | MUST |
+| 8-digit hex | `#AARRGGBB` (alpha first) | `#80000000` | MUST |
+| CSS basic name | one of ten, case-insensitive | `red`, `grey` | MUST |
+| Functional rgba | `rgb(r, g, b)` / `rgba(r, g, b, a)` | `rgba(33, 150, 243, 0.5)` | SHOULD |
 
-Hex MUST. Functional SHOULD. Named CSS-keyword colors are not canonical.
+The ten basic names are `red`, `blue`, `green`, `yellow`, `orange`,
+`purple`, `black`, `white`, `grey`/`gray`. **No other CSS keyword is a
+color here** — `tomato` and its neighbours are not accepted, because a
+name a runtime cannot resolve paints nothing and says nothing. A scheme
+slot is preferred over every literal form: it is the only spelling that
+follows light / dark mode.
+
+This table and `configs/_primitive/Color.yaml` are one set. A validator
+reads the primitive; this section states what it means and why the
+ratings differ.
 
 ### 5.3.5 Light / Dark schemes
 
@@ -231,6 +260,20 @@ The "no `theme` block" row is the key contract: a bundle that omits the `theme` 
 | `lineHeight` | `number` | Multiplier (e.g. 1.5) or absolute px (≥ 16 treated as px) |
 | `letterSpacing` | `number` | Logical px |
 | `fontFeatureSettings` | `string[]` | OpenType features (e.g. `["liga", "kern"]`) |
+
+A `TextStyle` written at a widget (`text.style`, `richText.spans[].style`,
+`NavigationStyle.labelStyle`, …) takes the same fields plus the ones a type
+scale has no use for:
+
+| Field | Type | Description |
+|---|---|---|
+| `fontStyle` | `"normal" \| "italic"` | Slant |
+| `wordSpacing` | `number` | Extra space between words, logical px |
+| `color`, `backgroundColor` | `Color` | Foreground and behind-the-glyphs fill |
+| `decoration` | `"none" \| "underline" \| "overline" \| "lineThrough"` | Line drawn with the text |
+| `decorationColor` | `Color` | Colour of that line; defaults to the text colour |
+| `decorationStyle` | `"solid" \| "double" \| "dotted" \| "dashed" \| "wavy"` | How the line is drawn |
+| `decorationThickness` | `number` | Multiplier on the font's own thickness |
 
 ### 5.4.3 M3 default scale
 

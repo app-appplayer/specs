@@ -4,6 +4,9 @@ profile: Core
 description: |
   Detects touch and pointer gestures on its child.
 properties:
+  onScaleUpdate:
+    type: Action
+    description: "Fired as a pinch / rotate gesture proceeds. `{{event.value}}` carries the scale."
   child:
     type: "Widget"
     required: true

@@ -9,6 +9,12 @@ description: |
 
   Main-axis sizing: when at least one child is `expanded` / `flexible` / `spacer` (or carries a `flex` value), `linear` expands to fill the available main-axis space so those children can distribute the remainder; otherwise it shrink-wraps its children. Authors can override this with the explicit `mainAxisSize` property.
 properties:
+  wrap:
+    type: "boolean"
+    description: "Let children flow onto another line instead of overflowing."
+  padding:
+    type: EdgeInsets
+    description: "Space inside the surface, around its content."
   mainAxisSize:
     type: "string"
     enum: ["min", "max"]
@@ -16,21 +22,27 @@ properties:
   direction:
     type: "string"
     required: true
-    default: "\"vertical\""
+    default: "vertical"
     description: "`\"horizontal\"` or `\"vertical\"`."
     aliases:
       - orientation
       - scrollDirection
   alignment:
     type: "string"
-    default: "\"start\""
+    enum: [start, center, end, stretch]
+    default: "start"
     description: "Cross-axis alignment: `start`, `center`, `end`, `stretch`."
     aliases:
       - crossAxisAlignment
   distribution:
     type: "string"
-    default: "\"start\""
-    description: "Main-axis distribution: `start`, `center`, `end`, `spaceBetween`, `spaceAround`, `spaceEvenly`."
+    enum: [start, center, end, spaceBetween, spaceAround, spaceEvenly]
+    legacyValues: [space-between, space-around, space-evenly]
+    default: "start"
+    description: |
+      Main-axis distribution: `start` · `center` · `end` · `spaceBetween` ·
+      `spaceAround` · `spaceEvenly` (§17.1.3 spells multi-word values in
+      camelCase).
     aliases:
       - mainAxisAlignment
   spacing:
@@ -41,7 +53,7 @@ properties:
       - gap
       - itemSpacing
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     required: true
     description: "Child widgets arranged along `direction`."
 # examples migrated verbatim from prose JSON fences.

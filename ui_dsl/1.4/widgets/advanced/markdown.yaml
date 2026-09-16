@@ -1,14 +1,15 @@
 type: markdown
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Markdown renderer.
 properties:
   text:
-    type: "string "
-    default: "binding"
-    description: "required | Markdown source"
+    type: "string | binding"
+    required: true
+    aliases: [content]
+    description: "Markdown source"
   selectable:
     type: "boolean"
     default: false
@@ -26,15 +27,19 @@ properties:
     default: null
     description: "Base font size"
   textColor:
-    type: "string"
+    type: Color
     default: null
     description: "Default text color"
+  backgroundColor:
+    type: Color
+    default: null
+    description: "Surface behind the rendered document"
   linkColor:
-    type: "string"
+    type: Color
     default: null
     description: "Hyperlink color"
   codeBackgroundColor:
-    type: "string"
+    type: Color
     default: null
     description: "Code-block background"
   onLinkTap:

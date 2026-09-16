@@ -1,0 +1,41 @@
+type: barcode
+category: advanced
+profile: Advanced
+since: v1.4
+description: |
+  Renders a 1-D barcode for `value`.
+
+  Like `qrCode`, the bar pattern is computed rather than laid out. Unlike it,
+  each `format` constrains what `value` may contain — an EAN-13 payload is
+  thirteen digits with a check digit, not arbitrary text.
+properties:
+  value:
+    type: "string | binding"
+    required: true
+    description: "Encoded payload. MUST satisfy the chosen `format`; a runtime reports a violation rather than rendering an unscannable image."
+  format:
+    type: string
+    enum: [code128, code39, ean13, ean8, upcA, upcE, itf, codabar]
+    default: "code128"
+    description: "Symbology. `code128` accepts the widest payload and is the safe default."
+  width:
+    type: number
+    description: "Rendered width in logical pixels. Omitted means intrinsic — the natural width for the module count, which is what stays scannable."
+  height:
+    type: number
+    default: 80
+    description: "Bar height."
+  displayValue:
+    type: boolean
+    default: true
+    description: "Print the payload under the bars."
+  foregroundColor:
+    type: Color
+    description: "Bar color."
+  backgroundColor:
+    type: Color
+    description: "Background color."
+examples:
+  - name: basic
+    dsl: |
+      { "type": "barcode", "value": "4006381333931", "format": "ean13" }

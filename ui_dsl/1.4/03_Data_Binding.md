@@ -83,6 +83,7 @@ An unprefixed identifier is resolved by searching scopes in order. The first sco
 6. Route parameters (`route.params.*`)
 7. Runtime capabilities (`runtime.*`)
 8. i18n keys (`i18n.*`) — see [`12_Internationalization.md`](12_Internationalization.md)
+9. Entry context (`entry.*`) and current principal (`identity.*`) *(since v1.4 — see [`08_Client_Extensions.md`](08_Client_Extensions.md) §8.9)*
 
 If no scope matches, the expression evaluates to `null` and the runtime MAY log a warning.
 
@@ -113,6 +114,60 @@ Full prefix catalog is maintained in [`17_Naming.md`](17_Naming.md) §17.2.5. Su
 | `resources.` | v1.1 | Subscribed MCP resources | Read-only |
 | `sync.` | v1.1 | Offline sync status | Read-only |
 | `runtime.` | v1.1 | Runtime capability flags | Read-only |
+| `entry.` | v1.4 | How this definition was entered (§8.9.2) | Read-only |
+| `identity.` | v1.4 | The current principal (§8.9.2) | Read-only |
+| `slot.` | v1.4 | A dashboard slot and the device bound to it (§3.5.5) | Read-write |
+
+### 3.5.5 Dashboard Slots (`slot.*`) *(since v1.4)*
+
+A dashboard composes several servers into one document. Each **slot** names a
+position in that document, and the host binds a device to it. The bound
+device's state is mirrored under `slot.<slotId>.` in the dashboard's own state,
+and writes to that prefix reach the device.
+
+| Path | Direction | Meaning |
+|---|---|---|
+| `slot.<id>.deviceId` | Read-only | Which device the host bound to this slot |
+| `slot.<id>.error` | Read-only | Why binding or mounting failed, when it did |
+| `slot.<id>.<path>` | Read-write | The bound device's state at `<path>` |
+
+This is what makes a dashboard more than a set of tiles side by side: one
+device's reading and another device's control are **two paths in one state
+tree**, so the ordinary binding and action vocabulary already expresses the
+relationship between them.
+
+```json
+{
+  "type": "conditional",
+  "condition": "{{slot.greenhouse.temperature < 10}}",
+  "then": {
+    "type": "state", "action": "set",
+    "binding": "slot.boiler.heating", "value": true
+  }
+}
+```
+
+No action addresses a device: the **path** does. A dashboard that wanted to
+call one server's tool from another server's reading would otherwise need a
+way to name the target in every action, and every action would carry a field
+that means nothing outside a dashboard.
+
+Rules:
+
+- A write to `slot.<id>.<path>` MUST reach the bound device's state at
+  `<path>`, and a change in the device's state at `<path>` MUST appear at
+  `slot.<id>.<path>`. A host that mirrors one direction only turns a control
+  into a display without saying so.
+- `deviceId` and `error` are the host's, not the device's: a document MUST NOT
+  write them, and a device MUST NOT be able to overwrite them by naming those
+  paths in its own state.
+- A slot with no device bound has no `slot.<id>.<path>` entries. A binding
+  against one resolves as absent (§3.4), which is the same state it has while
+  a device is still connecting — a dashboard SHOULD render that as pending
+  rather than as zero.
+- Slot ids are the document's, chosen where the slots are declared. A host
+  MUST NOT invent or renumber them, or a document's bindings stop matching its
+  own layout.
 
 ### 3.5.1 List Iteration Context
 

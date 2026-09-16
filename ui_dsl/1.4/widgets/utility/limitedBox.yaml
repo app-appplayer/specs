@@ -6,12 +6,15 @@ description: |
 properties:
   maxWidth:
     type: "number"
-    default: "double.infinity"
-    description: "Upper bound when width is unbounded."
+    description: |
+      Upper bound applied when the parent gives unbounded width. Omitted, no
+      bound is applied — written as a number, so the "infinity" a Flutter
+      implementation uses internally is not a value a document can carry.
   maxHeight:
     type: "number"
-    default: "double.infinity"
-    description: "Upper bound when height is unbounded."
+    description: |
+      Upper bound applied when the parent gives unbounded height. Omitted, no
+      bound is applied.
   child:
     type: "Widget"
     required: true

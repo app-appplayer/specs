@@ -1,0 +1,62 @@
+name: IconRef
+since: v1.4
+description: |
+  Reference to an icon. Three forms, all accepted anywhere an icon is
+  taken — the `icon` widget and every widget with an icon slot
+  (`button.icon`, `iconButton.icon`, `floatingActionButton.icon`,
+  `popupMenuButton.icon`, `rating.icon`, `offlineFallback.icon`,
+  `permissionPrompt.icon`, …):
+
+  1. **Name** — `"home"`, `"folder_open"`, … resolved through the
+     runtime's built-in icon table. Zero-cost, and the default reading of
+     a bare string.
+  2. **Codepoint** — `{codepoint, fontFamily?, fontPackage?}` for glyphs
+     the name table does not carry.
+  3. **`AssetRef`** — any form that primitive accepts (network URL,
+     `bundle://`, `assets/`, `data:image/svg+xml;…`, `client://`, or the
+     `{uri, origin?}` object). Which of those a runtime resolves is
+     declared, not assumed (`06_Runtime_Contract.md` §6.12).
+
+  A bare string carrying a known scheme prefix (or an `assets/` path) is
+  an asset; every other bare string is a **name**. That rule is what lets
+  the named form stay the zero-ceremony default while the same slot also
+  accepts a server-served glyph.
+
+  This primitive exists so the rule is stated once. Before it, `icon`
+  documented three forms while the eight other icon slots were typed as
+  bare strings — so the same value was legal in one slot and undeclared
+  in the next, and a codepoint object could not be written at all outside
+  the `icon` widget.
+definition:
+  {
+    "$comment": "anyOf, not oneOf: the name branch is an unconstrained string, so a binding expression matches both it and the Binding branch. `oneOf` reads that legitimate value as a violation — the same reason the Widget union uses anyOf.",
+    "anyOf": [
+      {
+        "type": "string",
+        "description": "Icon name, or an AssetRef string (scheme-prefixed, or an `assets/` path)."
+      },
+      {
+        "type": "object",
+        "properties": {
+          "codepoint": { "type": "integer" },
+          "fontFamily": { "type": "string" },
+          "fontPackage": { "type": "string" }
+        },
+        "required": ["codepoint"],
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "properties": {
+          "uri": {
+            "type": "string",
+            "description": "Resource uri read through MCP `resources/read` on the resolved origin."
+          },
+          "origin": { "$ref": "#/$defs/Origin" }
+        },
+        "required": ["uri"],
+        "additionalProperties": false
+      },
+      { "$ref": "#/$defs/Binding" }
+    ]
+  }

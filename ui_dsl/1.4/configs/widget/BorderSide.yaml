@@ -5,7 +5,7 @@ definition:
   {
     "type": "object",
     "properties": {
-      "color": { "type": "string" },
+      "color": { "$ref": "#/$defs/Color" },
       "width": { "type": "number", "minimum": 0 },
       "style": {
         "enum": ["solid", "none"],

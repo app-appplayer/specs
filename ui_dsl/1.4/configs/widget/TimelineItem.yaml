@@ -1,0 +1,30 @@
+name: TimelineItem
+description: |
+  One entry on a timeline.
+
+  Keys the runtime reads are declared with their types; a document may carry
+  further keys, which the runtime ignores rather than refusing — an item shape
+  that rejected an unknown key would break every document that carries one for
+  its own bookkeeping.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "subtitle": {
+        "type": "string"
+      },
+      "time": {
+        "type": "string"
+      },
+      "icon": {
+        "$ref": "#/$defs/IconRef"
+      },
+      "color": {
+        "$ref": "#/$defs/Color"
+      }
+    },
+    "additionalProperties": true
+  }

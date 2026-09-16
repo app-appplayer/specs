@@ -7,6 +7,17 @@ properties:
   label:
     type: "string"
     description: "Optional label."
+  tristate:
+    type: "boolean"
+    default: false
+    description: |
+      Allow the third, indeterminate state. With `tristate: true` the value
+      cycles unchecked → checked → indeterminate, and `null` is a value the
+      binding carries. A parent row summarising children that are partly
+      selected has no other way to say so — `false` would claim none are.
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

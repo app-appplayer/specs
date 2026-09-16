@@ -25,14 +25,20 @@ definition:
       {
         "enum": [
           "topStart",
+          "topLeft",
           "topCenter",
           "topEnd",
+          "topRight",
           "centerStart",
+          "centerLeft",
           "center",
           "centerEnd",
+          "centerRight",
           "bottomStart",
+          "bottomLeft",
           "bottomCenter",
-          "bottomEnd"
+          "bottomEnd",
+          "bottomRight"
         ]
       },
       {

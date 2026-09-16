@@ -4,6 +4,12 @@ profile: Core
 description: |
   Shows or hides a child with optional state preservation and replacement content.
 properties:
+  maintainAnimation:
+    type: "boolean"
+    description: "Keep animations running while hidden."
+  maintainInteractivity:
+    type: "boolean"
+    description: "Keep the subtree interactive while hidden."
   visible:
     type: "boolean | binding"
     default: true
@@ -23,7 +29,7 @@ properties:
     type: "Widget"
     description: "Primary widget. Required when `children` is omitted."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: "Multiple widgets; runtime wraps them in a linear column. Mutually exclusive with `child`."
 # examples migrated verbatim from prose JSON fences.
 examples:

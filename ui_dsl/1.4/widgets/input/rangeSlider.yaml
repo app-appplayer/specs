@@ -4,6 +4,21 @@ profile: Core
 description: |
   Range selection with two thumbs. Shared rows per §2.6.0; `value` is an object `{ start, end }`.
 properties:
+  labels:
+    type: array<string>
+    description: "Labels shown above the two thumbs."
+  onChangeEnd:
+    type: Action
+    description: "Fired when a thumb is released."
+  onChangeStart:
+    type: Action
+    description: "Fired when a thumb starts moving."
+  activeColor:
+    type: Color
+    description: "Colour of the selected / active portion."
+  inactiveColor:
+    type: Color
+    description: "Colour of the unselected / inactive portion."
   min:
     type: "number"
     default: 0
@@ -15,4 +30,7 @@ properties:
   divisions:
     type: "number"
     description: "Number of discrete steps."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
 # examples migrated verbatim from prose JSON fences.

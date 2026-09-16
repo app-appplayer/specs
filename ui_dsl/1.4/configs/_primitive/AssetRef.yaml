@@ -1,30 +1,92 @@
 name: AssetRef
 description: |
-  Reference to an asset (image, font, audio, video, SVG, …). Five
-  scheme prefixes are accepted, picked by the runtime to dispatch
-  the right loader:
+  Reference to an asset (image, font, audio, video, SVG, …).
 
-  - `bundle://<path>` — asset packaged inside the active bundle.
+  An asset reference takes one of three shapes: a **scheme-prefixed
+  string**, an **object** naming a resource and the origin that serves
+  it, or a **binding** that resolves to either at render time.
+
+  ## Known schemes
+
+  A runtime dispatches the right loader by prefix:
+
+  - `bundle://<path>` — asset packaged inside the active bundle. Inside
+    an embedded subtree this is the *embedded* document's bundle, not
+    the embedder's (`06_Runtime_Contract.md` §6.11.3).
   - `https://<url>` / `http://<url>` — fetched over the network and
     cached on first render.
   - `data:<mime>;base64,<payload>` (or `data:<mime>,<urlencoded>`) —
-    inline bytes carried in the DSL itself.
+    inline bytes carried in the DSL itself. The only form that needs no
+    I/O capability at all, and so the one a constrained host can always
+    render.
   - `assets/<path>` — Flutter-style local asset path declared in the
     consumer app's pubspec asset list (used by host integrations that
     ship icon SVGs alongside the runtime).
   - `client://<channel>/<id>` — resource served by the client / host
-    process via an MCP client-extension channel.
+    process via an MCP client-extension channel (`08_Client_Extensions.md`
+    §8.3). This is how a document reaches the *host's* own files —
+    `client://file/…`, `client://workspace/…` — rather than the server's.
 
-  Used cross-schema by `app` (splash · publisher logos · font
-  assets), `page`/widgets (image · icon · BackgroundImage · video
-  src), and `theme` (font asset registration). Lives under
-  `configs/_primitive/` for that reason.
+  **This list is open, not closed.** The pattern admits any RFC 3986
+  scheme so a host may serve forms this document does not name, exactly
+  as `Origin` admits sources beyond `connection`. A runtime that meets a
+  scheme it does not implement MUST fail visibly per §6.12 rather than
+  reject the document — an author naming a scheme this runtime lacks has
+  written a valid document that this runtime cannot fully render, which
+  is not the same as an invalid document.
+
+  ## Object form — an asset served by an origin
+
+  ```json
+  { "uri": "file:///reports/2026-q2.pdf", "origin": { "connection": "{{ deviceId }}" } }
+  ```
+
+  `uri` is read through MCP `resources/read` on the named origin. No new
+  scheme is minted for "the server's own asset": MCP already reads an
+  arbitrary resource uri and returns text or base64 `blob`, so a server
+  publishes assets the same way it publishes anything else.
+
+  `origin` is the `Origin` primitive, so addressing an asset and
+  addressing a definition use one vocabulary. Omitted, the asset resolves
+  against the **ambient origin** — the origin of the definition that
+  declares it (§6.11.3), never the embedder's.
+
+  The object form is what lets an asset stay *out* of application state.
+  A server with room can publish a resource uri and let the runtime pull
+  the bytes; a server without room can inline the same asset as a `data:`
+  string. Both are valid, and which one a server chooses is its own
+  decision — the DSL does not force a transport on it.
+
+  ## Support is declared, not assumed
+
+  Runtimes declare which schemes they resolve (§6.12, §18.9). Nothing
+  here requires a runtime to implement all of them; it requires a runtime
+  to be honest about which it does, and to route the rest to the
+  consumer's declared fallback instead of a blank box or a placeholder
+  bearing an implementation detail.
+
+  Used cross-schema by `app` (splash · publisher logos · font assets),
+  `page`/widgets (image · icon · avatar · lottieAnimation ·
+  BackgroundImage · mediaPlayer · rive · lightbox), and `theme` (font
+  asset registration). Lives under `configs/_primitive/` for that reason.
 definition:
   {
     "oneOf": [
       {
         "type": "string",
-        "pattern": "^(bundle://|https?://|data:|assets/|client://)"
+        "pattern": "^([A-Za-z][A-Za-z0-9+.-]*:|assets/)"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "uri": {
+            "type": "string",
+            "description": "Resource uri read through MCP `resources/read` on the resolved origin."
+          },
+          "origin": { "$ref": "#/$defs/Origin" }
+        },
+        "required": ["uri"],
+        "additionalProperties": false
       },
       { "$ref": "#/$defs/Binding" }
     ]

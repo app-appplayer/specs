@@ -1,0 +1,63 @@
+type: gantt
+category: advanced
+profile: Advanced
+since: v1.4
+description: |
+  Tasks on a time axis, with dependencies and progress.
+
+  What makes this a widget rather than a composition is the axis. Bars are
+  positioned by *time*, not by index, so the row and the header must share
+  one scale, stay aligned through zoom and horizontal scroll, and place a
+  task whose span is shorter than a pixel without dropping it. Composing it
+  from `grid` gives rows that drift from the header as soon as either
+  scrolls.
+
+  Dependencies are drawn, not enforced: the widget renders the arrows and
+  reports an edit, and whether a move is legal is the server's answer.
+properties:
+  tasks:
+    type: "array<object> | binding"
+    required: true
+    description: "`{ id, label, start, end, progress?, dependsOn?, group?, color? }`. `start`/`end` are ISO-8601. `dependsOn` holds task ids."
+  viewMode:
+    type: string
+    enum: [hour, day, week, month, quarter, year]
+    default: "day"
+    description: "Axis granularity."
+  range:
+    type: "object"
+    description: "`{ start, end }` window shown. Omitted fits all tasks."
+  editable:
+    type: boolean
+    default: false
+    description: "Allow dragging bars to move them and dragging edges to reschedule."
+  showProgress:
+    type: boolean
+    default: true
+    description: "Render each task's `progress` as a fill: the completed fraction in the bar's colour, the remainder in a lighter tint of it."
+  showDependencies:
+    type: boolean
+    default: true
+    description: "Draw dependency arrows."
+  todayMarker:
+    type: boolean
+    default: true
+    description: "Mark the current instant on the axis."
+  rowHeight:
+    type: number
+    description: "Task row height in logical pixels."
+events:
+  onTaskChange:
+    description: "Fired when a bar is moved or resized. Carries `{ id, start, end }` — the proposed schedule, not an applied one."
+  onTaskClick:
+    description: Fired when a bar is activated without dragging.
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "gantt",
+        "tasks": "{{plan.tasks}}",
+        "viewMode": "week",
+        "editable": true,
+        "onTaskChange": { "type": "tool", "tool": "rescheduleTask", "params": { "id": "{{event.id}}", "start": "{{event.start}}", "end": "{{event.end}}" } }
+      }

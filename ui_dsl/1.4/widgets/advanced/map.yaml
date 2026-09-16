@@ -1,12 +1,27 @@
 type: map
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Geographic map with markers and overlays.
 properties:
+  markerColor:
+    type: Color
+    description: "Default colour for a marker with no colour of its own."
+  showCoordinates:
+    type: "boolean"
+    description: "Show the coordinate readout."
+  showGrid:
+    type: "boolean"
+    description: "Draw the coordinate grid."
+  height:
+    type: Dimension
+    description: "Fixed height."
+  interactive:
+    type: "boolean"
+    description: "Whether the surface responds to pointer input."
   center:
-    type: "`{ latitude, longitude }`"
+    type: "{ latitude, longitude }"
     description: "Map center coordinates. Required when flat `latitude` / `longitude` are omitted."
   latitude:
     type: "number"
@@ -24,7 +39,7 @@ properties:
     default: "standard"
     description: "Base tile set."
   markers:
-    type: "`Marker[]`"
+    type: "array<Marker>"
     default: "[]"
     description: "Point markers"
   markers[].id:
@@ -52,7 +67,7 @@ properties:
     default: null
     description: "Marker color"
   overlays:
-    type: "`Overlay[]`"
+    type: "array<Overlay>"
     default: "[]"
     description: "Polygon / polyline / circle overlays"
   overlays[].type:
@@ -61,7 +76,7 @@ properties:
     required: true
     description: "Overlay shape."
   overlays[].points:
-    type: "`{ latitude, longitude }[]`"
+    type: "array<object{ latitude: number, longitude: number }>"
     default: "required for polygon/polyline"
     description: "Vertex list"
   overlays[].fillColor:
@@ -84,6 +99,15 @@ properties:
     type: "Action"
     default: null
     description: "Fired on map tap; `event.latitude` / `event.longitude`"
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  gridColor:
+    type: Color
+    description: "Grid color."
+  width:
+    type: Dimension
+    description: "Measured from real documents (2026-08-04): number, `{value, unit}`, a dimension string or a binding."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

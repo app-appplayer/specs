@@ -4,15 +4,35 @@ profile: Core
 description: |
   Small status indicator typically anchored to another widget.
 properties:
+  isLabelVisible:
+    type: "boolean"
+    description: "Whether the badge label is drawn at all."
+  smallSize:
+    type: "boolean"
+    description: |
+      Render the compact form — a smaller dot and label. The dimensions are
+      the M3 badge sizes, so this is a form switch, not a measurement.
+  offset:
+    type: "object"
+    description: "Displacement from the anchor, as `{ dx, dy }`."
   label:
     type: "string"
     description: "Text content of the badge."
   color:
-    type: "string"
+    type: Color
     description: "Badge background color."
   child:
     type: "Widget"
     description: "Optional child the badge is attached to."
+  alignment:
+    type: Alignment
+    description: "Where the badge sits against the child it decorates."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  textColor:
+    type: Color
+    description: "Default text color"
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

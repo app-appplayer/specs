@@ -33,11 +33,11 @@ properties:
   fit:
     type: string
     enum: [fill, contain, cover, fitWidth, fitHeight, none, scaleDown]
-    default: "\"contain\""
+    default: "contain"
     description: How the artboard scales within its render bounds.
   alignment:
     type: Alignment
-    default: "\"center\""
+    default: "center"
     description: Alignment of the artboard within its render bounds.
   width:
     type: Dimension

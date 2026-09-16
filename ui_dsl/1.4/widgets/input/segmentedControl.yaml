@@ -4,15 +4,19 @@ profile: Core
 description: |
   Segmented selection, styled as tabs or buttons. Shared rows per §2.6.0.
 properties:
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
   options:
-    type: "Option[]"
+    type: "array<Option>"
     required: true
     description: "`{ value, label, icon? }` entries."
     aliases:
       - segments
   variant:
     type: "string"
-    default: "\"segmented\""
+    enum: [segmented, tabs, buttons]
+    default: "segmented"
     description: "`segmented`, `tabs`, `buttons`."
 # examples migrated verbatim from prose JSON fences.
 examples:

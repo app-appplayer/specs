@@ -6,19 +6,37 @@ aliases:
 description: |
   Scrollable two-dimensional collection.
 properties:
+  mainAxisExtent:
+    type: Dimension
+    description: "Fixed extent of each row along the scroll axis."
+  maxCrossAxisExtent:
+    type: Dimension
+    description: "Widest a cell may be before the grid adds a column."
+  padding:
+    type: EdgeInsets
+    description: "Space inside the surface, around its content."
+  physics:
+    type: "string"
+    description: "Scroll response: `bouncing`, `clamping`, `never`, `always`."
+  shrinkWrap:
+    type: "boolean"
+    description: "Size to the content instead of filling the viewport."
+  spacing:
+    type: Dimension
+    description: "Gap between adjacent items."
   items:
-    type: "binding"
+    type: "array | binding"
     description: "Array source. Required when `children` is omitted."
   itemTemplate:
     type: "Widget"
     description: "Template rendered per bound item. Required with `items`."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: "Static grid cells. Mutually exclusive with `items` + `itemTemplate`."
   columns:
     type: "number | object"
     required: true
-    description: "Column count; may use responsive `{default, sm, md, lg}`."
+    description: "Column count. The object form is a responsive override keyed by form factor (§14.1.1) — `{compact, medium, expanded, large, extraLarge, default}`."
     aliases:
       - crossAxisCount
   rowGap:
@@ -32,6 +50,15 @@ properties:
   itemAspectRatio:
     type: "number"
     description: "Fixed aspect ratio for each item."
+  reverse:
+    type: "boolean"
+    description: "When true, run the transition in reverse direction (for back navigation)."
+  scrollDirection:
+    type: "string"
+    description: "Scroll axis."
+  template:
+    type: ["object", "string"]
+    description: "Template name to instantiate."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

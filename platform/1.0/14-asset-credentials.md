@@ -34,6 +34,18 @@ Schema unchanged — a convention over the existing knowledge fact. `category: "
 
 Intent: internal and external assets under one model, with location as an attribute. A market-shared bundle leaks only the `credentialRef`; the secret body never leaves.
 
+### 1.1 `fs` locator = project-portable
+
+An `fs` asset `locator` is **legitimate both inside and outside** the project. An asset may be an external folder the project **operates on**, or a file the project owns. Portability normalization applies **only to links inside the project**:
+
+- A locator **inside the project** → stored **relative** to the project root (the active workspace bundle) → survives a folder rename · copy · move (self-contained and portable).
+- A locator **outside the project** (a target of work, a remote, …) → **kept absolute as-is**. Relativizing something external means nothing; it is not a candidate for it.
+
+- **Storing (normalization)**: on asset registration (`knowledge_fact_save category:"asset"`), if the `fs` locator is **inside the project** the host normalizes it relative to the active workspace bundle directory (`<projectRoot>/<wsId_>.mbd`, the host tab's `currentProject`). Absolute paths outside the project, `http(s)://`, `bundle://` and the like stay **as-is** as external refs. (Export / vendoring is only for when an external target should be brought into the project — a choice, not a portability requirement.)
+- **Reading (resolve)**: `asset_open` reads through the host's `studio.fs.*` capability, and `fs.*` resolves a relative locator against the **current** active project root (`registerFsTools(activeProjectRoot:)`). It works unchanged from wherever the project was moved to.
+- **Anchor-identity invariant**: the store-side relativization anchor = the read-side resolve anchor = the host tab's `currentProject` (= `wsBundleDir(projectRoot, wsId)`). Break this single anchor and assets stop opening after a rename.
+- This resolve lives in the host fs layer (above), so **bundle apps inherit it automatically** — an individual builtin does not reimplement it.
+
 ## 2. `secret.*` Keyed Vault (fixed surface)
 
 | namespace | tools |

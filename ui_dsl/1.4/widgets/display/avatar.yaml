@@ -5,8 +5,8 @@ description: |
   Circular widget for user images or initials.
 properties:
   src:
-    type: "string"
-    description: "Image URL; if absent, falls back to `label`."
+    type: AssetRef
+    description: "Image source. Any `AssetRef` form; if absent or unresolvable, falls back to `label`."
   label:
     type: "string"
     description: "Text label (typically initials)."
@@ -17,10 +17,22 @@ properties:
     default: 40
     description: "Diameter in logical pixels."
   color:
-    type: "string"
+    type: Color
     description: "Background color when showing label."
     aliases:
       - backgroundColor
+  backgroundImage:
+    type: BackgroundImage
+    description: "Image drawn behind the initials or icon."
+  foregroundColor:
+    type: Color
+    description: "Bar color."
+  icon:
+    type: IconRef
+    description: "Icon shown. Any `IconRef` form."
+  radius:
+    type: "number"
+    description: "Radius of the circle, in logical pixels."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

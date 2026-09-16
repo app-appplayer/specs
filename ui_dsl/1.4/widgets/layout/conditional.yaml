@@ -4,15 +4,19 @@ profile: Core
 description: |
   Renders different branches based on an expression. Two forms are supported: then/else and multi-branch (`switch`/`cases`).
 properties:
-  # Two polymorphic forms: then/else OR switch/cases. Authors pick one.
-  # Schema-level `required` is not enforced because each form needs a
-  # different subset of these keys.
+  # Two polymorphic forms: then/else OR switch/cases. Authors pick one, and
+  # neither key is required: a document carrying neither has to keep opening.
+  # It was briefly declared as "one of the two" here — the schema then rejected
+  # such a document at load, which is the one failure mode §1.7.5 rules out.
+  # The runtime treats a conditional with no condition as not-true and renders
+  # the `else` / `default` branch, or nothing.
   condition:
     type: "boolean | binding"
     description: "Boolean literal or boolean-producing expression (then/else form)."
   then:
     type: "Widget"
     description: "Rendered when `condition` is truthy (then/else form)."
+    aliases: [child, widget]
   else:
     type: "Widget"
     description: "Rendered when `condition` is falsy (then/else form)."

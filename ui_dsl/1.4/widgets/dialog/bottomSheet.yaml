@@ -4,6 +4,27 @@ profile: Core
 description: |
   Modal bottom sheet with swipeable handle.
 properties:
+  dragHandleColor:
+    type: Color
+    description: "Colour of the drag handle."
+  dragHandleSize:
+    type: "object"
+    description: "Size of the drag handle, as `{ width, height }`."
+  onClosing:
+    type: Action
+    description: "Fired as the sheet begins to close."
+  showDragHandle:
+    type: "boolean"
+    description: "Draw the drag handle at the top of the sheet."
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
+  constraints:
+    type: "object"
+    description: "Minimum / maximum width and height the box may take."
+  shadowColor:
+    type: Color
+    description: "Colour of the drop shadow cast by the surface."
   child:
     type: "Widget"
     required: true
@@ -17,7 +38,7 @@ properties:
     default: true
     description: "Allow drag to dismiss."
   backgroundColor:
-    type: "string"
+    type: Color
     description: "Sheet background."
   shape:
     type: "object"
@@ -25,4 +46,7 @@ properties:
   onClose:
     type: "Action"
     description: "Fired when the sheet is dismissed (scrim tap when `isDismissible` is true, drag-down when `enableDrag` is true)."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the sheet surface."
 # examples migrated verbatim from prose JSON fences.

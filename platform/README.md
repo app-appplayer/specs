@@ -32,6 +32,8 @@ The composition model of every package, tool, bundle, and UI in the MakeMind fra
 | [`1.0/17-device-discovery.md`](1.0/17-device-discovery.md) | nearby device discovery (announce-scan → probe-confirm · mDNS `_mcp._tcp` · manifest `trust` signature · onboarding axis) |
 | [`1.0/18-ble-scan-observe.md`](1.0/18-ble-scan-observe.md) | BLE advertisement observation (one radio, N isolated subscriptions · `client.mcpStream` binding) |
 | [`1.0/19-scan-entry-identity.md`](1.0/19-scan-entry-identity.md) | scan entry & identity (how a scanned medium opens an app on the page it named, and who the opener is) |
+| [`1.0/20-account-storage.md`](1.0/20-account-storage.md) | account storage (opaque keyed documents per account · scope boundaries · client-side merge · quota) |
+| [`1.0/21-payment-action.md`](1.0/21-payment-action.md) | payment action (an app declares only who and what · the host holds no credential and no card passes through it) |
 
 Numbers absent from this table are specs whose subject is outside the published surface.
 

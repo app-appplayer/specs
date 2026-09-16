@@ -7,13 +7,22 @@ description: |
   `carousel` (partial-viewport, peeking neighbours) — pageView is
   always one full page. Each child is rendered as a separate page.
 properties:
+  padEnds:
+    type: "boolean"
+    description: "Pad the first and last page so they can centre."
+  pageSnapping:
+    type: "boolean"
+    description: "Snap to page boundaries when the drag ends."
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
   direction:
     type: string
     enum: [horizontal, vertical]
-    default: "\"horizontal\""
+    default: "horizontal"
     description: Scroll axis.
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     required: true
     description: One child per page.
   initialPage:
@@ -22,25 +31,34 @@ properties:
     description: Index of the page rendered first.
   loop:
     type: boolean
-    default: "false"
+    default: false
     description: When true the list wraps around — last → first.
   scrollPhysics:
     type: string
     enum: [bouncing, clamping, neverScrollable]
-    default: "\"clamping\""
+    default: "clamping"
     description: |
       Edge / overscroll behaviour. `bouncing` mirrors iOS rubber-band;
       `clamping` is the Android-style hard stop; `neverScrollable`
       disables user dragging (use programmatic page change only).
   allowImplicitScrolling:
     type: boolean
-    default: "false"
+    default: false
     description: |
       Pre-render the adjacent pages off-screen so subsequent swipes
       are instant (assistive-technology friendly). Costs memory.
   onPageChanged:
     type: Action
     description: Fires after the active page settles. `event.page` carries the new index.
+  onChange:
+    type: Action
+    description: "Fired when the visible page changes. `{{event.value}}` carries its index."
+  reverse:
+    type: "boolean"
+    description: "When true, run the transition in reverse direction (for back navigation)."
+  scrollDirection:
+    type: "string"
+    description: "Scroll axis."
 examples:
   - name: book_pages
     dsl: |

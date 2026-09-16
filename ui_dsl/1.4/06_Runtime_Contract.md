@@ -102,10 +102,14 @@ The DSL uses a dual placement rule for lifecycle hooks:
 
 | Placement | Applies to | Shape |
 |-----------|------------|-------|
-| **Definition-level** | `ApplicationDefinition`, `PageDefinition` | Hooks are **top-level properties** of the definition (e.g., `"onInit": [...]`, `"onDestroy": [...]`) |
+| **Definition-level** | `ApplicationDefinition`, `PageDefinition` | Hooks are **top-level properties** of the definition (e.g., `"onInit": [...]`), **or** grouped in a `"lifecycle": {...}` object. Both forms are valid and the two sets merge — see §1.5.3 |
 | **Instance-level** | Any widget (including template instances) | Hooks are wrapped in a `"lifecycle": {...}` object property on the widget |
 
-Definition-level placement reflects that the definition itself is the lifecycle-aware entity. Instance-level placement keeps lifecycle concerns explicitly separated from the widget's own properties and prevents collision with them.
+Definition-level placement reflects that the definition itself is the lifecycle-aware entity. Instance-level placement keeps lifecycle concerns explicitly separated from the widget's own properties and prevents collision with them — a widget carries arbitrary properties, so a bare `onMount` beside `onTap` would be ambiguous, while a definition's key set is declared.
+
+The grouped form is therefore the one that reads the same everywhere, and is **preferred** for new documents: it is the only placement valid for both a definition and a widget. Top-level hook fields on a definition remain valid.
+
+A runtime MUST read both placements. Reading only one is invisible to the author — a hook that is never parsed is a hook that never runs, with nothing in any log to say so.
 
 ### 6.8.1 Definition-Level Example
 
@@ -138,9 +142,45 @@ Definition-level placement reflects that the definition itself is the lifecycle-
 ### 6.8.3 Hook Firing Order
 
 For a page mount: `onInit` → `onMount` → `onReady`.
-For a page unmount: `onPause` → `onUnmount` → `onDestroy`.
-For navigation A → B: A fires `onPause` → `onUnmount` → `onDestroy`, then B fires `onInit` → `onMount` → `onReady`.
-On back navigation: B fires `onUnmount` → `onDestroy`, then A fires `onMount` → `onResume`.
+For a page unmount: `onUnmount` → `onDestroy`.
+
+Navigation splits on one question — **does the outgoing instance survive?**
+
+| Navigation | Outgoing page | Incoming page |
+|---|---|---|
+| Replaces the outgoing page | `onUnmount` → `onDestroy` | `onInit` → `onMount` → `onReady` |
+| Stacks over it (outgoing kept alive) | `onPause` | `onInit` → `onMount` → `onReady` |
+| Returns to a kept-alive page | `onUnmount` → `onDestroy` | `onResume` |
+| Returns to a page that was replaced | `onUnmount` → `onDestroy` | `onInit` → `onMount` → `onReady` |
+
+A destroyed instance MUST NOT fire `onPause`. §1.5.1 defines that hook as
+losing active focus *without* being destroyed, and §1.5.2 draws it as half of
+the `(onPause ↔ onResume)*` pair; an instance that fires it and then dies has
+satisfied neither. The distinction is what the hook is *for*: an author saves
+a draft, stops a timer, or parks a subscription there on the understanding
+that this instance comes back. Firing it on the way out makes teardown work
+placed in `onPause` appear to run, while the state it saved is discarded with
+the instance and rebuilt from scratch on the next visit.
+
+A shell that switches between pages — a tab bar, a rail, a bottom bar — keeps
+them. Selecting another item is the second row of that table, not the first:
+the page being left is still mounted and fires `onPause`, and coming back to
+it fires `onResume` on the same instance. A page is built on its first visit,
+so an application with six tabs does not run five `onInit`s before anyone has
+looked at them.
+
+**A paused page pauses what is inside it.** Instance-level `lifecycle` blocks
+(§6.8.2) and embedded `view` definitions stay mounted with the page, so they
+receive `onPause` and `onResume` with it. Without that, a widget that started
+a timer or a subscription on mount keeps running behind a page nobody is
+looking at, and never hears the resume its own document declares — the hooks
+would be reachable only by destroying the page, which is the thing that is no
+longer happening.
+
+Which navigations keep an instance alive is otherwise a host decision
+(§1.5.2), so a document MUST NOT assume that leaving a page will pause it
+rather than destroy it. Work that must happen exactly once per document belongs on the
+application, whose instance outlives every page.
 
 Hooks within the same stage execute in definition order. A failing hook logs its error; subsequent hooks MUST still run. `onInit` hooks complete before `onReady` begins. `onDestroy` completes before the runtime releases page-scoped resources (subscriptions, channels, local state).
 
@@ -192,11 +232,46 @@ For a `DefinitionSource` of the qualified form `{ "$ref": <uri>, "from": <origin
 
 For the binding form, steps 1–3 are skipped: the definition is already in state, and its ambient origin is the origin of the scope that holds it.
 
+### 6.11.2a What the host must provide
+
+Resolution is one of **three** capabilities a host wires, and a runtime claims the profile only when it has all three. They are listed together because a host that wires the first alone produces a composed screen that renders correctly and does nothing — every control inside the embedded subtree takes the app's own path, and the failure surfaces as an unrelated "no client" rather than as a missing capability.
+
+| Capability | What it does | Missing ⇒ |
+|---|---|---|
+| **Resolve** | Read a definition from a named origin | `view` fails closed to `fallback` (the runtime does not implement the profile) |
+| **Call** | Invoke a tool on a named origin | subtree renders; every control silently reaches the wrong server |
+| **Watch** | Track a resource on a named origin | live readings render their label and never a value |
+| **Read** | One-shot read on a named origin | a read returns the *embedder's* resource under the embedded document's uri — a wrong answer, not a missing one |
+
+Read is separate from Watch on purpose: a read that leaves a subscription behind keeps the device pushing to a view that asked once.
+
+A runtime that does not have all four MUST NOT report the profile as implemented (§18.7).
+
+**Storage and permissions scope too.** An embedded subtree has its own storage identity: two devices on one screen that both store `config` MUST NOT share a key space, and neither may write into the embedder's. Its permission set is the **intersection** with the embedder's, never the union — an embedded document may not request, or be granted, more than the app embedding it holds. Enforce the ceiling *before* prompting: asking the user and then refusing is worse than never asking.
+
+**Opening is the host's, and is deferred.** A document names an origin; it never opens one. A host MAY open a named origin on first use rather than holding one open per known device — and SHOULD, because devices that serve a single peer at a time are reset by a second connection, so permanent connections make the last one opened evict the others.
+
+**A tool call MUST NOT be redirected.** If a subtree is scoped to an origin and the host wired no Call capability, the action fails. Falling back to the embedder's own server would run one device's tool name against another.
+
+### 6.11.2b An embedded definition runs its own lifecycle
+
+A definition is the lifecycle-aware entity (§6.8), and that does not change when it is embedded. A runtime MUST seed the embedded definition's `state.initial` into its scope and fire `onInit` → `onMount` → `onReady` once per mount, and `onDestroy` on unmount.
+
+**Which definition owns a hook matters more once composition exists.** An application hook runs for the application as a whole; a page hook runs while that page is shown (§1.5). A standalone application and its initial page share one scope, so a subscription placed on either appeared to work — but an embedded page has its own scope, and a value written by the *application's* hook lands where the page cannot read it. The reading then renders its label and never a value, with every layer beneath reporting success.
+
+So: **the definition that BINDS a value owns the hook that starts it.** A page that subscribes in its own `onReady` and releases in its own `onDestroy` is self-contained — it behaves identically opened on its own and embedded in another host's screen. This is the shape §6.8.1 already shows.
+
 ### 6.11.3 One runtime scope per origin
 
 The resolved subtree runs in its **own scope**: its own state tree, its own subscription registry, its own permission and storage identity. It is not a sub-tree of the embedder's state.
 
 `notifications/resources/updated` arriving on a connection dispatch to the scope(s) bound to that connection, never to the embedder's scope. Two `view`s bound to the same connection share that connection but hold separate scopes.
+
+The scope's lifetime is the **mount**, not the render. A scope rebuilt per frame discards everything the embedded definition put in it — a value arrives, the write triggers a rebuild, and the rebuild throws the value away, so the reading never appears while every layer beneath reports success. Runtimes MUST create the scope once per mounted source and MUST replace it when the source changes (a different origin must never inherit the previous one's state).
+
+Bindings in the embedded subtree MUST re-evaluate when that scope's state changes. A subtree evaluated once at mount can render a live reading's label and never its value.
+
+**A source is compared by value, not identity.** An embedded application whose route is a `ui://` uri resolves one level further, and the nested source is rebuilt each frame — structurally equal, a different object. Comparing by identity reads that as a changed origin, so the subtree resolves, renders, rebuilds and resolves again: on real hardware the view flickered between its content and its loading indicator and then stayed on the indicator. A route value that is a bare uri also MUST inherit the embedding view's origin — the route belongs to the application that declared it.
 
 ### 6.11.4 Failure and lifecycle
 
@@ -204,3 +279,176 @@ The resolved subtree runs in its **own scope**: its own state tree, its own subs
 - **Disconnect.** When a connection drops, scopes bound to it enter the failed state and render `fallback`. Their subscriptions are dropped.
 - **Reconnect.** On reconnect the runtime MUST re-resolve the source and remount the scope. Local state inside the embedded scope does not survive; a definition that must survive reconnection persists through its own origin. (Remount rather than resume is chosen because the origin may have changed what it serves.)
 - **Depth and cycles.** Runtimes MUST enforce a maximum nesting depth for embedded definitions and MUST detect cycles in the origin/URI pair chain. On either, the offending source fails resolution and renders `fallback` — it MUST NOT recurse.
+
+## 6.12 Asset Resolution *(since v1.4)*
+
+§6.11 says how a *definition* reaches a runtime. This section says how an **asset** does. Every widget slot typed `AssetRef` — `image.src`, `icon.icon`, `avatar.src`, `lottieAnimation.src`, `BackgroundImage.image`, `mediaPlayer.{source,poster}`, `rive.src`, `lightbox.images[]`, and the `app` / `theme` asset slots — resolves through the one contract below. A runtime MUST NOT implement asset loading per widget: two widgets given the same `AssetRef` MUST resolve it identically.
+
+### 6.12.1 Resolution is by scheme, and the scheme set is open
+
+A runtime dispatches on the reference's scheme prefix (or, for the object form, reads `uri` through `resources/read` on the resolved origin — §6.12.3). The schemes named in `AssetRef` are the ones this document defines; a host MAY resolve others.
+
+**An unknown scheme is not an invalid document.** A runtime that meets a scheme it does not resolve MUST treat it as an *unresolvable asset* (§6.12.4), not as a schema violation. Rejecting the document would make every runtime's gaps into authoring errors, and an author cannot know in advance which runtime will render their page.
+
+### 6.12.2 A binding is resolved first
+
+`AssetRef` admits a binding in every position. A runtime MUST resolve the binding **before** dispatching on scheme — an asset whose source arrives in state is the normal case, not an edge one, and a slot that dispatches on the literal `"{{item.picture}}"` will find no scheme and fail on a document that is correct.
+
+### 6.12.2a An empty string is not a reference
+
+`""` is not a valid `AssetRef`: there is no asset it could name. A slot whose source may legitimately be absent declares a **binding**, and the runtime treats a binding that resolves to empty or `null` as an unresolved asset (§6.12.4) — the same path an unsupported scheme takes.
+
+Stated because the alternative is worse in a way that only shows up later: admitting `""` into the type would make every asset slot silently accept a typo that produced an empty string, and the author would see the fallback and conclude the asset was missing rather than misspelt.
+
+### 6.12.3 Ambient origin
+
+An `AssetRef` in object form without `origin`, and a `bundle://` reference, both resolve against the **ambient origin**: the origin of the definition that declares them, never the embedding document's (§6.11.3). An embedded subtree's `bundle://logo.png` is its *own* bundle's logo. A runtime that resolves it against the embedder's bundle serves one server's asset under another's identity — the same failure [`07_Security.md`](07_Security.md) §7.10 names for definitions.
+
+### 6.12.4 Unresolvable is declared, never silent
+
+Assets differ from definitions in one way that matters: a runtime is not expected to resolve all of them. Constrained hosts exist, and a device that can inline bytes may have no filesystem, no network stack, and no room to hold a bundle.
+
+So the contract is **honesty, not completeness**:
+
+- A runtime MUST publish the set of `AssetRef` forms it resolves ([`18_Conformance.md`](18_Conformance.md) §18.2.12). "Publish" means discoverable by the host that embeds it, not merely documented.
+- An asset that cannot be resolved — unsupported scheme, missing capability, read failure, or a payload the runtime cannot decode — MUST take the slot's **declared fallback path** where the widget defines one (`image` has `fallback`, `fallbackUrl`, and `fallbackBehavior`), and MUST otherwise render as an absent asset per §6.9.
+- A runtime MUST NOT render an implementation detail in place of the asset. A box reading `Base64 not supported` states the runtime's limitation in the user's screen; the author asked for a picture, and the failure belongs in the diagnostic channel (§6.9), not the layout.
+- A runtime MUST NOT silently substitute a different origin's asset, or the embedder's, for one it could not resolve.
+
+### 6.12.5 Reading is asynchronous
+
+`bundle://`, `client://`, and origin-served references are read asynchronously. A runtime whose asset path is synchronous can only ever support the forms that need no I/O, and will appear to support the contract while resolving a strict subset of it. Asset resolution MUST therefore be modelled as an asynchronous read with a pending state, and a slot awaiting bytes MUST render its declared loading state rather than its fallback — a fallback shown while a read is in flight reports a failure that has not happened.
+
+### 6.12.6 Size is a host policy, not a document one
+
+A host MAY decline to inline or cache an asset above a size it chooses. That decision is a resolution failure like any other and takes the path in §6.12.4; it MUST NOT be reported as a malformed reference, and the threshold MUST NOT appear in the document. An author writes what the asset *is*, not how large the host will tolerate it being.
+
+### 6.12.7 Who resolves `bundle://`, and when
+
+§6.12.3 says *which* bundle a `bundle://` reference names. This says who reads
+it, because the answer has been left to each host and the two ways of doing it
+are not interchangeable.
+
+A `bundle://` reference is resolved **against the bundle the client already
+holds** — the ambient origin's bundle (§6.12.3). It is never a request to the
+server that sent the document: a server naming `bundle://logo.png` is naming
+the running app's own asset, not one of its own files. A server's own files
+reach the client by the serving conventions in
+[`mcp_serving`](../../../mcp_serving/spec/1.0/README.md) §4, which need no
+scheme in this DSL.
+
+Two placements are conformant:
+
+1. **Resolved before the runtime sees the document.** The host walks the
+   definition (and every page it later loads) and replaces each `bundle://`
+   string with something the runtime already resolves — usually a `data:` URI
+   or a local path. The runtime never meets the scheme.
+2. **Resolved inside the runtime.** The host gives the runtime read access to
+   the active bundle, and the runtime resolves the scheme like any other
+   (§6.12.5, asynchronously).
+
+Placement is a host choice. What is **not** a choice:
+
+- **A host MUST apply the same placement to every document it loads,
+  regardless of how the document arrived.** A host that resolves `bundle://`
+  for a locally installed bundle and not for a document read from a connected
+  server makes the same reference render in one path and vanish in the other,
+  and the author has no way to tell which path their document will take.
+- Placement 1 satisfies §6.12.3 by construction, because the resolver belongs
+  to the document's own bundle. Placement 2 does not: a runtime resolving the
+  scheme itself MUST know which bundle is ambient for the subtree being built,
+  or an embedded subtree's `bundle://logo.png` will find the embedder's logo —
+  the substitution §6.12.4 forbids.
+- A host with no bundle loaded has nothing to resolve against, and
+  `bundle://` there is an unresolvable asset (§6.12.4) — not an error in the
+  document, which may be perfectly valid in a host that does hold the bundle.
+
+
+### 6.12.8 An asset travels as a reference, not as state
+
+A tool result, and therefore state, is a value the runtime copies, merges and
+re-parses on every delivery. An asset is not that: it is bytes with an
+identity, and every layer that knows the identity can skip the bytes.
+
+Authors SHOULD carry assets as references (`bundle://`, `resource://`, a URL)
+and let the host resolve them. Embedding the bytes — a `data:` URI, base64 in
+a tool result — is legal and sometimes the only option, but it MUST be
+understood as giving up the identity:
+
+- The reference is what a cache is keyed on. Bytes carried in state are
+  re-sent in full every time the tool is called again, re-parsed with the
+  rest of the payload, and re-merged into state; a reference costs the same
+  few dozen characters however many times it arrives.
+- Only decoding can be recovered after the fact. A runtime MAY cache the
+  decode of a `data:` URI keyed on the URI string, and one that does removes
+  the repeated decode — it cannot remove the transfer or the parse, because
+  those already happened before the runtime saw the value.
+- Size, per §6.12.6, is a host policy. An inlined asset is not subject to it:
+  the host never sees a reference it could decline, so a document that
+  embeds bytes bypasses the one place that limit is meant to live.
+
+**Send an asset at the size it is drawn at.** Everything above is about the
+second delivery; the first one is paid whatever happens, and its cost is set
+by the transport, not by any cache. The same picture at its source resolution
+and at the size the screen actually uses differed by 1,268 ms against 57 ms on
+a local pipe — and a pipe is the fastest transport there is. On a serial link
+the same difference is tens of seconds, which is the difference between a
+screen appearing and a device that cannot present one.
+
+No layer below the author can do this. A runtime that receives bytes cannot
+know what they were meant to be, and a host applying §6.12.6 sees a reference
+it may decline, not a picture it may resize.
+
+This is guidance, not a constraint on the wire format. A runtime MUST NOT
+reject a document for carrying an inline asset, and MUST NOT impose a size
+limit on state (§6.12.6 governs *assets*, and the host cannot tell which
+string in a payload was meant to be one).
+
+## 6.13 Declared Behaviour *(since v1.4)*
+
+§6.12.4 fixes honesty for assets. This section states the same rule for the
+**behaviour a widget declares** — playing media, loading a page, drawing a map,
+speaking, signing — because the failure mode there is worse and was found in the
+field: a runtime that cannot perform a behaviour can still draw something that
+looks like it is performing it.
+
+### 6.13.1 A declared behaviour is performed or reported (MUST)
+
+A widget whose contract declares an effect — sound comes out, a page loads, a
+document renders, an animation plays — MUST either perform that effect or report
+that it cannot. There is no third state.
+
+A runtime MUST NOT render a facsimile of the behaviour succeeding. Concretely,
+and each of these has been shipped by an implementation of this spec:
+
+- a media transport whose position advances on a timer while nothing is decoded,
+  firing `onPlay` and `onEnded` as though playback occurred;
+- a web view that reports a successful load and renders the URL as text;
+- a map that draws a coloured rectangle where tiles would be.
+
+Each satisfies "parse and render" and each tells the user the opposite of the
+truth. **A silent failure is recoverable; a simulated success is not** — nobody
+looks for a bug in something that appears to work, and the author ships a
+document believing the effect reached the user.
+
+### 6.13.2 Inability is a capability fact, not a rendering (MUST)
+
+A runtime that lacks a behaviour MUST publish that fact the way §6.12.4 requires
+for asset forms — discoverable by the embedding host, not merely documented — and
+MUST route the individual failure to the widget's declared error path
+(`onError` where the widget defines one) and to the diagnostic channel (§6.9).
+
+The screen is not the diagnostic channel. A box reading "video not supported"
+is the substitution §6.12.4 already forbids for assets, and it is forbidden here
+for the same reason: the author asked for an effect, and the layout is not where
+the runtime's limits are reported.
+
+### 6.13.3 A host-provided capability is the normal case (informative)
+
+Most of these behaviours are platform powers, not rendering: an audio decoder, a
+web engine, a tile source. A runtime is expected to accept them from its embedder
+rather than carry them, exactly as it accepts asset resolution. The contract
+above is written so that a runtime with none of them is still conformant — it
+declares what it has and reports what it does not — while one that fakes them is
+not.
+

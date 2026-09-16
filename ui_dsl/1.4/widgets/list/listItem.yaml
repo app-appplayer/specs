@@ -7,6 +7,33 @@ aliases:
 description: |
   Single row in a list with optional leading/trailing widgets. Replaces Material `listTile` naming.
 properties:
+  contentPadding:
+    type: EdgeInsets
+    description: "Space inside the row, around its content."
+  dense:
+    type: "boolean"
+    description: "Use the compact row height."
+  isThreeLine:
+    type: "boolean"
+    description: "Reserve room for a three-line row."
+  selectedTileColor:
+    type: Color
+    description: "Background of the row while selected."
+  tileColor:
+    type: Color
+    description: "Background of the row."
+  focusColor:
+    type: Color
+    description: "Overlay while the surface holds focus."
+  hoverColor:
+    type: Color
+    description: "Overlay while a pointer rests on the surface."
+  iconColor:
+    type: Color
+    description: "Colour applied to the icon."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
   title:
     type: "string | Widget"
     description: "Primary text, or an inline Widget for rich titles."
@@ -30,6 +57,12 @@ properties:
     type: "boolean"
     default: true
     description: "Whether the item is interactive."
+  onLongPress:
+    type: Action
+    description: "Fired on a long press."
+  textColor:
+    type: Color
+    description: "Default text color"
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

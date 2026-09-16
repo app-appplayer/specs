@@ -2,19 +2,22 @@ type: box
 category: layout
 profile: Core
 since: v1.0
-aliases: [container]
+aliases: [container, constrained, decoratedBox, constrainedBox]
 description: |
   Generic single-child container that applies size, padding, margin, and a
   decoration (background color, border, shadow, gradient, borderRadius). Most
   commonly used as a styled wrapper around any child widget.
 
 properties:
+  constraints:
+    type: "object"
+    description: "Minimum / maximum width and height the box may take."
   width:
-    type: number
-    description: Fixed width in logical pixels. When omitted, the box shrinks to its child's width.
+    type: Dimension
+    description: Fixed width — a number of logical pixels, or a `{value, unit}` object. When omitted, the box shrinks to its child's width.
   height:
-    type: number
-    description: Fixed height in logical pixels. When omitted, the box shrinks to its child's height.
+    type: Dimension
+    description: Fixed height — a number of logical pixels, or a `{value, unit}` object. When omitted, the box shrinks to its child's height.
   minWidth:
     type: number
     description: Minimum width constraint. Honored independently of `width`; a child wider than `minWidth` is allowed.
@@ -28,16 +31,20 @@ properties:
     type: number
     description: Maximum height constraint.
   padding:
-    type: ["string", "EdgeInsets"]
+    type: BoxSpacing
     description: |
       Space inside the box, between the border and the child. Accepts an
       M3 spacing token shorthand (`xxs` / `xs` / `sm` / `md` / `lg` /
       `xl` / `2xl` / `3xl` / `4xl`, or any custom slot in
       `theme.spacing`) — resolved through `theme.spacing.<token>` to a
-      uniform inset — or the legacy EdgeInsets object form.
+      uniform inset — the `{token}` object form, or any EdgeInsets spelling.
   margin:
-    type: EdgeInsets
-    description: Space outside the box, between the box and its parent.
+    type: BoxSpacing
+    description: |
+      Space outside the box, between the box and its parent. Takes the same
+      spellings as `padding`, token included — the widget resolves both
+      through one helper, so declaring less here only made the token
+      unauthorable, never unrenderable.
   alignment:
     type: Alignment
     description: |
@@ -57,7 +64,6 @@ properties:
       `BoxDecoration` $def for the full property set: `color`,
       `gradient`, `image`, `border`, `borderRadius`, `boxShadow`,
       `shape`, `backdropBlur`.
-
 children:
   kind: single
   key: child

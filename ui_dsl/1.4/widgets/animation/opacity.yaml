@@ -19,7 +19,7 @@ properties:
     description: "Animation duration in milliseconds (when `animated: true`)."
   curve:
     type: "string"
-    default: "\"easeInOut\""
+    default: "easeInOut"
     description: "Animation curve (when `animated: true`)."
   child:
     type: "Widget"

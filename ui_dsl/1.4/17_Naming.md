@@ -48,7 +48,9 @@ Rationale: matches React's convention (the dominant component-based UI grammar).
 
 ### 17.1.6 Action Types — Single word or dotted namespace
 
-- Core: `state`, `navigation`, `tool`, `resource`, `dialog`, `batch`, `conditional`, `notification`, `parallel`, `sequence`, `cancel`, `animation`
+- Core: `state`, `navigation`, `tool`, `resource`, `dialog`, `batch`, `conditional`, `notification`, `parallel`, `sequence`, `cancel`, `animation`, `submit`, `event`
+- Payment Profile *(since v1.4.2)*: `payment`
+- Location Profile *(since v1.4.3)*: `location`
 - Namespaced (dotted): `client.selectFile`, `client.readFile`, `channel.start`, `channel.stop`, `permission.revoke`
 
 The dot separator indicates a family of related operations on one subsystem.
@@ -81,20 +83,32 @@ Full widget catalog in [`02_Widgets.md`](02_Widgets.md). Names below are normati
 | `slider`, `rangeSlider` | Continuous value selection |
 | `listItem` | Item within a list |
 | `list`, `grid` | Scrollable collections |
+| `multiSelect` *(since v1.4)* | Dropdown selection of several values; binds an array |
+| `combobox` *(since v1.4)* | Text entry with suggestions; accepts values outside the option list |
+| `otpInput` *(since v1.4)* | Fixed-length one-time-code entry |
+| `dateTimePicker` *(since v1.4)* | Single instant — date and time in one binding |
+| `fileInput` *(since v1.4)* | File the user picked, as descriptors in state |
+| `accordion` *(since v1.4)* | Expanding/collapsing sections |
+| `popover` *(since v1.4)* | Transient surface anchored to a trigger |
 | `card` | Elevated container |
 | `divider`, `verticalDivider` | Visual separators |
+| `avatar` | Circular image or initials for a person or entity |
+| `badge` | Small count or status marker attached to a child |
+| `chip` | Compact label, optionally selectable or deletable |
+| `tooltip` | Explanatory text surfaced on hover or long-press |
+| `progressBar` | Determinate or indeterminate progress |
 
 #### Navigation widgets (Core Profile)
 
-`headerBar`, `bottomNavigation`, `tabBar`, `drawer`, `navigationRail`, `floatingActionButton`, `popupMenuButton`
+`headerBar`, `bottomNavigation`, `tabBar`, `tabBarView`, `drawer`, `navigationRail`, `floatingActionButton`, `popupMenuButton`, `menu` *(since v1.4)*, `contextMenu` *(since v1.4)*, `breadcrumb` *(since v1.4)*, `pagination` *(since v1.4)*, `link` *(since v1.4)*
 
 #### Scroll and layout (Core Profile)
 
-`scrollView`, `singleChildScrollView`, `pageView`, `sizedBox`, `aspectRatio`, `fractionallySized`, `intrinsicHeight`, `intrinsicWidth`, `wrap`, `positioned`, `safeArea`, `margin`, `visibility`, `conditional`
+`scrollView`, `singleChildScrollView`, `scrollBar`, `pageView`, `sizedBox`, `aspectRatio`, `fractionallySized`, `intrinsicHeight`, `intrinsicWidth`, `limitedBox`, `wrap`, `flow`, `baseline`, `indexedStack`, `staggeredGrid`, `carousel`, `dashboard`, `layoutBuilder`, `mediaQuery`, `positioned`, `safeArea`, `margin`, `visibility`, `conditional`
 
 #### Form controls (Core Profile)
 
-`form`, `numberField`, `dateField`, `timeField`, `datePicker`, `timePicker`, `dateRangePicker`, `colorPicker`, `segmentedControl`, `stepper`, `numberStepper`, `rating`
+`form`, `numberField`, `dateField`, `timeField`, `datePicker`, `timePicker`, `dateRangePicker`, `colorPicker`, `segmentedControl`, `stepper`, `numberStepper`, `rating`, `fileInput` *(since v1.4)*
 
 #### Dialogs (Core Profile)
 
@@ -106,11 +120,11 @@ Full widget catalog in [`02_Widgets.md`](02_Widgets.md). Names below are normati
 
 #### Advanced widgets (Advanced Profile — see [`10_Advanced_Widgets.md`](10_Advanced_Widgets.md))
 
-`chart`, `table`, `dataTable`, `map`, `mediaPlayer`, `calendar`, `timeline`, `gauge`, `heatmap`, `tree`, `graph`, `networkGraph`, `codeEditor`, `terminal`, `fileExplorer`, `markdown`, `webView`, `signature`, `canvas` *(since v1.3)*
+`chart`, `table`, `dataTable`, `map`, `mediaPlayer`, `calendar`, `timeline`, `gauge`, `heatmap`, `tree`, `graph`, `networkGraph`, `codeEditor`, `terminal`, `fileExplorer`, `markdown`, `webView`, `signature`, `lightbox`, `canvas` *(since v1.3)*, `qrCode` *(since v1.4)*, `barcode` *(since v1.4)*, `pdfViewer` *(since v1.4)*, `diffViewer` *(since v1.4)*, `richTextEditor` *(since v1.4)*, `splitter` *(since v1.4)*, `resizable` *(since v1.4)*, `kanban` *(since v1.4)*, `gantt` *(since v1.4)*, `spreadsheet` *(since v1.4)*
 
 #### Animation widgets (Core Profile / v1.3)
 
-`animatedContainer`, `opacity` *(since v1.3)*, `transform` *(since v1.3)*, `lottieAnimation`
+`animatedContainer`, `animatedAlign`, `animatedOpacity`, `animatedPositioned`, `animatedDefaultTextStyle`, `opacity` *(since v1.3)*, `transform` *(since v1.3)*, `lottieAnimation`, `hero`, `imageFilter`, `kenBurnsImage`, `rive`, `scrollAnimated`
 
 #### Template widgets (Template Profile — see [`09_Templates.md`](09_Templates.md))
 
@@ -118,7 +132,15 @@ Full widget catalog in [`02_Widgets.md`](02_Widgets.md). Names below are normati
 
 #### Utility
 
-`placeholder`, `banner`, `accessibleWrapper`, `lazy`, `decoration`, `fittedBox`, `clipOval`, `clipRRect`
+`placeholder`, `banner`, `accessibleWrapper`, `lazy`, `decoration`, `fittedBox`, `clipOval`, `clipRRect`, `errorBoundary`, `errorRecovery`, `offlineFallback`, `permissionPrompt`
+
+#### Composition (Composition Profile — see [`18_Conformance.md`](18_Conformance.md) §18.7)
+
+`view` *(since v1.4)* — embeds a definition served by another origin; the embedded subtree resolves its tools, resources and assets against that origin (§6.11.3).
+
+#### Widgets requiring the Client Profile
+
+`voiceInput` *(since v1.4)* — microphone capture, gated by the permission system (§8.4). Listed here rather than beside the `client.*` actions because it is a widget: a runtime renders it, and only the capture behind it needs the grant.
 
 ### 17.2.2 Action Types
 
@@ -126,11 +148,19 @@ Full catalog in [`04_Actions.md`](04_Actions.md).
 
 #### Core Profile
 
-`state`, `navigation`, `tool`, `resource`, `dialog`, `batch`, `conditional`, `notification`, `parallel`, `sequence`, `cancel`, `animation`
+`state`, `navigation`, `tool`, `resource`, `dialog`, `batch`, `conditional`, `notification`, `parallel`, `sequence`, `cancel`, `animation`, `submit`, `event`
 
 #### Client Profile
 
-`client.selectFile`, `client.readFile`, `client.writeFile`, `client.saveFile`, `client.listFiles`, `client.httpRequest`, `client.getSystemInfo`, `client.clipboard`, `client.exec`, `client.notification`, `client.storage.get`, `client.storage.set`, `client.storage.remove`, `permission.revoke`, `channel.start`, `channel.stop`, `channel.restart`, `channel.toggle`, `channel.send`
+`channel`, `permission`, `identity`, `client.selectFile`, `client.readFile`, `client.writeFile`, `client.saveFile`, `client.listFiles`, `client.httpRequest`, `client.getSystemInfo`, `client.clipboard`, `client.exec`, `client.notification`, `client.storage.get`, `client.storage.set`, `client.storage.remove`, `permission.revoke`, `channel.start`, `channel.stop`, `channel.restart`, `channel.toggle`, `channel.send`, `identity.promote`, `identity.release`, `sound.play`, `sound.stop`, `media.play`, `media.pause`, `media.toggle`, `media.seek`
+
+#### Payment Profile *(since v1.4.2)*
+
+`payment`
+
+#### Location Profile *(since v1.4.3)*
+
+`location`
 
 ### 17.2.3 Navigation Sub-Actions
 
@@ -146,6 +176,7 @@ Used inside `{"type": "navigation", "action": "..."}`.
 | `setIndex` | Set the active index for tab-based navigation |
 | `openApp` *(since v1.3)* | Transition from dashboard mode to full application rendering |
 | `exitApp` *(since v1.3)* | Signal the host to exit; invokes host-registered `onExit` callback |
+| `openUrl` *(since v1.4)* | Open a URL outside the application; the only sub-action that leaves the app |
 
 ### 17.2.4 State Sub-Actions
 
@@ -179,6 +210,9 @@ Full resolution order in [`03_Data_Binding.md`](03_Data_Binding.md).
 | `sync.` | Sync operation status |
 | `runtime.` | Runtime capability flags |
 | `i18n.` | Internationalization keys (see [`12_Internationalization.md`](12_Internationalization.md)) |
+| `entry.` | Entry context — how this definition was reached (v1.4 — Client Profile) |
+| `identity.` | Current principal (v1.4 — Client Profile) |
+| `slot.` | Dashboard slot state — the bound device's, read-write (v1.4, §3.5.5) |
 
 ### 17.2.6 Callback Property Names
 
@@ -194,22 +228,66 @@ Every entry is accepted by conformant runtimes. Emitters SHOULD prefer the canon
 
 | Canonical | Legacy aliases |
 |-----------|----------------|
-| `box` | `container`, `decoratedBox` |
+| `box` | `container`, `constrained`, `decoratedBox`, `constrainedBox` |
 | `linear` + `direction` | `row`, `column` |
 | `textInput` | `textField`, `textfield`, `textFormField` (Flutter/Material; form-aware semantics folded into `textInput` + `validation`) |
 | `toggle` | `switch` |
 | `listItem` | `listTile`, `list-tile` |
 | `select` | `dropdown` |
-| `progressBar` | `linearProgressIndicator`, `loadingIndicator`, `loading-indicator`, `progress-bar`, `progress` |
+| `progressBar` | `linearProgressIndicator`, `circularProgressIndicator`, `loadingIndicator`, `loading-indicator`, `progress-bar`, `progress` |
 | `bottomNavigation` | `bottomNav`, `bottomnavigationbar` |
 | `headerBar` | `appbar` |
 | `list` | `listView`, `listview` (Flutter-style casing) |
 | `grid` | `gridview` (Flutter-style casing) |
+| `dataTable` | `dataGrid` *(v1.4)* |
+| `tree` | `treeView` *(v1.4)* |
+| `gauge` | `meter` *(v1.4)* |
+| `mediaPlayer` | `video`, `audio` *(v1.4)* |
+| `customDialog` | `modal`, `dialog` *(v1.4)* |
+| `alertDialog` | `alert`, `confirmDialog` *(v1.4)* |
+| `snackBar` | `toast` *(v1.4)* |
+| `placeholder` | `skeleton` *(v1.4)* |
+| `chip` | `tag` *(v1.4)* |
+| `stepper` | `steps` *(v1.4)* |
+| `scrollView` | `scrollArea` *(v1.4)* |
+| `numberField` | `numberInput` *(v1.4)* |
+| `popupMenuButton` | `dropdownMenu` *(v1.4)* |
+| `codeEditor` | `code` *(v1.4)* |
+| `text` | `label` *(v1.4)* |
+| `combobox` | `autocomplete` *(v1.4)* |
+| `accordion` | `collapsible` *(v1.4)* |
+| `popover` | `hoverCard` *(v1.4)* |
+| `link` | `navLink` *(v1.4)* |
+
+The v1.4 entries come from aligning a no-code builder's palette vocabulary with this spec. They are **read-only**: a runtime MUST accept them on input (§18.2.10) and authoring tools SHOULD emit the canonical name. An alias never appears in generated output, so a document round-tripped through a tool converges on one name rather than preserving whichever the author happened to type.
+
+### 17.3.1a Value Aliases
+
+Enumerated property **values** may also carry legacy spellings. Like widget and property aliases these are accepted on input and never emitted (§18.2.10).
+
+| Property | Canonical | Legacy values |
+|----------|-----------|---------------|
+| `linear.distribution` | `spaceBetween`, `spaceAround`, `spaceEvenly` | `space-between`, `space-around`, `space-evenly` |
+| `qrCode.errorCorrection` | `low`, `medium`, `quartile`, `high` | `L`, `M`, `Q`, `H` |
+
+**Legacy values are not listed in the property's `enum`.** The canonical
+surface carries the canonical spelling and nothing else, exactly as it does for
+widget and property aliases (§17.3.1, §17.3.2): a name that breaks §17.1 is
+fixed in the document and kept in the implementation, not preserved in the
+registry. An editor therefore offers only the canonical value, and a document
+still carrying the old one keeps rendering because the runtime accepts it.
+
+*(1.4.1 changed this. Through 1.4.0 the legacy spellings were declared in the
+`enum` as well, on the reasoning that the `enum` is what a validator reads.
+That reasoning kept the two spellings equal forever and made the naming rule
+unenforceable — `space-between` sat in the registry two lines under a prose
+table naming `spaceBetween` as canonical.)*
 
 ### 17.3.2 Property Aliases
 
 | Widget | Canonical property | Legacy aliases |
 |--------|--------------------|----------------|
+| `otpInput` | `onComplete` | `autoSubmit` |
 | `text` | `text` (the content) | `content` (was canonical in v1.0) |
 | `button` | `label` | `text` (when applied to a button; v1.1 drift) |
 | `textInput`, `textField` | `placeholder` | `hint` |
@@ -252,6 +330,8 @@ Every entry is accepted by conformant runtimes. Emitters SHOULD prefer the canon
 | `onPanEnd` | `panEnd` |
 
 ### 17.3.4 Action Shape Aliases
+
+`channel` and `permission` are the canonical grouped forms — the subsystem is the type and the operation goes in the `action` field. The dotted spellings below are the v1.1 legacy shapes, accepted on input and never emitted.
 
 | Canonical | Legacy aliases |
 |-----------|----------------|

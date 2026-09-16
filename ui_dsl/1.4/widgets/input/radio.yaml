@@ -4,6 +4,18 @@ profile: Core
 description: |
   Single radio button. The group's selected value is bound via `groupValue` (or the enclosing `radioGroup`'s `binding`).
 properties:
+  activeColor:
+    type: Color
+    description: "Colour of the selected / active portion."
+  focusColor:
+    type: Color
+    description: "Overlay while the surface holds focus."
+  hoverColor:
+    type: Color
+    description: "Overlay while a pointer rests on the surface."
+  splashRadius:
+    type: Dimension
+    description: "Radius the ripple expands to."
   value:
     type: "any"
     required: true
@@ -18,4 +30,13 @@ properties:
   onChange:
     type: "Action"
     description: "Fired when selected."
+  binding:
+    type: "string"
+    description: "State path bound two-way to the widget value (§2.6.0). Runtime reads/writes this path without requiring an explicit onChange."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  fillColor:
+    type: Color
+    description: "Area fill color."
 # examples migrated verbatim from prose JSON fences.

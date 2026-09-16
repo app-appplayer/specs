@@ -1,20 +1,60 @@
 type: popupMenuButton
 category: navigation
 profile: Core
+aliases: [dropdownMenu]
 description: |
   Button that reveals a popup menu of options.
 properties:
+  onCanceled:
+    type: Action
+    description: "Fired when the menu closes with nothing chosen."
+  onOpened:
+    type: Action
+    description: "Fired when the menu opens."
+  iconSize:
+    type: Dimension
+    description: "Rendered size of the icon."
+  offset:
+    type: "object"
+    description: "Displacement from the anchor, as `{ dx, dy }`."
+  padding:
+    type: EdgeInsets
+    description: "Space inside the surface, around its content."
+  shadowColor:
+    type: Color
+    description: "Colour of the drop shadow cast by the surface."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
+  splashRadius:
+    type: Dimension
+    description: "Radius the ripple expands to."
+  surfaceTintColor:
+    type: Color
+    description: "Elevation tint applied over the surface colour (M3)."
   icon:
-    type: "string"
-    default: "\"more_vert\""
-    description: "Trigger icon."
+    type: IconRef
+    default: "more_vert"
+    description: "Trigger icon. Any `IconRef` form."
   items:
-    type: "MenuItem[]"
+    type: "array<MenuItem>"
     required: true
     description: "`{ value, label, icon?, enabled? }` entries."
   onSelect:
     type: "Action"
     description: "Fired when an item is selected."
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  color:
+    type: Color
+    description: "Background of the open menu surface."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the open menu."
+  onChange:
+    type: Action
+    description: "Fired when an item is chosen. `{{event.value}}` carries its value."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

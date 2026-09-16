@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://specs.makemind.com/mcp_ui_dsl/1.3/page.schema.json",
-  "title": "MCP UI DSL 1.3 — PageDefinition",
+  "$id": "https://specs.makemind.com/mcp_ui_dsl/1.4/page.schema.json",
+  "title": "MCP UI DSL 1.4 — PageDefinition",
   "type": "object",
   "properties": {
     "type": {
@@ -21,7 +21,7 @@
       "$ref": "#/$defs/Widget"
     },
     "themeOverride": {
-      "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.3/theme.schema.json"
+      "$ref": "https://specs.makemind.com/mcp_ui_dsl/1.4/theme.schema.json"
     },
     "state": {
       "$ref": "#/$defs/StateBlock"
@@ -98,14 +98,20 @@
         {
           "enum": [
             "topStart",
+            "topLeft",
             "topCenter",
             "topEnd",
+            "topRight",
             "centerStart",
+            "centerLeft",
             "center",
             "centerEnd",
+            "centerRight",
             "bottomStart",
+            "bottomLeft",
             "bottomCenter",
-            "bottomEnd"
+            "bottomEnd",
+            "bottomRight"
           ]
         },
         {
@@ -155,13 +161,29 @@
       "oneOf": [
         {
           "type": "string",
-          "pattern": "^(bundle://|https?://|data:|assets/|client://)"
+          "pattern": "^([A-Za-z][A-Za-z0-9+.-]*:|assets/)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "type": "string",
+              "description": "Resource uri read through MCP `resources/read` on the resolved origin."
+            },
+            "origin": {
+              "$ref": "#/$defs/Origin"
+            }
+          },
+          "required": [
+            "uri"
+          ],
+          "additionalProperties": false
         },
         {
           "$ref": "#/$defs/Binding"
         }
       ],
-      "description": "Reference to an asset (image, font, audio, video, SVG, …). Five\nscheme prefixes are accepted, picked by the runtime to dispatch\nthe right loader:\n\n- `bundle://<path>` — asset packaged inside the active bundle.\n- `https://<url>` / `http://<url>` — fetched over the network and\n  cached on first render.\n- `data:<mime>;base64,<payload>` (or `data:<mime>,<urlencoded>`) —\n  inline bytes carried in the DSL itself.\n- `assets/<path>` — Flutter-style local asset path declared in the\n  consumer app's pubspec asset list (used by host integrations that\n  ship icon SVGs alongside the runtime).\n- `client://<channel>/<id>` — resource served by the client / host\n  process via an MCP client-extension channel.\n\nUsed cross-schema by `app` (splash · publisher logos · font\nassets), `page`/widgets (image · icon · BackgroundImage · video\nsrc), and `theme` (font asset registration). Lives under\n`configs/_primitive/` for that reason."
+      "description": "Reference to an asset (image, font, audio, video, SVG, …).\n\nAn asset reference takes one of three shapes: a **scheme-prefixed\nstring**, an **object** naming a resource and the origin that serves\nit, or a **binding** that resolves to either at render time.\n\n## Known schemes\n\nA runtime dispatches the right loader by prefix:\n\n- `bundle://<path>` — asset packaged inside the active bundle. Inside\n  an embedded subtree this is the *embedded* document's bundle, not\n  the embedder's (`06_Runtime_Contract.md` §6.11.3).\n- `https://<url>` / `http://<url>` — fetched over the network and\n  cached on first render.\n- `data:<mime>;base64,<payload>` (or `data:<mime>,<urlencoded>`) —\n  inline bytes carried in the DSL itself. The only form that needs no\n  I/O capability at all, and so the one a constrained host can always\n  render.\n- `assets/<path>` — Flutter-style local asset path declared in the\n  consumer app's pubspec asset list (used by host integrations that\n  ship icon SVGs alongside the runtime).\n- `client://<channel>/<id>` — resource served by the client / host\n  process via an MCP client-extension channel (`08_Client_Extensions.md`\n  §8.3). This is how a document reaches the *host's* own files —\n  `client://file/…`, `client://workspace/…` — rather than the server's.\n\n**This list is open, not closed.** The pattern admits any RFC 3986\nscheme so a host may serve forms this document does not name, exactly\nas `Origin` admits sources beyond `connection`. A runtime that meets a\nscheme it does not implement MUST fail visibly per §6.12 rather than\nreject the document — an author naming a scheme this runtime lacks has\nwritten a valid document that this runtime cannot fully render, which\nis not the same as an invalid document.\n\n## Object form — an asset served by an origin\n\n```json\n{ \"uri\": \"file:///reports/2026-q2.pdf\", \"origin\": { \"connection\": \"{{ deviceId }}\" } }\n```\n\n`uri` is read through MCP `resources/read` on the named origin. No new\nscheme is minted for \"the server's own asset\": MCP already reads an\narbitrary resource uri and returns text or base64 `blob`, so a server\npublishes assets the same way it publishes anything else.\n\n`origin` is the `Origin` primitive, so addressing an asset and\naddressing a definition use one vocabulary. Omitted, the asset resolves\nagainst the **ambient origin** — the origin of the definition that\ndeclares it (§6.11.3), never the embedder's.\n\nThe object form is what lets an asset stay *out* of application state.\nA server with room can publish a resource uri and let the runtime pull\nthe bytes; a server without room can inline the same asset as a `data:`\nstring. Both are valid, and which one a server chooses is its own\ndecision — the DSL does not force a transport on it.\n\n## Support is declared, not assumed\n\nRuntimes declare which schemes they resolve (§6.12, §18.9). Nothing\nhere requires a runtime to implement all of them; it requires a runtime\nto be honest about which it does, and to route the rest to the\nconsumer's declared fallback instead of a blank box or a placeholder\nbearing an implementation detail.\n\nUsed cross-schema by `app` (splash · publisher logos · font assets),\n`page`/widgets (image · icon · avatar · lottieAnimation ·\nBackgroundImage · mediaPlayer · rive · lightbox), and `theme` (font\nasset registration). Lives under `configs/_primitive/` for that reason."
     },
     "BackgroundImage": {
       "type": "object",
@@ -193,7 +215,7 @@
           "type": "object",
           "properties": {
             "color": {
-              "type": "string"
+              "$ref": "#/$defs/Color"
             },
             "blendMode": {
               "enum": [
@@ -356,8 +378,165 @@
         "$ref": "#/$defs/ChannelDefinition"
       }
     },
+    "Color": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$",
+          "description": "Hex — `#RGB`, `#RRGGBB`, or `#AARRGGBB` (alpha first)."
+        },
+        {
+          "description": "Material 3 scheme slot (§5.3) — adapts to light / dark mode.",
+          "enum": [
+            "primary",
+            "onPrimary",
+            "primaryContainer",
+            "onPrimaryContainer",
+            "secondary",
+            "onSecondary",
+            "secondaryContainer",
+            "onSecondaryContainer",
+            "tertiary",
+            "onTertiary",
+            "tertiaryContainer",
+            "onTertiaryContainer",
+            "error",
+            "onError",
+            "errorContainer",
+            "onErrorContainer",
+            "surface",
+            "onSurface",
+            "onSurfaceVariant",
+            "surfaceTint",
+            "surfaceBright",
+            "surfaceDim",
+            "surfaceContainerLowest",
+            "surfaceContainerLow",
+            "surfaceContainer",
+            "surfaceContainerHigh",
+            "surfaceContainerHighest",
+            "outline",
+            "outlineVariant",
+            "inverseSurface",
+            "onInverseSurface",
+            "inverseOnSurface",
+            "background",
+            "onBackground",
+            "surfaceVariant",
+            "inversePrimary",
+            "scrim",
+            "shadow",
+            "success",
+            "onSuccess",
+            "warning",
+            "onWarning",
+            "info",
+            "onInfo",
+            "divider",
+            "foreground",
+            "textOnPrimary",
+            "textOnSecondary",
+            "textOnBackground",
+            "textOnSurface",
+            "textOnError"
+          ],
+          "x-legacy": [
+            "divider",
+            "foreground",
+            "textOnPrimary",
+            "textOnSecondary",
+            "textOnBackground",
+            "textOnSurface",
+            "textOnError"
+          ],
+          "x-legacy-note": "Pre-M3 slot names (§17.3). Accepted so documents written before §5.3.1's roles keep loading and painting; §5.3.1 lists what to write now."
+        },
+        {
+          "type": "string",
+          "pattern": "^([Rr][Ee][Dd]|[Bb][Ll][Uu][Ee]|[Gg][Rr][Ee][Ee][Nn]|[Yy][Ee][Ll][Ll][Oo][Ww]|[Oo][Rr][Aa][Nn][Gg][Ee]|[Pp][Uu][Rr][Pp][Ll][Ee]|[Bb][Ll][Aa][Cc][Kk]|[Ww][Hh][Ii][Tt][Ee]|[Gg][Rr][Ee][Yy]|[Gg][Rr][Aa][Yy])$",
+          "description": "CSS basic color name. Spelled as a character class per\nletter because JSON Schema regexes are ECMA-262, which has no\ninline `(?i:)` flag — writing one makes the whole branch\nunconstrained instead of case-insensitive, and it accepted every\nstring."
+        },
+        {
+          "type": "string",
+          "pattern": "^[Rr][Gg][Bb][Aa]? *\\( *[0-9]{1,3} *, *[0-9]{1,3} *, *[0-9]{1,3} *(, *([01]|[01]?[.][0-9]+) *)?\\) *$",
+          "description": "Functional notation — `rgb(r, g, b)` or `rgba(r, g, b, a)`,\nchannels 0-255 and alpha 0-1. §5.3.4 rates it SHOULD, below hex:\nit carries no alpha in the three-channel form and does not adapt\nto light / dark mode the way a scheme slot does."
+        },
+        {
+          "$ref": "#/$defs/Binding"
+        }
+      ],
+      "description": "A color value. Three spellings, all accepted wherever a color is\nexpected:\n\n- **Hex** — `#RGB`, `#RRGGBB`, or `#AARRGGBB`. The 8-digit form puts\n  alpha **first**, matching the runtime's parse order.\n- **Theme scheme slot** — a bare Material 3 role name from §5.3.1\n  (`primary`, `onSurfaceVariant`, `error`, …), the three semantic pairs\n  this spec adds (`success`, `warning`, `info` and their `on*`), and the\n  four legacy spellings §5.3.1 keeps (`background`, `onBackground`,\n  `surfaceVariant`, `inverseOnSurface`).\n  Resolved against the active theme, so it follows light / dark mode.\n  This is the preferred form: it is the only one that adapts.\n- **CSS basic name** — the ten colors a document can name without a\n  theme (`red`, `blue`, `green`, `yellow`, `orange`, `purple`,\n  `black`, `white`, `grey`/`gray`). Matched case-insensitively.\n- **Functional** — `rgb(r, g, b)` / `rgba(r, g, b, a)`. §5.3.4 rates\n  this SHOULD where hex is MUST; it is accepted so that a theme\n  written in that notation validates, but it adapts to neither mode\n  nor palette.\n\nBindings are accepted in all three positions.\n\nA bare word that is neither a scheme slot nor a basic name is **not**\na color: the runtime resolves it to null and the widget falls back to\nits default. Validators reject it rather than let it render as a\nsilent default."
+    },
+    "DefinitionSource": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\{\\{.*\\}\\}$",
+          "description": "Binding to a definition held in state (since v1.4)."
+        },
+        {
+          "type": "string",
+          "description": "Resource URI on the current origin, e.g. `ui://pages/main`."
+        },
+        {
+          "type": "object",
+          "description": "Qualified reference to a definition on another origin (since v1.4).",
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "description": "Resource URI to read from the named origin."
+            },
+            "from": {
+              "$ref": "#/$defs/Origin"
+            }
+          },
+          "required": [
+            "$ref"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "description": "Inline PageDefinition or WidgetDefinition."
+        }
+      ],
+      "description": "Where a definition comes from. Four forms: an inline definition, a resource\nURI on the current origin, a qualified `{ $ref, from }` reference to another\norigin, or a binding to a definition already held in state.\n\nOmitting `from` means the current origin, so every pre-1.4 document keeps its\nexact meaning. Naming an origin makes that origin ambient for the resolved\nsubtree — its tool calls, resource reads, state, storage and permissions all\nscope to it. See `01_Core_Concepts.md` §1.9 and `07_Security.md` §7.10.\n\nAccepted wherever `RouteValue` is accepted (§1.2.1) and as the `source` of the\n`view` widget (§2.13.1)."
+    },
     "Dimension": {
       "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "value": {
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "$ref": "#/$defs/Binding"
+                }
+              ]
+            },
+            "unit": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Binding"
+        }
+      ],
+      "description": "Numeric size — accepts a plain `number` (logical pixels) OR the\nlegacy MCP UI DSL v1.0 `{value, unit}` object form. The `unit`\nfield is informational; the runtime treats every dimension as\nlogical pixels. `value` may itself be a binding: a bar whose width\ncomes from data writes `{\"value\": \"{{item.ratio}}\", \"unit\": \"percent\"}`,\nand that is the whole point of the object form."
+    },
+    "EdgeInsets": {
+      "anyOf": [
         {
           "type": "number"
         },
@@ -373,14 +552,39 @@
           },
           "required": [
             "value"
-          ],
-          "additionalProperties": false
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "all": {
+              "$ref": "#/$defs/Dimension"
+            },
+            "horizontal": {
+              "$ref": "#/$defs/Dimension"
+            },
+            "vertical": {
+              "$ref": "#/$defs/Dimension"
+            },
+            "top": {
+              "$ref": "#/$defs/Dimension"
+            },
+            "right": {
+              "$ref": "#/$defs/Dimension"
+            },
+            "bottom": {
+              "$ref": "#/$defs/Dimension"
+            },
+            "left": {
+              "$ref": "#/$defs/Dimension"
+            }
+          }
         },
         {
           "$ref": "#/$defs/Binding"
         }
       ],
-      "description": "Numeric size — accepts a plain `number` (logical pixels) OR the\nlegacy MCP UI DSL v1.0 `{value, unit}` object form. The `unit`\nfield is informational; the runtime treats every dimension as\nlogical pixels."
+      "description": "Space around or inside a box. Four spellings, all accepted wherever insets\nare expected:\n\n- **Number** — one value applied to every edge.\n- **`{value, unit}`** — the legacy v1.0 dimension object; `unit` is\n  informational and the runtime treats every inset as logical pixels.\n- **Edge map** — `{all}` for every edge, `{horizontal, vertical}` for the\n  two axes, or `{top, right, bottom, left}` for individual edges. Each entry\n  is a `Dimension`, so one edge may be bound while its neighbours are\n  literal: `{ \"left\": \"{{sidebar.width}}\", \"top\": 8 }`.\n- **Binding** — resolves to any of the above at render time.\n\nA bare word is not an inset: the runtime resolves it to null and the widget\nfalls back to no padding, so validators reject it rather than let it render\nas a silent zero."
     },
     "Gradient": {
       "type": "object",
@@ -395,7 +599,7 @@
         "colors": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/$defs/Color"
           },
           "minItems": 2
         },
@@ -442,6 +646,53 @@
       "additionalProperties": false,
       "description": "Multi-stop gradient fill. Selected by `type`:\n\n- `linear` — straight axis from `begin` (default `centerLeft`) to\n  `end` (default `centerRight`).\n- `radial` — circular gradient out from `center` (default `center`)\n  to `radius` (default `0.5`, expressed as a fraction of the\n  bounding rectangle's longest side).\n- `sweep` — angular gradient around `center`, swept from\n  `startAngle` (default `0`) to `endAngle` (default `2π`) in\n  radians.\n\n`colors` lists at least two color values; `stops` (optional) places\neach color at a position in `[0, 1]`. `tileMode` controls behaviour\npast the gradient extents."
     },
+    "IconRef": {
+      "$comment": "anyOf, not oneOf: the name branch is an unconstrained string, so a binding expression matches both it and the Binding branch. `oneOf` reads that legitimate value as a violation — the same reason the Widget union uses anyOf.",
+      "anyOf": [
+        {
+          "type": "string",
+          "description": "Icon name, or an AssetRef string (scheme-prefixed, or an `assets/` path)."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "codepoint": {
+              "type": "integer"
+            },
+            "fontFamily": {
+              "type": "string"
+            },
+            "fontPackage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "codepoint"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "type": "string",
+              "description": "Resource uri read through MCP `resources/read` on the resolved origin."
+            },
+            "origin": {
+              "$ref": "#/$defs/Origin"
+            }
+          },
+          "required": [
+            "uri"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Binding"
+        }
+      ],
+      "description": "Reference to an icon. Three forms, all accepted anywhere an icon is\ntaken — the `icon` widget and every widget with an icon slot\n(`button.icon`, `iconButton.icon`, `floatingActionButton.icon`,\n`popupMenuButton.icon`, `rating.icon`, `offlineFallback.icon`,\n`permissionPrompt.icon`, …):\n\n1. **Name** — `\"home\"`, `\"folder_open\"`, … resolved through the\n   runtime's built-in icon table. Zero-cost, and the default reading of\n   a bare string.\n2. **Codepoint** — `{codepoint, fontFamily?, fontPackage?}` for glyphs\n   the name table does not carry.\n3. **`AssetRef`** — any form that primitive accepts (network URL,\n   `bundle://`, `assets/`, `data:image/svg+xml;…`, `client://`, or the\n   `{uri, origin?}` object). Which of those a runtime resolves is\n   declared, not assumed (`06_Runtime_Contract.md` §6.12).\n\nA bare string carrying a known scheme prefix (or an `assets/` path) is\nan asset; every other bare string is a **name**. That rule is what lets\nthe named form stay the zero-ceremony default while the same slot also\naccepts a server-served glyph.\n\nThis primitive exists so the rule is stated once. Before it, `icon`\ndocumented three forms while the eight other icon slots were typed as\nbare strings — so the same value was legal in one slot and undeclared\nin the next, and a codepoint object could not be written at all outside\nthe `icon` widget."
+    },
     "LifecycleHooks": {
       "type": "object",
       "properties": {
@@ -473,13 +724,13 @@
       "type": "object",
       "properties": {
         "backgroundColor": {
-          "type": "string"
+          "$ref": "#/$defs/Color"
         },
         "backgroundImage": {
           "$ref": "#/$defs/BackgroundImage"
         },
         "indicatorColor": {
-          "type": "string",
+          "$ref": "#/$defs/Color",
           "description": "Selection indicator pill color (rail / drawer / tabs)."
         },
         "indicatorShape": {
@@ -487,7 +738,7 @@
           "description": "Selection indicator corner radius. Defaults to a fully-rounded pill."
         },
         "dividerColor": {
-          "type": "string",
+          "$ref": "#/$defs/Color",
           "description": "Drawer-only — color of dividers between item groups."
         },
         "dividerThickness": {
@@ -505,7 +756,7 @@
           "type": "object",
           "properties": {
             "color": {
-              "type": "string"
+              "$ref": "#/$defs/Color"
             },
             "size": {
               "$ref": "#/$defs/Dimension"
@@ -515,11 +766,11 @@
           "description": "Default icon color and size."
         },
         "selectedColor": {
-          "type": "string",
+          "$ref": "#/$defs/Color",
           "description": "Foreground color (icon + label) for the selected item."
         },
         "unselectedColor": {
-          "type": "string",
+          "$ref": "#/$defs/Color",
           "description": "Foreground color for non-selected items."
         },
         "elevation": {
@@ -528,6 +779,28 @@
       },
       "additionalProperties": false,
       "description": "Visual styling for a navigation surface (drawer / rail / tabs /\nbottomBar). Every field is optional — omitted fields fall back to\nthe active theme's component defaults. Used by\n`NavigationConfig.style` (whole surface) and `NavItem.style`\n(per-item override).\n\nBackgrounds compose: `backgroundColor` paints first, then\n`backgroundImage` paints over it."
+    },
+    "Origin": {
+      "type": "object",
+      "properties": {
+        "connection": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string",
+              "pattern": "^\\{\\{.*\\}\\}$"
+            }
+          ],
+          "description": "Outbound MCP client connection id, or a binding to one."
+        }
+      },
+      "required": [
+        "connection"
+      ],
+      "additionalProperties": false,
+      "description": "Who serves a definition. Deliberately open so future sources need no new\nsyntax — today one shape is defined; `{ \"bundle\": ... }` / `{ \"agent\": ... }`\nand similar can be added without changing any document that uses it.\n\n`connection` names a live connection in the host's outbound MCP client\nregistry, addressed by the id used to open it. The DSL does not define how\nconnections are made — that is a host capability (`06_Runtime_Contract.md`\n§6.11.1); it defines only how a definition is addressed once one exists.\n\nA binding is the normal value here: an application opens its connections in\n`lifecycle.onInit` and keeps the ids in state.\n\nRuntimes MUST reject an Origin whose sole key they do not recognise rather\nthan falling back to the current origin — a permissive reading would render a\ndifferent server's UI under the requested one's identity (`07_Security.md`\n§7.10.1)."
     },
     "PermissionDeclaration": {
       "oneOf": [
@@ -645,9 +918,14 @@
               "$ref": "#/$defs/Dimension"
             },
             "fontWeight": {
-              "oneOf": [
+              "anyOf": [
                 {
                   "type": "number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[1-9]00$",
+                  "description": "CSS numeric spelling (`\"700\"`). Documents written against CSS habits use it, and the runtime reads it the same as the number."
                 },
                 {
                   "enum": [
@@ -792,10 +1070,10 @@
               "description": "Gradient/shader fill applied to the rendered text via a shader mask. When set, `color` is ignored."
             }
           },
-          "additionalProperties": false
+          "additionalProperties": true
         }
       ],
-      "description": "Inline text style applied per `text` widget instance. Layered on\ntop of an M3 typography role when `variant` is set, or used\nstandalone. Mirrors the theme `TextStyle` token shape (fontFamily,\nfontSize, fontWeight, lineHeight, letterSpacing, fontFeatureSettings)\nand adds the per-instance fields a content app needs: color,\ndecoration, shader (gradient fill), and shadow stack."
+      "description": "Inline text style applied per `text` widget instance. Layered on\ntop of an M3 typography role when `variant` is set, or used\nstandalone. Mirrors the theme `TextStyle` token shape (fontFamily,\nfontSize, fontWeight, lineHeight, letterSpacing, fontFeatureSettings)\nand adds the per-instance fields a content app needs: color,\ndecoration, shader (gradient fill), and shadow stack.\n\nThe object stays open. Documents in the field carry keys this style\nnever had — `textAlign` inside `style` is the common one, written by\nhand before it moved onto the widget — and the runtime simply ignores\nthem. Rejecting them here would not correct anything: validation runs\nwhen the document loads, so a stray key inside `style` would stop the\nwhole page instead of being ignored the way the runtime ignores it."
     },
     "ValidationConfig": {
       "oneOf": [

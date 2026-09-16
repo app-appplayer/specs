@@ -1,0 +1,102 @@
+type: fileInput
+category: input
+profile: Core
+since: v1.4
+description: |
+  Lets the user hand the application a file they picked themselves.
+
+  Follows the shared input contract (spec §2.6.0): with `binding` set, the
+  runtime writes the selection to that state path. The value written is a
+  list of file descriptors — see `binding` below.
+
+  **Why this is Core and `client.selectFile` is not.** Reading a path the
+  document names (`client.readFile`, `client.listFiles` — spec §8.2) reaches
+  into the host's filesystem, so it belongs to the Client Profile behind a
+  `file.read` grant (spec §8.4). Receiving a file the *user chose in a picker* is the
+  opposite: the choosing is the consent, and the app learns nothing it was
+  not handed. It is the same trust level as `signature` (also Core), which
+  already accepts user-drawn input. A browser-rendered app that cannot claim
+  the Client Profile still must be able to accept an upload.
+
+  A runtime MUST NOT use this widget as a path to unpicked files: only what
+  the picker returned is readable, and `path` MAY be absent (it is on web).
+  Transport is not this widget's concern — once the selection is in state,
+  sending it is an ordinary `tool` action.
+properties:
+  dragDrop:
+    type: boolean
+    default: true
+    description: "Accept files dropped onto the control where the host supports it. Never the only affordance — the picker button stays."
+  maxFiles:
+    type: number
+    description: "Ceiling on selection count. Ignored unless `multiple` is true."
+  preview:
+    type: boolean
+    default: false
+    description: "Render thumbnails for image selections, using each descriptor's `bytes` as an `AssetRef`."
+  crop:
+    type: boolean
+    default: false
+    description: "Offer a crop step for image selections before the value lands in state."
+  aspectRatio:
+    type: number
+    description: "Crop ratio (width / height). Ignored unless `crop` is true."
+  # Shared per §2.6.0.
+  binding:
+    type: string
+    description: |
+      State path the selection is written to. Receives an array of
+      `{name, size, mimeType, bytes?, path?}` — `bytes` is a base64
+      `data:` URI usable directly as an `AssetRef`, `path` is present only
+      where the host has a filesystem. Empty array when the user cancels.
+  enabled:
+    type: boolean
+    default: true
+    description: Whether the picker can be opened.
+  accept:
+    type: "array<string>"
+    description: |
+      Acceptable types as MIME patterns (`image/*`, `application/pdf`) or
+      extensions (`.csv`). A hint to the picker, not a guarantee — a
+      runtime MUST re-check `mimeType` before relying on it.
+  multiple:
+    type: boolean
+    default: false
+    description: Allow selecting more than one file.
+  maxBytes:
+    type: number
+    description: |
+      Per-file size ceiling. Files above it are rejected before entering
+      state and MUST surface through `onError`, not silently vanish.
+  label:
+    type: string
+    description: Text on the picker trigger.
+  onChange:
+    type: Action
+    description: Fired after a selection lands in state.
+  onError:
+    type: Action
+    description: |
+      Fired when the picker fails, a file exceeds `maxBytes`, or the host
+      has no picker at all. A host that cannot pick MUST report here rather
+      than render a control that does nothing.
+examples:
+  - name: image_upload
+    dsl: |
+      {
+        "type": "fileInput",
+        "binding": "form.photo",
+        "accept": ["image/*"],
+        "maxBytes": 5242880,
+        "label": "Choose a photo"
+      }
+  - name: render_the_picked_image
+    description: |
+      The descriptor's `bytes` is a `data:` URI, so it is a valid `AssetRef`
+      and needs no upload round-trip to be shown.
+    dsl: |
+      {
+        "type": "image",
+        "src": "{{form.photo[0].bytes}}",
+        "width": 200
+      }

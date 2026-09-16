@@ -30,6 +30,16 @@ All examples use canonical names only. Binding expressions (`{{...}}`) follow [`
 | `signature` | Signature capture pad | v1.0 |
 | `canvas` | General-purpose drawing canvas | v1.3 |
 | `lightbox` | Full-screen image viewer with pinch-zoom + swipe | v1.3 |
+| `qrCode` | QR code renderer | v1.4 |
+| `barcode` | 1-D barcode renderer | v1.4 |
+| `pdfViewer` | PDF document viewer with page navigation and zoom | v1.4 |
+| `diffViewer` | Side-by-side or unified text comparison | v1.4 |
+| `richTextEditor` | Formatted text entry; value is HTML or Markdown | v1.4 |
+| `splitter` | Panes divided by draggable gutters | v1.4 |
+| `resizable` | A box the user resizes by dragging its edges | v1.4 |
+| `kanban` | Cards in columns, moved by dragging | v1.4 |
+| `gantt` | Tasks on a time axis with dependencies | v1.4 |
+| `spreadsheet` | Editable cell grid with optional formulas | v1.4 |
 
 ## 10.2 `chart` *(since v1.0)*
 
@@ -61,7 +71,7 @@ Data visualization widget with multiple chart types.
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `chartType` | enum | required | `line`, `bar`, `pie`, `donut`, `scatter`, `area`, `radar`, `polar`, `bubble` |
-| `data` | object | required | `{ labels: string[], datasets: Dataset[] }` |
+| `data` | object \| array | required | `{ labels: string[], datasets: Dataset[] }`, or a bare series array |
 | `data.datasets[].label` | string | null | Dataset label shown in legend |
 | `data.datasets[].data` | number[] | required | Data points |
 | `data.datasets[].borderColor` | string | theme | Line/border color |
@@ -106,9 +116,9 @@ Layout table for arranging widgets in rows and columns. Not data-bound; each cel
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `rows` | `{ cells: Widget[] }[]` | required | Row definitions |
+| `rows` | `TableRow[]` | required | Row definitions — each carries the widgets for its cells (`{ cells: Widget[] }`). A row with no cells is accepted and skipped at render, so a document carrying one still opens. |
 | `border` | `{ color, width }` | null | Optional cell border |
-| `defaultColumnWidth` | enum | `flex` | `flex`, `intrinsic`, or a number (fixed px) |
+| `defaultColumnWidth` | string \| number | `flex` | `flex`, `intrinsic`, or a number (fixed px) |
 | `defaultVerticalAlignment` | enum | `middle` | `top`, `middle`, `bottom`, `baseline` |
 | `columnWidths` | object | null | Map `columnIndex` → width override |
 
@@ -151,12 +161,36 @@ Material-style sortable, selectable data table bound to a row array.
 | `columns[].width` | number | null | Fixed column width |
 | `columns[].sortable` | boolean | `false` | Whether column supports sorting |
 | `columns[].align` | enum | `start` | `start`, `center`, `end` |
-| `rows` | binding | required | Array of row objects |
+| `rows` | `object[]` \| binding | required | Array of row objects — a literal array or a binding to one |
 | `selectable` | boolean | `false` | Whether rows are selectable |
 | `sortColumn` | binding | null | Current sort column key |
 | `sortAscending` | binding | `true` | Current sort direction |
+| `editable` | boolean | `false` | Allow in-place cell editing. Edits report through `onCellEdit`; the widget does not mutate `rows` on its own |
+| `filterable` | boolean | `false` | Per-column filter row under the header |
+| `resizableColumns` | boolean | `false` | Drag column edges to resize |
+| `virtualScroll` | boolean | `false` | Build rows on demand. Requires `rowHeight` |
+| `rowHeight` | number | — | Fixed row height in logical pixels |
 | `onSort` | Action | null | Fired on header tap of a sortable column |
+| `onCellEdit` | Action | null | Fired when an edit is committed; `{ row, column, value, previous }` |
 | `onRowTap` | Action | null | Fired on row tap; `event.row` is the row object |
+
+**Two render paths, and which one a document gets.** `editable`, `virtualScroll` or
+`resizableColumns` selects a laid-out grid; without any of them the table is a Material
+`DataTable`. The distinction is not cosmetic: a `DataTable`'s cells are text, so `editable`
+alone drawing one gave a table marked editable with no editable cell. Both paths honour
+`columns[].align`, the header tap of a `sortable` column, and the declared `sortColumn` /
+`sortAscending`.
+
+Sorting compares two numbers as numbers whatever their subtype. An `int` and a `double` in
+one column are one kind of value; comparing them as strings puts `617.5` after `2160`.
+
+An editable cell is keyed by its **row's identity**, not its position, so a re-sort moves each
+field with its row. Keyed by position, the field at row *n* keeps the text it was built with
+while the event names the row now at *n* — the number typed lands visually in one line and is
+reported for another.
+
+With editable cells a tap focuses the field, so `onRowTap` fires only on the row's padding.
+That is inherent to the composition: a document that needs both puts the row action elsewhere.
 
 ## 10.5 `map` *(since v1.0)*
 
@@ -208,7 +242,7 @@ Geographic map with markers and overlays.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `center` | `{ latitude, longitude }` | required | Map center coordinates |
+| `center` | `{ latitude, longitude }` | no | — | Map center coordinates. Required unless flat `latitude` / `longitude` are given. |
 | `zoom` | number | 13 | Zoom level (0–22) |
 | `mapType` | enum | `standard` | `standard`, `satellite`, `terrain`, `hybrid` |
 | `markers` | `Marker[]` | `[]` | Point markers |
@@ -265,7 +299,8 @@ Audio / video player widget.
 | `volume` | number | 1.0 | Volume 0.0–1.0 |
 | `controls` | boolean | `true` | Show native controls |
 | `poster` | `AssetRef` | — | Preview image rendered before playback (video only). |
-| `waveform` | boolean | `false` | Audio mode only — render the audio's amplitude waveform above the transport controls, advancing with playback. |
+| `id` | string | — | Names this player so §4.9b media actions can drive it. Required to build a custom transport (`controls: false`). |
+| `waveform` | boolean | `false` | Audio mode only — render the audio's amplitude waveform above the transport controls, advancing with playback. A runtime whose host does not supply amplitude data MUST report the capability absent through `onError` (§6.13.2) rather than accept the property and draw nothing. |
 | `width` | number | null | Display width |
 | `height` | number | null | Display height |
 | `onPlay` | Action | null | Fired when playback starts |
@@ -295,7 +330,7 @@ Calendar view for date selection and event display.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `selectedDate` | binding (ISO 8601) | null | Currently selected date |
+| `selectedDate` | string \| binding (ISO 8601) | null | Currently selected date |
 | `events` | binding | null | Array of `{ date, title, color? }` |
 | `firstDate` | string (ISO 8601) | null | Earliest selectable date |
 | `lastDate` | string (ISO 8601) | null | Latest selectable date |
@@ -362,13 +397,13 @@ Radial gauge for a value within a range.
 | `max` | number | 100 | Range maximum |
 | `segments` | `Segment[]` | null | Color segments with `from`, `to`, `color` |
 | `size` | number | 200 | Diameter (logical px) |
-| `strokeWidth` | number | 20 | Arc thickness |
+| `strokeWidth` | number | 10 | Arc thickness in logical pixels |
 | `backgroundColor` | string | `#E0E0E0` | Track color |
 | `valueColor` | string | theme primary | Value arc color (when no segments) |
 | `showLabel` | boolean | `true` | Show numeric label |
-| `labelFormat` | string | `{value}` | Label format pattern |
-| `startAngle` | number | 135 | Start angle in degrees |
-| `sweepAngle` | number | 270 | Sweep span in degrees |
+| `labelFormat` | string | `{value}%` | Label pattern; `{value}` is the reading |
+| `startAngle` | number | -220 | Start angle in degrees |
+| `sweepAngle` | number | 260 | Sweep span in degrees |
 
 ## 10.10 `heatmap` *(since v1.0)*
 
@@ -388,12 +423,12 @@ Two-dimensional heatmap visualization.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `data` | binding | required | 2D numeric array (rows × columns) |
+| `data` | array \| binding | required | 2D numeric array (rows × columns) |
 | `columnLabels` | string[] | null | Horizontal axis labels |
 | `rowLabels` | string[] | null | Vertical axis labels |
 | `cellSize` | number | 40 | Cell size (logical px) |
 | `colorRange` | `{ low, high }` | `{ "#E3F2FD", "#1565C0" }` | Hex gradient endpoints |
-| `showValues` | boolean | `false` | Render numeric value inside each cell |
+| `showValues` | boolean | `true` | Render numeric value inside each cell |
 | `onCellTap` | Action | null | Fired on cell tap; `event.row`, `event.column`, `event.value` |
 
 ## 10.11 `tree` *(since v1.0)*
@@ -420,14 +455,37 @@ Hierarchical tree view with expandable nodes.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `data` | binding | required | Hierarchical data; each node MAY carry a `children` array |
+| `data` | array \| binding | required | Hierarchical data; each node MAY carry a `children` array |
 | `childrenKey` | string | `children` | Field name of the children array |
-| `itemTemplate` | Widget | required | Template rendered per node; `{{item}}` is node data |
+| `itemTemplate` | Widget | no | — | Template rendered per node; `{{item}}` is node data. Omitted, each node draws its label. |
 | `expandable` | boolean | `true` | Allow expand/collapse |
 | `initiallyExpanded` | boolean | `false` | Expand all nodes on mount |
+| `selectable` | boolean | `false` | Tapping selects the node |
+| `selectedColor` | Color | theme primary @ 20% | Selection highlight |
+| `checkable` | boolean | `false` | Draw a checkbox per node |
+| `checkedKeys` | string[] \| binding | `[]` | Checked node ids |
+| `draggable` | boolean | `false` | Allow reordering and reparenting by drag. Reports through `onDrop`; the widget does not mutate the tree |
+| `showLines` | boolean | `true` | Draw guide lines |
+| `lineColor` | Color | theme outlineVariant | Guide line colour |
+| `indentation` | Dimension | `24` | Indent per depth level |
+| `itemPadding` | EdgeInsets | `{top:4, bottom:4, right:8}` | Padding inside every row; the vertical component is row density |
+| `width` / `height` | number | — | Fixed widget size |
 | `onNodeTap` | Action | null | Fired on node tap |
+| `onSelect` | Action | null | Fired on selection; requires `selectable` |
+| `onDrop` | Action | null | Fired when a dragged node is released on another |
 | `onExpand` | Action | null | Fired on node expand; `event.id` |
 | `onCollapse` | Action | null | Fired on node collapse; `event.id` |
+
+**`onDrop` carries where it landed.** `event.item` is the node that moved, `event.target` the
+node it was released on, and `event.position` one of `before` / `inside` / `after` — which edge
+of the target it landed on. A move that cannot say where it landed is a move the document
+cannot apply.
+
+Every node is a drag source and a drop target, **expandable nodes included**: dropping on a
+group's row with `position: "inside"` is the reparenting this event exists for, and a tree
+where only leaves accept a drop cannot express it. The edge is measured against the target
+**row**, not the widget, and a node is refused as a target for itself or anything in its own
+subtree — that move has no consistent result.
 
 ## 10.12 `graph` *(since v1.0)*
 
@@ -504,9 +562,9 @@ Syntax-highlighted code editor.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `code` | binding | required | Code content |
+| `code` | string \| binding | no | — | Code content. Required unless `binding` supplies it. |
 | `language` | enum | `plaintext` | `plaintext`, `javascript`, `typescript`, `dart`, `python`, `java`, `kotlin`, `swift`, `go`, `rust`, `c`, `cpp`, `csharp`, `ruby`, `php`, `sql`, `json`, `yaml`, `xml`, `html`, `css`, `markdown`, `shell` |
-| `theme` | enum | `vsLight` | `vsLight`, `vsDark`, `monokai`, `solarizedLight`, `solarizedDark`, `github`, `dracula` |
+| `theme` | enum | `vsDark` | `vsLight`, `vsDark`, `monokai`, `solarizedLight`, `solarizedDark`, `github`, `dracula` (legacy `light` / `dark` still read) |
 | `readOnly` | boolean | `false` | Disable editing (syntax highlighting still applies) |
 | `showLineNumbers` | boolean | `true` | Show gutter line numbers |
 | `fontSize` | number | null | Font size (logical px) |
@@ -587,7 +645,7 @@ File and directory browser.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `items` | binding | required | Hierarchical `{ name, path, type, children? }` tree |
+| `items` | `object[]` \| binding | no | — | Hierarchical `{ name, path, type, children? }` tree — a literal array or a binding to one. Omitted, the explorer renders empty. |
 | `showIcons` | boolean | `true` | Show file / folder icons |
 | `showHidden` | boolean | `false` | Show entries whose name starts with `.` |
 | `expandAll` | boolean | `false` | Expand all folders by default |
@@ -626,6 +684,7 @@ Markdown renderer.
 | `height` | number | null | Widget height |
 | `fontSize` | number | null | Base font size |
 | `textColor` | string | null | Default text color |
+| `backgroundColor` | string | null | Surface behind the rendered document |
 | `linkColor` | string | null | Hyperlink color |
 | `codeBackgroundColor` | string | null | Code-block background |
 | `onLinkTap` | Action | null | Fired on link tap; `event.url` is the target |
@@ -704,7 +763,7 @@ Signature capture pad.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `binding` | binding | required | Target binding for signature data (base64 PNG or SVG path) |
+| `binding` | binding | no | Target binding for the signature. Written as a `data:image/png;base64,…` URI once a stroke completes, and `null` once the pad is cleared. Omitted, the pad still draws; the stroke goes nowhere. |
 | `penColor` | string | `#000000` | Stroke color |
 | `penWidth` | number | 2.0 | Stroke width |
 | `width` | number | null | Widget width |
@@ -712,8 +771,8 @@ Signature capture pad.
 | `backgroundColor` | string | null | Pad background |
 | `borderColor` | string | null | Pad border |
 | `showClearButton` | boolean | `true` | Show a clear-signature button |
-| `showGuide` | boolean | `false` | Show a signing guide line |
-| `onSignatureEnd` | Action | null | Fired when a stroke completes |
+| `showGuide` | boolean | `true` | Show a signing guide line |
+| `onSignatureEnd` | Action | null | Fired when a stroke completes. `event.value` carries the same `data:` URI the binding receives; `event.strokes` carries the stroke coordinates for a document that wants the vector rather than the picture; `event.strokeCount` and `event.hasSignature` describe what is on the pad. Fired **after** the encode, so it is asynchronous with respect to the gesture. |
 | `onClear` | Action | null | Fired when the signature is cleared |
 
 ## 10.20 `canvas` *(since v1.3)*
@@ -944,7 +1003,190 @@ Inline-defined content variant:
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `placeholder` | Widget | null | Rendered while `content` is not yet materialized |
-| `content` | Widget \| `{ source }` | required | Inline widget, or `{ source: "ui://..." }` to fetch a remote page fragment |
-| `trigger` | enum | `viewport` | `viewport` (render when scrolled into view), `immediate` (render on mount), `manual` (render when `load()` signal is received) |
+| `content` | Widget \| object | — | Inline widget, or `{ source: "ui://..." }` naming a fragment to fetch — resolved the same way `view` resolves a `DefinitionSource` (§2.13.1). Required when `children` / `child` are omitted. |
+| `trigger` | enum | `visible` | `visible` (render when the widget becomes visible to the user), `immediate` (render on mount), `manual` (render when a `load()` signal is received) |
 | `onLoad` | Action | null | Fired after `content` is materialized |
 | `onError` | Action | null | Fired if `content` fetch fails; `event.error` |
+
+
+## 10.23 `qrCode` *(since v1.4)*
+
+Renders a QR code for `value`. Cannot be composed — the module grid is computed, not laid out. The definition is small in exchange, and it pairs with the scanning side the platform already has: a code produced here is the same artefact [`08_Client_Extensions.md`](08_Client_Extensions.md) §8.9 reads on arrival.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | string \| binding | required | Encoded payload — a URL, a `ui://` route, or an entry token |
+| `size` | number | `200` | Edge length in logical pixels; the grid is square |
+| `errorCorrection` | enum | `medium` | `low` (7%), `medium` (15%), `quartile` (25%), `high` (30%). Higher survives damage at the cost of density — use `high` when a logo overlays the centre. The QR standard's own `L`/`M`/`Q`/`H` are legacy spellings a runtime MAY accept (§17.3); they are not declared values. |
+| `foregroundColor` | Color | — | Module color. Contrast must stay scannable; a runtime SHOULD refuse to render below it rather than emit an unreadable code |
+| `backgroundColor` | Color | — | Quiet-zone and gap color |
+| `margin` | boolean | `true` | Include the quiet zone. Omitting it breaks scanning against busy backgrounds |
+| `logo` | AssetRef | — | Image centred over the code. Requires a higher `errorCorrection` (`quartile` or `high`) to stay scannable |
+
+## 10.24 `barcode` *(since v1.4)*
+
+Renders a 1-D barcode. Like `qrCode` the bar pattern is computed; unlike it, each `format` constrains what `value` may contain — an EAN-13 payload is thirteen digits with a check digit, not arbitrary text.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `value` | string \| binding | required | Payload. MUST satisfy `format`; a runtime reports a violation rather than rendering an unscannable image |
+| `format` | enum | `code128` | `code128`, `code39`, `ean13`, `ean8`, `upcA`, `upcE`, `itf`, `codabar` |
+| `width` | number | intrinsic | Omitted means the natural width for the module count, which is what stays scannable |
+| `height` | number | `80` | Bar height |
+| `displayValue` | boolean | `true` | Print the payload under the bars |
+| `foregroundColor` / `backgroundColor` | Color | — | Colors |
+
+## 10.25 `pdfViewer` *(since v1.4)*
+
+Renders a PDF with page navigation and zoom. `webView` can display a PDF where the host has a plugin, and that is the substitution to avoid: the document then belongs to the browser, so page position, zoom, and search sit outside the DSL's reach and outside the app's theme.
+
+`src` is an `AssetRef`, so the same document works from a bundle, a URL, a picked file (`fileInput` writes a `data:` URI), or a server resource.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `src` | AssetRef | required | Document source |
+| `page` | number \| binding | — | Two-way bound current page, 1-based |
+| `zoom` | number \| binding | — | Two-way bound zoom; `1.0` is fit-width |
+| `showToolbar` | boolean | `true` | Built-in toolbar. False leaves navigation to bindings |
+| `showPageNav` / `showZoom` | boolean | `true` | Toolbar controls |
+| `fit` | enum | `width` | `width`, `height`, `page` |
+
+Events: `onLoad` (carries page count), `onPageChange` (however it changed), `onError`.
+
+## 10.26 `diffViewer` *(since v1.4)*
+
+Comparison of two texts. Separate from `codeEditor` rather than a mode on it, because the input is **two documents**: a `mode` flag on a single-value widget would leave one of the two with nowhere to bind. Read-only by design — editing a diff means editing one side, which is `codeEditor`'s job.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `oldValue` / `newValue` | string \| binding | required | Base and changed text |
+| `splitView` | boolean | `true` | Two columns; false is unified |
+| `language` | string | — | Highlighting, same vocabulary as `codeEditor.language` |
+| `showLineNumbers` | boolean | `true` | Gutter line numbers |
+| `contextLines` | number | — | Unchanged lines kept around each change; omitted shows the whole document |
+| `highlightLines` | number[] | — | Extra emphasis on new-side lines |
+
+## 10.27 `richTextEditor` *(since v1.4)*
+
+Formatted text entry. Shared rows per §2.6.0.
+
+**The bound value is HTML** (or Markdown via `format`), and that choice is why this needed a decision rather than a definition: an editor's value format is a contract every consumer of the document inherits, and a proprietary delta model would make the content unreadable to anything but the editor that produced it. A host that cannot edit can still display HTML.
+
+A runtime MUST sanitise on the way in and on the way out — [`07_Security.md`](07_Security.md) §7.5 applies to this value exactly as to any other author-supplied markup.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `format` | enum | `html` | `html`, `markdown`. HTML is limited to inline marks, block elements, and `img` whose `src` is an `AssetRef`; anything else is **stripped, not escaped** |
+| `toolbar` | string[] | runtime default | Controls shown. A control absent here MUST also be unreachable by shortcut, or the toolbar lies about what the document can contain |
+| `placeholder` | string | — | Shown while empty |
+| `minHeight` | number | — | Minimum height |
+| `maxLength` | number | — | Ceiling on text content, not markup |
+
+## 10.28 `splitter` *(since v1.4)*
+
+Panes separated by draggable gutters. Distinct from `resizable`, which resizes one box against the layout around it: this divides a **fixed area** between siblings, so dragging takes space from one pane and gives it to the next and the total never changes.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `children` | Widget[] | required | Panes in order; gutters appear between them |
+| `orientation` | enum | `horizontal` | Direction panes lie along |
+| `sizes` | number[] \| binding | even | Fractions summing to 1. Two-way bindable so a layout can be restored |
+| `minSizes` | number[] | — | Per-pane minimums. A drag stops at them rather than collapsing a pane not marked collapsible |
+| `gutterSize` | number | `8` | Thickness. Keep it hittable with a finger where touch is possible |
+| `collapsible` | boolean[] | — | Per-pane: whether dragging past the minimum collapses it |
+
+## 10.29 `resizable` *(since v1.4)*
+
+A box the user resizes by dragging its edges or corners. Distinct from `splitter`: this changes one widget's own size against whatever surrounds it.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `child` | Widget | required | Content being sized |
+| `width` / `height` | number \| binding | — | Two-way bound; bind to persist |
+| `minWidth` / `maxWidth` / `minHeight` / `maxHeight` | number | — | Bounds |
+| `handles` | string[] | `[bottomEnd]` | Draggable edges/corners |
+| `keepAspectRatio` | boolean | `false` | Constrain to the starting ratio |
+
+Events: `onResize` (per frame), `onResizeEnd` (on release — prefer this for persistence).
+
+## 10.30 `kanban` *(since v1.4)*
+
+Cards in columns, moved between columns by dragging.
+
+The pieces for a composition exist (`grid` + `draggable` + `dragTarget`) and that composition is where the work actually is: drop targets must be the **gaps between cards** rather than the cards, the column must auto-scroll while a card hovers near its edge, and a drop must report *where* in the destination the card landed. Authors composing this get a board that looks right and reorders wrongly.
+
+The widget owns presentation and gesture. It does **not** own the move: `onCardMove` reports intent and the author's action decides, so a server-rejected move is not silently already applied on screen.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `columns` | object[] \| binding | required | `{ key, title, items, limit?, color? }`. `limit` refuses an over-capacity drop **at the gesture**, not after |
+| `itemTemplate` | Widget | required | Card body, rendered per item with `item` in scope |
+| `itemKey` | string | `"id"` | Field identifying a card — stable identity is what makes a move addressable |
+| `draggable` | boolean | `true` | False renders a read-only board |
+| `columnWidth` | Dimension | — | Fixed width; omitted distributes available width |
+| `height` | Dimension | — | Board height. Omitted, the board fills its parent, which must then be bounded (§2.15) |
+| `optimistic` | boolean | `false` | Move on screen before `onCardMove` resolves. False keeps the board as the truth the server confirmed |
+
+Events: `onCardMove` (`{ item, from: {column, index}, to: {column, index} }` — the destination index matters, since a board without ordering is a list of columns), `onCardClick`.
+
+**The board cannot size to its content** — each column scrolls its own cards — so it needs a
+height from `height` or from a bounded parent. No default is invented when neither is given:
+a made-up height is a layout that looks deliberate and is not.
+
+**A drop lands anywhere in a column**: in the gaps between cards, on a card (its upper half
+inserts before it, its lower half after), and in the space below the last card. Gaps alone
+leave a column with cards in it mostly not a drop target.
+
+**`optimistic` holds while the bound data is unchanged**, and is replaced when the data
+changes. The board compares incoming `columns` by content: compared by identity, the state
+write that `onCardMove` itself provokes reads as new data and undoes the move on the next
+frame. One consequence for a document: a server refusal that leaves the data identical is
+"nothing changed" and the card stays, so a refusal that must show sends the data the server
+holds.
+
+## 10.31 `gantt` *(since v1.4)*
+
+Tasks on a time axis, with dependencies and progress.
+
+What makes this a widget rather than a composition is the **axis**. Bars are positioned by time, not by index, so the row and the header must share one scale, stay aligned through zoom and horizontal scroll, and place a task whose span is shorter than a pixel without dropping it. Composing it from `grid` gives rows that drift from the header as soon as either scrolls.
+
+Dependencies are drawn, not enforced: the widget renders the arrows and reports an edit; whether a move is legal is the server's answer.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `tasks` | object[] \| binding | required | `{ id, label, start, end, progress?, dependsOn?, group?, color? }`; times are ISO-8601 |
+| `viewMode` | enum | `day` | `hour`, `day`, `week`, `month`, `quarter`, `year` |
+| `range` | object | fits tasks | `{ start, end }` window shown |
+| `editable` | boolean | `false` | Drag bars to move, drag edges to reschedule |
+| `showProgress` | boolean | `true` | Render each task's `progress` as a fill: the completed fraction in the bar's colour, the remainder in a lighter tint of it |
+| `showDependencies` | boolean | `true` | Draw dependency arrows, from the end of each task a row depends on to the start of that row's task |
+| `todayMarker` | boolean | `true` | Mark the current instant on the axis |
+| `rowHeight` | number | — | Task row height |
+
+Events: `onTaskChange` (`{ id, start, end }` — the **proposed** schedule, not an applied one), `onTaskClick`.
+
+**The header labels by granularity.** A unit of a day or longer names a *span*, so its label is
+centred in the cell between two ticks, over the bar it dates — the reading every calendar and
+gantt trains. A unit shorter than a day names a *point*, so its label sits beside the tick and
+reads the time, with the date where the day turns. Ticks stay on cell boundaries in both. A
+label that would overlap the previous one is dropped rather than drawn over it, so a dense
+scale shows fewer dates instead of unreadable ones.
+
+## 10.32 `spreadsheet` *(since v1.4)*
+
+Editable grid of cells addressed by row and column, with optional formulas.
+
+Distinct from `dataTable`, which presents **records**: a table's unit is a row with typed fields, a spreadsheet's unit is a **cell with a coordinate**. That is why one cannot be a mode of the other — selection, editing, and paste all address different things.
+
+**Formulas are evaluated by the runtime's expression engine under [`07_Security.md`](07_Security.md) §7.1**, not by a spreadsheet language of the DSL's own. A runtime that cannot meet that sandbox MUST render formulas as their last computed value rather than evaluating them loosely: a cell that runs arbitrary text is the one place this widget could become an injection surface.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `data` | array[] \| binding | required | Rows of cell values. A cell is a scalar, or `{ value, formula?, format?, style? }` |
+| `columns` | object[] | derived | `{ key?, label?, width?, type?, readOnly? }`; omitted labels them A, B, C… |
+| `rowHeaders` / `columnHeaders` | boolean | `true` | Gutter and header |
+| `editable` | boolean | `true` | Allow cell editing |
+| `formulas` | boolean | `false` | Evaluate `formula` fields. Off by default — a document that needs no computation should not carry an evaluator |
+| `frozenRows` / `frozenColumns` | number | `0` | Panes pinned while scrolling |
+
+Events: `onChange` (`{ row, column, value, previous }`), `onCellSelect`.

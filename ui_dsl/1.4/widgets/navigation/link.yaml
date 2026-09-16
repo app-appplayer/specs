@@ -1,0 +1,62 @@
+type: link
+category: navigation
+profile: Core
+since: v1.4
+aliases:
+  - navLink
+description: |
+  Text that navigates. `route` goes to an internal route; `url` leaves the
+  application through `navigation.openUrl` (§4.3.3). Exactly one of the two
+  is set — a link that could mean either is a link whose destination the
+  author did not decide.
+
+  Composable from `inkWell` + `text` + an action, and the composition is
+  what most documents do today. It loses the link role (assistive technology
+  announces "button"), the visited/hover affordances, and — for `url` — the
+  external-destination cue a user needs before leaving the app.
+
+  `navLink` is the same widget with `activeWhen` in use: a link that knows
+  whether it points at where you already are.
+properties:
+  label:
+    type: string
+    required: true
+    description: "Link text. Use `child` instead when the link wraps richer content."
+  route:
+    type: string
+    description: "Internal route. Mutually exclusive with `url`."
+  params:
+    type: "object"
+    description: "Route parameters. Ignored when `url` is set."
+  url:
+    type: string
+    description: "External URL, opened per §4.3.3. Mutually exclusive with `route`."
+  target:
+    type: string
+    enum: [new, same]
+    default: "new"
+    description: "Hint for `url` links only; a host with no tabs MAY ignore it."
+  activeWhen:
+    type: "string | binding"
+    description: "Route (or expression) that marks this link as the current location. Sets the active style and `aria-current`."
+  underline:
+    type: string
+    enum: [always, hover, never]
+    default: "hover"
+    description: "Underline policy."
+  icon:
+    type: IconRef
+    description: "Leading icon."
+  child:
+    type: Widget
+    description: "Rich content in place of `label`."
+events:
+  onClick:
+    description: Fired before navigation. Cancelling is not supported — use a `button` when the decision is conditional.
+examples:
+  - name: internal
+    dsl: |
+      { "type": "link", "label": "Orders", "route": "/orders", "activeWhen": "/orders" }
+  - name: external
+    dsl: |
+      { "type": "link", "label": "Terms", "url": "https://example.com/terms" }

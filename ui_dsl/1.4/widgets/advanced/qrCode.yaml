@@ -1,0 +1,45 @@
+type: qrCode
+category: advanced
+profile: Advanced
+since: v1.4
+description: |
+  Renders a QR code for `value`.
+
+  Cannot be composed — the module grid is computed, not laid out. The
+  definition is small in exchange, and it pairs with the scanning side the
+  platform already has: a code produced here is the same artefact §8.9 reads
+  on arrival.
+properties:
+  value:
+    type: "string | binding"
+    required: true
+    description: "Encoded payload. A URL, a `ui://` route, or an entry token."
+  size:
+    type: number
+    default: 200
+    description: "Edge length in logical pixels. The grid is square."
+  errorCorrection:
+    type: string
+    enum: [low, medium, quartile, high]
+    legacyValues: [L, M, Q, H]
+    default: "medium"
+    description: |
+      Error-correction level: `low` (7%), `medium` (15%), `quartile` (25%),
+      `high` (30%).
+  foregroundColor:
+    type: Color
+    description: "Module color. Contrast against `backgroundColor` must stay high enough to scan; a runtime SHOULD refuse to render below it rather than emit an unreadable code."
+  backgroundColor:
+    type: Color
+    description: "Quiet-zone and gap color."
+  margin:
+    type: boolean
+    default: true
+    description: "Include the quiet zone. Omitting it breaks scanning against busy backgrounds."
+  logo:
+    type: AssetRef
+    description: "Image centred over the code. Requires a higher `errorCorrection` to stay scannable."
+examples:
+  - name: basic
+    dsl: |
+      { "type": "qrCode", "value": "https://example.com/i/42", "size": 240, "errorCorrection": "high" }

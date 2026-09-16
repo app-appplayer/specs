@@ -2,7 +2,9 @@
 
 **Status:** Normative.
 
-> **SSOT:** The machine-readable widget registry at [`widgets/<category>/<type>.yaml`](widgets/) is authoritative. The prose rows in this file are regenerated from it. If YAML and prose disagree, YAML wins. Generated reference artifacts: [`generated/widgets.md`](generated/widgets.md), [`schema/widgets.schema.json`](schema/widgets.schema.json).
+> **SSOT:** The machine-readable widget registry at [`widgets/<category>/<type>.yaml`](widgets/) is authoritative. If YAML and prose disagree, YAML wins.
+>
+> The tables in this file are **curated, not generated** — they carry the canonical properties with the explanation an author needs, and they do not list every declared property. The complete per-widget list, including properties promoted from a runtime that had been reading them undeclared, is [`generated/widgets.md`](generated/widgets.md); the machine form is [`schema/widgets.schema.json`](schema/widgets.schema.json). A property absent from a prose table but present in the registry is still declared and still validated.
 
 This section defines every widget in the Core Profile. The full canonical name list is also summarized in [`17_Naming.md`](17_Naming.md) §17.2.1; all aliases are registered in §17.3. Required widget sets are anchored in [`18_Conformance.md`](18_Conformance.md) §18.2.1. Advanced widgets are defined in [`10_Advanced_Widgets.md`](10_Advanced_Widgets.md).
 
@@ -66,8 +68,8 @@ Rectangular region with padding, margin, border, decoration, and size constraint
 | `maxWidth` | number | no | — | Maximum width constraint; caps the child's width. |
 | `minHeight` | number | no | — | Minimum height constraint. |
 | `maxHeight` | number | no | — | Maximum height constraint. |
-| `padding` | string \| EdgeInsets | no | — | Inner spacing. String form accepts an M3 spacing token (`xxs` / `xs` / `sm` / `md` / `lg` / `xl` / `2xl` / `3xl` / `4xl`, or any custom slot in `theme.spacing`) that resolves through `theme.spacing.<token>` to a uniform inset; object form is `{all}`, `{horizontal, vertical}`, `{top, right, bottom, left}`, or `{token: "md"}`. |
-| `margin` | EdgeInsets | no | — | Outer spacing. |
+| `padding` | BoxSpacing | no | — | Inner spacing. String form accepts an M3 spacing token (`xxs` / `xs` / `sm` / `md` / `lg` / `xl` / `2xl` / `3xl` / `4xl`, or any custom slot in `theme.spacing`) that resolves through `theme.spacing.<token>` to a uniform inset; object form is `{all}`, `{horizontal, vertical}`, `{top, right, bottom, left}`, or `{token: "md"}`. A string that is not a declared slot (`"16px"`) resolves to no inset; the runtime reports it rather than rejecting the document. |
+| `margin` | BoxSpacing | no | — | Outer spacing. Same spellings as `padding`, token included: `box` resolves both through one helper. |
 | `alignment` | string | no | — | Alignment of the child within the box. |
 | `decoration` | object | no | — | `color`, `borderRadius`, `border`, `boxShadow`, `gradient`. |
 | `color` | string | no | — | Shorthand for `decoration.color`. |
@@ -168,7 +170,7 @@ Aligns a single child at a specified alignment.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `alignment` | string | yes | — | `topStart`, `topCenter`, `topEnd`, `centerStart`, `center`, `centerEnd`, `bottomStart`, `bottomCenter`, `bottomEnd`. |
+| `alignment` | string | no | — | `topStart`, `topCenter`, `topEnd`, `centerStart`, `center`, `centerEnd`, `bottomStart`, `bottomCenter`, `bottomEnd`. Defaults to `center`. |
 | `child` | Widget | yes | — | Aligned widget. |
 
 ```json
@@ -207,6 +209,13 @@ Applies outer margin around a single child.
 ### 2.4.8 `expanded`
 
 Flex child that expands to fill available space inside a `linear` parent.
+
+**The parent must be bounded along its own direction.** A `linear` inside a
+scrolling ancestor shrink-wraps — it has no "available space" to divide — and
+`expanded` there is an error, not a no-op: the runtime reports *"RenderFlex
+children have non-zero flex but incoming height constraints are unbounded"* and
+the subtree does not draw. Give the region a size (`sizedBox`, `box.height`)
+before dividing it. §2.15 lists the widgets this comes up with.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
@@ -296,7 +305,7 @@ Sizes the child to a specific aspect ratio.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `aspectRatio` | number | yes | — | Width-to-height ratio (e.g., `1.5` for 3:2). |
+| `aspectRatio` | number | no | — | Width-to-height ratio (e.g., `1.5` for 3:2). Defaults to `1.0`. |
 | `child` | Widget | yes | — | Child widget. |
 
 ### 2.4.16 `fractionallySized`
@@ -331,11 +340,11 @@ Shows or hides a child with optional state preservation and replacement content.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `visible` | boolean \| binding | yes | — | Whether the child is visible. |
+| `visible` | boolean \| binding | no | `true` | Whether the child is visible. |
 | `maintainSize` | boolean | no | `false` | Keep space allocated when hidden. |
 | `maintainState` | boolean | no | `false` | Preserve `child` state when hidden. Does not affect `replacement`, which is built fresh each time it is shown. |
 | `replacement` | Widget | no | — | Widget shown in place of `child` when `visible` is `false`. When absent, the child is simply hidden in-place (respecting `maintainSize` / `maintainState`). |
-| `child` | Widget | yes | — | Primary widget. |
+| `child` | Widget | no | — | Primary widget. Required unless `children` is given. |
 
 ```json
 {
@@ -354,8 +363,8 @@ Renders different branches based on an expression. Two forms are supported: then
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `condition` | binding | yes | — | Boolean-producing expression. |
-| `then` | Widget | yes | — | Rendered when `condition` is truthy. |
+| `condition` | boolean \| binding | no | — | Boolean-producing expression. Required in the `condition` / `then` shape. |
+| `then` | Widget | no | — | Rendered when `condition` is truthy. Required in the `condition` / `then` shape; `child` / `widget` are accepted spellings. |
 | `else` | Widget | no | — | Rendered when `condition` is falsy. |
 
 ```json
@@ -375,8 +384,8 @@ Renders different branches based on an expression. Two forms are supported: then
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `switch` | binding | yes | — | Expression whose value is compared against each case. |
-| `cases` | array | yes | — | List of `{ value, child }` entries. |
+| `switch` | binding | no | — | Expression whose value is compared against each case. Required in the `switch` / `cases` shape. |
+| `cases` | array | no | — | List of `{ value, child }` entries. Required in the `switch` / `cases` shape. |
 | `default` | Widget | no | — | Rendered when no case matches. |
 
 ```json
@@ -412,6 +421,24 @@ Displays a single child selected by index. All children retain state.
     { "type": "text", "text": "Step 3" }
   ]
 }
+```
+
+### 2.4.22 `accordion` *(since v1.4)*
+
+Sections that expand and collapse. Alias: `collapsible` (the single-section case — the same widget, not a smaller one).
+
+Composing this from `conditional` + `inkWell` renders correctly and loses two things the author cannot add back: the transition, and the accessibility state a screen reader announces. A collapsed section that is merely absent from the tree reads to assistive technology as content that does not exist rather than content that is hidden.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `panels` | object[] | yes | — | `{ id, title?, header?, content, expanded?, enabled? }`. `header` (a Widget) wins over `title`. |
+| `allowMultiple` | boolean | no | `false` | Allow more than one open. False collapses the previous panel. |
+| `expandedIds` | string[] | no | — | Two-way bound open ids — makes expansion addressable from actions. |
+| `bordered` | boolean | no | `true` | Dividers between panels. |
+| `icon` | `IconRef` | no | — | Expand indicator; rotates on toggle. |
+
+```json
+{ "type": "accordion", "panels": [ { "id": "s", "title": "Shipping", "content": { "type": "text", "content": "2 days" } } ] }
 ```
 
 ---
@@ -464,11 +491,11 @@ Styled text composed of inline spans.
 
 ### 2.5.3 `image`
 
-Displays an image from a URL, bundle, or client resource.
+Displays an image from any asset source the runtime resolves — a network URL, the active bundle, inline bytes, a host resource, or a resource served by an origin. Which forms a given runtime resolves is declared, not assumed ([`06_Runtime_Contract.md`](06_Runtime_Contract.md) §6.12); unresolved sources take `fallback` / `fallbackUrl` / `fallbackBehavior`.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `src` | string | yes | — | Image URL, `bundle://...`, or `client://...`. |
+| `src` | `AssetRef` | yes | — | Image source. Any `AssetRef` form. |
 | `width` | number | no | — | Width in logical pixels. |
 | `height` | number | no | — | Height in logical pixels. |
 | `fit` | string | no | `"contain"` | `cover`, `contain`, `fill`, `none`, `scaleDown`, `fitHeight`, `fitWidth`. |
@@ -490,7 +517,7 @@ Displays a named icon from the runtime's icon set.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `icon` | string | yes | — | Icon name (e.g., `"home"`, `"settings"`), `http(s)://` URL, or codepoint object `{codepoint, fontFamily?, fontPackage?}`. |
+| `icon` | `IconRef` | yes | — | Icon name, codepoint object, or any `AssetRef` — the same three forms every icon slot accepts. |
 | `size` | string \| number | no | — | Numeric dp, or an `AppIconSizes` token (`sm` / `md` / `lg` / `xl`) that scales with the active form factor. |
 | `sizeToken` | string | no | — | Equivalent to `size` when given as a token; explicit form for tooling. |
 | `color` | string | no | — | Icon color. |
@@ -590,7 +617,7 @@ Circular widget for user images or initials.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `src` | string | no | — | Image URL; if absent, falls back to `label`. |
+| `src` | `AssetRef` | no | — | Image source. Any `AssetRef` form; if absent or unresolvable, falls back to `label`. |
 | `label` | string | no | — | Text label (typically initials). |
 | `size` | number | no | `40` | Diameter in logical pixels. |
 | `color` | string | no | — | Background color when showing label. |
@@ -663,10 +690,18 @@ Persistent message banner at the top of a section or page.
 
 Progress indicator (linear or circular).
 
+> **The shape can be named by the widget type (2026-08-10).** `progressBar`
+> and `loadingIndicator` default to `circular`; `linearProgressIndicator` and
+> `circularProgressIndicator` name their shape outright, and `indicatorType`
+> overrides either. The default is `circular` because a linear bar has no
+> intrinsic width: a bare `progressBar` inside a row asserts at layout time
+> rather than rendering, and documents already in the field carry exactly that
+> shape.
+
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
 | `value` | number \| binding | no | — | Progress in `0.0..1.0`; omit for indeterminate. |
-| `indicatorType` | string | no | `"linear"` | `linear` or `circular`. |
+| `indicatorType` | string | no | `"circular"` | `linear` or `circular`. Legacy alias: `type` (avoid — it collides with the widget-type discriminator and is unreachable at the top level). |
 | `color` | string | no | theme primary | Foreground color. |
 | `backgroundColor` | string | no | — | Track color. |
 
@@ -695,7 +730,24 @@ Wraps a child with a decoration box (color, gradient, border, shadow, image, blu
 | `boxShadow` | array\<`BoxShadow`\> | no | — | Flat shorthand for `decoration.boxShadow`. |
 | `shape` | string | no | `"rectangle"` | `rectangle` or `circle`. |
 | `backdropBlur` | number | no | — | Gaussian backdrop-filter sigma. |
-| `child` | Widget | yes | — | Decorated widget. |
+| `child` | Widget | no | — | Decorated widget. Omitted, the decoration renders alone. |
+
+#### Decoration primitives
+
+The shapes the fields above take. Full definitions live in
+`configs/_primitive/` and `configs/widget/`; the keys are named here so a
+reader of the prose can see what a decoration is made of.
+
+| Shape | Keys |
+|-------|------|
+| `Gradient` | `type` (`linear` / `radial` / `sweep`), `colors`, `stops`, `begin`, `end`, `center`, `radius`, `startAngle`, `endAngle`, `tileMode` (`clamp` / `repeated` / `mirror` / `decal` — how the ramp continues past its ends) |
+| `BoxShadow` | `color`, `offset` (or `offsetX` / `offsetY`), `blurRadius` (alias `blur`), `spreadRadius` (alias `spread`) |
+| `BoxBorder` | `all` / `top` / `right` / `bottom` / `left`, each a `BorderSide` (`color`, `width`, `style`) |
+| `BackgroundImage` | `src`, `fit`, `repeat`, `alignment`, `opacity`, `colorFilter` |
+
+`begin` and `end` place a linear gradient's axis with an `Alignment`;
+`center`, `radius`, `startAngle` and `endAngle` position the radial and sweep
+forms.
 
 ### 2.5.16 `kenBurnsImage` *(since v1.3)*
 
@@ -762,7 +814,7 @@ Interactive button. The canonical label field is `label`.
 | `label` | string | yes | — | Button text. |
 | `variant` | string | no | `"elevated"` | `elevated`, `filled`, `outlined`, `text`, `icon`. |
 | `elevation` | number \| string | no | — | Shadow elevation. String form accepts an M3 elevation token (`level0` … `level5`) that resolves through `theme.elevation.<token>.shadow`. Honored only by the `elevated` variant; ignored by other variants. |
-| `icon` | string | no | — | Optional leading icon name. |
+| `icon` | `IconRef` | no | — | Optional leading icon. |
 | `enabled` | boolean | no | `true` | Whether the button is interactive. |
 | `onTap` | Action | no | — | Tap handler. |
 | `onDoubleTap` | Action | no | — | Double-tap handler. |
@@ -783,7 +835,7 @@ Icon-only button for compact actions.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `icon` | string | yes | — | Icon name. |
+| `icon` | `IconRef` | yes | — | Icon shown. |
 | `size` | number | no | — | Icon size; uses theme default if omitted. |
 | `color` | string | no | — | Icon color. |
 | `enabled` | boolean | no | `true` | Whether the button is interactive. |
@@ -887,6 +939,7 @@ Multi-selection checkbox group. Shared rows per §2.6.0; `binding` holds an `arr
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
 | `options` | Option[] | yes | — | `{ value, label }` entries. |
 | `orientation` | string | no | `"vertical"` | `vertical` or `horizontal`. |
 
@@ -918,6 +971,7 @@ Single-selection radio group. Shared rows per §2.6.0.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
 | `options` | Option[] | yes | — | `{ value, label }` entries. |
 | `orientation` | string | no | `"vertical"` | `vertical` or `horizontal`. |
 
@@ -938,6 +992,7 @@ Continuous single-value selection. Shared rows per §2.6.0; `value` is `number`.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
 | `min` | number | no | `0` | Minimum value. |
 | `max` | number | no | `1` | Maximum value. |
 | `divisions` | number | no | — | Number of discrete steps. |
@@ -973,7 +1028,7 @@ Specialized input for numeric values. Shared rows per §2.6.0; `value` is `numbe
 | `decimalPlaces` | number | no | `0` | Decimal precision. |
 | `prefix` | string | no | — | Leading display text (e.g., `"$"`). |
 | `suffix` | string | no | — | Trailing display text. |
-| `thousandSeparator` | string | no | — | Thousands separator for display. |
+| `thousandSeparator` | string \| boolean | no | — | Thousands separator for display; `false` disables grouping. |
 
 ### 2.6.13 `dateField`
 
@@ -996,7 +1051,7 @@ Time input. Shared rows per §2.6.0; `value` is a time string (e.g., `"14:30"`).
 |----------|------|----------|---------|-------------|
 | `label` | string | no | — | Field label. |
 | `format` | string | no | `"HH:mm"` | Display format. |
-| `use24HourFormat` | boolean | no | `true` | 24-hour clock. |
+| `use24HourFormat` | boolean | no | `false` | 24-hour clock. |
 | `mode` | string | no | `"spinner"` | `spinner`, `input`, `dial`. |
 
 ### 2.6.15 `datePicker`
@@ -1005,6 +1060,7 @@ Standalone date picker surface. Shared rows per §2.6.0; `value` is an ISO date 
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
 | `firstDate` | string | no | — | Earliest allowed date. |
 | `lastDate` | string | no | — | Latest allowed date. |
 
@@ -1014,7 +1070,8 @@ Standalone time picker surface. Shared rows per §2.6.0; `value` is a time strin
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `use24HourFormat` | boolean | no | `false` | 24-hour clock. |
+| `label` | string | no | — | Field label shown beside or above the control. |
+| `use24HourFormat` | boolean | no | `true` | 24-hour clock. |
 
 ### 2.6.17 `dateRangePicker`
 
@@ -1022,8 +1079,8 @@ Date range selection. Exception to §2.6.0: instead of a single `binding`, the r
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `startDate` | string | yes | — | State path bound two-way to the range's start (ISO date). |
-| `endDate` | string | yes | — | State path bound two-way to the range's end (ISO date). |
+| `startDate` | string | no | — | State path bound two-way to the range's start (ISO date). Required unless `startBinding` is given. |
+| `endDate` | string | no | — | State path bound two-way to the range's end (ISO date). Required unless `endBinding` is given. |
 | `firstDate` | string | no | — | Earliest allowed date (constraint, one-way). |
 | `lastDate` | string | no | — | Latest allowed date (constraint, one-way). |
 | `format` | string | no | `"yyyy-MM-dd"` | Display format. |
@@ -1047,6 +1104,7 @@ Color selection. Shared rows per §2.6.0; `value` is a hex color string.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
 | `showAlpha` | boolean | no | `false` | Enable alpha channel. |
 | `showLabel` | boolean | no | `true` | Show hex label. |
 | `pickerType` | string | no | `"wheel"` | `wheel`, `palette`, `both`. |
@@ -1058,6 +1116,7 @@ Segmented selection, styled as tabs or buttons. Shared rows per §2.6.0.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
 | `options` | Option[] | yes | — | `{ value, label, icon? }` entries. |
 | `variant` | string | no | `"segmented"` | `segmented`, `tabs`, `buttons`. |
 
@@ -1078,7 +1137,7 @@ Step-by-step wizard. Shared `binding` / `value` / `enabled` / `onChange` per §2
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `steps` | Step[] | yes | — | Each step: `{ title, subtitle?, state?, content, isActive? }`. |
+| `steps` | Step[] | yes | — | Each step: `{ title, subtitle?, state?, content, isActive? }`. `title` takes a widget; `titleText` is the plain-string form for a step whose heading is only text. |
 | `currentStep` | number \| binding | no | `0` | One-way legacy property. Use §2.6.0 `binding` for two-way behavior. |
 | `stepperType` | string | no | `"vertical"` | `vertical` or `horizontal`. |
 | `onStepTapped` | Action | no | — | Fired when a step header is tapped. Receives `{{event.index}}`. |
@@ -1102,6 +1161,7 @@ Incremental numeric input with plus/minus buttons. Shared rows per §2.6.0; `val
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
 | `min` | number | no | — | Minimum value. |
 | `max` | number | no | — | Maximum value. |
 | `step` | number | no | `1` | Increment size. |
@@ -1113,7 +1173,7 @@ Discrete rating control (e.g., star rating). Shared rows per §2.6.0; `value` is
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
 | `max` | number | no | `5` | Maximum rating value. |
-| `icon` | string | no | `"star"` | Icon name for each unit. |
+| `icon` | `IconRef` | no | `"star"` | Icon for each unit. |
 | `color` | string | no | — | Icon color. |
 
 ### 2.6.23 `form`
@@ -1138,9 +1198,133 @@ Container that manages validation state for its child inputs.
     { "type": "textInput", "label": "Password",
       "value": "{{form.password}}", "obscureText": true },
     { "type": "button", "label": "Submit",
-      "onTap": { "type": "form", "action": "submit" } }
+      "onTap": { "type": "submit" } }
   ]
 }
+```
+
+### 2.6.24 `fileInput` *(since v1.4)*
+
+Accepts a file the user picked. Core, because the picking *is* the consent — reaching a path the document names is a different act and stays in the Client Profile behind `file.read` (see [`08_Client_Extensions.md`](08_Client_Extensions.md) §8.2, §8.4). Same trust level as `signature`, which already takes user-drawn input.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `binding` | string | no | — | State path receiving `[{name, size, mimeType, bytes?, path?}]`. `bytes` is a `data:` URI (a valid `AssetRef`); `path` is absent where the host has no filesystem. Empty array on cancel. |
+| `accept` | string[] | no | — | MIME patterns (`image/*`) or extensions (`.csv`). A picker hint — re-check `mimeType`. |
+| `multiple` | boolean | no | `false` | Allow multi-selection. |
+| `maxBytes` | number | no | — | Per-file ceiling. Oversized files MUST surface via `onError`, never vanish. |
+| `label` | string | no | — | Text on the picker trigger. |
+| `enabled` | boolean | no | `true` | Whether the picker can open. |
+| `onChange` | Action | no | — | Fired after a selection lands in state. |
+| `onError` | Action | no | — | Picker failure, size rejection, or no picker on this host. |
+
+```json
+{ "type": "fileInput", "binding": "form.photo", "accept": ["image/*"], "maxBytes": 5242880 }
+```
+
+The descriptor's `bytes` is a `data:` URI, so a picked image renders with no upload round-trip:
+
+```json
+{ "type": "image", "src": "{{form.photo[0].bytes}}", "width": 200 }
+```
+
+A runtime MUST NOT let this widget reach files the picker did not return.
+
+### 2.6.25 `multiSelect` *(since v1.4)*
+
+Dropdown selection of more than one value. Shared rows per §2.6.0; `binding` holds an **array**.
+
+Kept apart from `select` rather than folded into a `multiple` flag: the bound value changes shape (scalar vs array), and a flag that silently changes the type of what lands in state is something an author discovers at runtime. Kept apart from `checkboxGroup`, which lays every option out at once — this keeps the closed/summary form a long list needs.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
+| `options` | Option[] | yes | — | `{ value, label, icon? }` entries. |
+| `placeholder` | string | no | — | Shown when nothing is selected. |
+| `maxSelections` | number | no | — | Upper bound. Reaching it disables unselected rows rather than dropping a pick. |
+| `showChips` | boolean | no | `true` | Render selections as removable chips. |
+| `selectAll` | boolean | no | `false` | Offer select-all / clear-all. |
+| `searchable` | boolean | no | `false` | Filter by typing. Filtering never adds values outside `options`. |
+
+```json
+{ "type": "multiSelect", "binding": "form.tags", "options": [], "maxSelections": 3 }
+```
+
+### 2.6.26 `combobox` *(since v1.4)*
+
+Text entry with suggestions. Shared rows per §2.6.0; `binding` holds the **typed string**, not an option id.
+
+The defining property is that a value outside `options` is legal — that is what separates it from `select`. Composing it from `textInput` + a list loses focus ownership: the list must not steal focus, arrow keys must move a highlight without moving the caret, and Escape must close the list without clearing the text.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
+| `options` | Option[] | no | — | Suggestions. Optional — with none it is a plain field until `onSearch` supplies them. |
+| `allowCustom` | boolean | no | `true` | Accept a value not in `options`. False makes this a searchable `select`. |
+| `onSearch` | Action | no | — | Fired as the user types. Writes `options`; the runtime does not re-filter the result. |
+| `minChars` | number | no | `1` | Characters before suggestions are requested. |
+| `debounceMs` | number | no | `250` | Idle time before `onSearch` fires. |
+| `placeholder` | string | no | — | Placeholder text. |
+
+```json
+{ "type": "combobox", "binding": "form.city", "minChars": 2,
+  "onSearch": { "type": "tool", "tool": "searchCities", "params": { "q": "{{event.query}}" } } }
+```
+
+### 2.6.27 `otpInput` *(since v1.4)*
+
+Fixed-length one-time-code entry. `binding` holds the concatenated string, not per-cell values.
+
+The composed version is reliably broken: a row of `textInput`s loses paste distribution (the whole code lands in the first cell), focus movement on entry and delete, and the platform's one-time-code autofill, which needs a single field declaring that intent.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `length` | number | no | `6` | Number of cells. |
+| `inputType` | string | no | `"numeric"` | `numeric`, `alphanumeric`. Selects the keyboard. |
+| `onComplete` | Action | no | — | Fired once every cell is filled. The older `autoSubmit` spelling is a legacy alias (§17.3): a runtime MAY accept it, the registry does not declare it. |
+| `masked` | boolean | no | `false` | Obscure entered characters. |
+| `autofill` | boolean | no | `true` | Declare one-time-code autofill. A runtime without it renders normally. |
+
+```json
+{ "type": "otpInput", "binding": "auth.code", "length": 6 }
+```
+
+### 2.6.28 `dateTimePicker` *(since v1.4)*
+
+Single instant — date and time chosen together. `binding` holds one ISO-8601 timestamp.
+
+Not `datePicker` + `timePicker` side by side: those bind two values the author must recombine, and the recombination is where time zones get lost.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `label` | string | no | — | Field label shown beside or above the control. |
+| `min` / `max` | string | no | — | Bounds (ISO-8601). |
+| `dateFormat` / `timeFormat` | string | no | — | Display patterns. The bound value stays ISO-8601. |
+| `minuteInterval` | number | no | `1` | Minute granularity. |
+| `timeZone` | string | no | — | IANA zone presented in. The bound value carries its offset either way — a timestamp without one is not an instant. |
+
+```json
+{ "type": "dateTimePicker", "binding": "booking.startsAt", "minuteInterval": 15 }
+```
+
+### 2.6.29 `voiceInput` *(since v1.4, Client Profile)*
+
+Speech captured from the microphone, transcribed into `binding`.
+
+**Client Profile, not Core** — and the line is worth stating because `fileInput` sits on the other side of it. Picking a file is one act of choosing, and the choosing is the consent. A microphone is a continuous capture of the room, including whoever else is in it, so it belongs behind the permission system ([`08_Client_Extensions.md`](08_Client_Extensions.md) §8.4). There is no composition that reaches it — microphone access is a host capability.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `language` | string | no | — | BCP 47 tag. Omitted uses the host locale. |
+| `continuous` | boolean | no | `false` | Keep listening after a pause. |
+| `interimResults` | boolean | no | `false` | Write partial transcripts. The binding then changes many times per utterance. |
+| `maxDuration` | number | no | — | Seconds before capture stops on its own. A microphone with no ceiling is a microphone left on. |
+| `showWaveform` | boolean | no | `true` | Live input level. The user's only continuous evidence that capture is running. |
+
+Events: `onStart` (after the grant, not before), `onResult`, `onEnd`, `onError` — a denied grant MUST arrive at `onError` rather than as silence.
+
+```json
+{ "type": "voiceInput", "binding": "form.note", "language": "ko-KR", "maxDuration": 60 }
 ```
 
 ---
@@ -1153,8 +1337,8 @@ Scrollable linear collection rendered from an array binding.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `items` | binding | yes | — | Array source. |
-| `itemTemplate` | Widget | yes | — | Template rendered per item. Iteration variables `item`, `index`, `isFirst`, `isLast`, `isEven`, `isOdd` are in scope. |
+| `items` | array \| binding | no | — | Array source — inline, or a binding to one. Required unless static `children` are given. |
+| `itemTemplate` | Widget | no | — | Template rendered per item. Iteration variables `item`, `index`, `isFirst`, `isLast`, `isEven`, `isOdd` are in scope. Required unless static `children` are given. |
 | `spacing` | number | no | `0` | Gap between items. |
 | `orientation` | string | no | `"vertical"` | `vertical` or `horizontal`. |
 | `emptyMessage` | string | no | — | Displayed when the list is empty. |
@@ -1179,9 +1363,9 @@ Scrollable two-dimensional collection.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `items` | binding | yes | — | Array source. |
-| `itemTemplate` | Widget | yes | — | Template rendered per item. |
-| `columns` | number \| object | yes | — | Column count; may use responsive `{default, sm, md, lg}`. |
+| `items` | array \| binding | no | — | Array source — inline, or a binding to one. Required unless static `children` are given. |
+| `itemTemplate` | Widget | no | — | Template rendered per item. Required unless static `children` are given. |
+| `columns` | number \| object | yes | — | Column count. The object form is a responsive override keyed by form factor (§14.1.1) — `{compact, medium, expanded, large, extraLarge, default}`. |
 | `rowGap` | number | no | `0` | Gap between rows. |
 | `columnGap` | number | no | `0` | Gap between columns. |
 | `itemAspectRatio` | number | no | — | Fixed aspect ratio for each item. |
@@ -1213,8 +1397,8 @@ Single row in a list with optional leading/trailing widgets. Replaces Material `
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `title` | string | no | — | Primary text. |
-| `subtitle` | string | no | — | Secondary text. |
+| `title` | string \| Widget | no | — | Primary text, or a widget when it needs more than a string. |
+| `subtitle` | string \| Widget | no | — | Secondary text, or a widget. |
 | `leading` | Widget | no | — | Leading widget (icon, avatar). |
 | `trailing` | Widget | no | — | Trailing widget. |
 | `onTap` | Action | no | — | Tap handler. |
@@ -1240,10 +1424,10 @@ Pinterest-style masonry layout — items keep their intrinsic height and pack by
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `items` | binding | no | — | Array source. Required when `children` is omitted. |
+| `items` | array \| binding | no | — | Array source — inline, or a binding to one. Required when `children` is omitted. |
 | `itemTemplate` | Widget | no | — | Template rendered per bound item. Required with `items`. |
 | `children` | Widget[] | no | — | Static cells. Mutually exclusive with `items` + `itemTemplate`. |
-| `columns` | number \| object | yes | — | Column count; may use responsive `{default, sm, md, lg}`. |
+| `columns` | number \| object | yes | — | Column count. The object form is a responsive override keyed by form factor (§14.1.1) — `{compact, medium, expanded, large, extraLarge, default}`. |
 | `mainAxisSpacing` | number | no | `0` | Gap along the scroll axis. |
 | `crossAxisSpacing` | number | no | `0` | Gap across the scroll axis. |
 | `padding` | EdgeInsets | no | — | Inner padding around the grid. |
@@ -1271,13 +1455,13 @@ Horizontally scrolling browser with optional partial-viewport framing (cover-flo
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `items` | binding | no | — | Array source. Required when `children` is omitted. |
+| `items` | array \| binding | no | — | Array source — inline, or a binding to one. Required when `children` is omitted. |
 | `itemTemplate` | Widget | no | — | Per-item template. |
 | `children` | Widget[] | no | — | Static slides. |
 | `scrollDirection` | string | no | `"horizontal"` | `horizontal` or `vertical`. |
 | `viewportFraction` | number | no | `1.0` | Slide width as a fraction of carousel width. `0.85` leaves both neighbours peeking. |
 | `loop` | boolean | no | `false` | Wrap around — last → first → last. |
-| `autoPlay` | number | no | — | Advance every `autoPlay` ms. Pair with `loop: true`. |
+| `autoPlay` | number \| boolean \| binding | no | — | Advance every `autoPlay` ms. `true` uses the default interval; a binding drives it from state. Pair with `loop: true`. |
 | `initialIndex` | number | no | `0` | Slide rendered first. |
 | `transition` | string | no | `"slide"` | `slide`, `fade`, `coverflow`, `depth`. `coverflow`/`depth` need a perspective compositor (fall back to `slide`). |
 | `indicatorPosition` | string | no | `"bottom"` | `bottom`, `top`, `none`. |
@@ -1322,7 +1506,7 @@ Application header / toolbar at the top of a page.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `icon` | string | `"close"` | Icon name for the button. |
+| `icon` | `IconRef` | `"close"` | Icon for the button. |
 | `tooltip` | string | `"Close"` | Hover / long-press tooltip. |
 | `color` | string | — | Icon color; inherits AppBar foreground if omitted. |
 
@@ -1347,8 +1531,8 @@ Bottom navigation bar. Each item's text field is `label`.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `selectedIndex` | number \| binding | yes | — | Currently selected index. |
-| `items` | NavItem[] | yes | — | `{ icon, label, route? }` entries. |
+| `selectedIndex` | number \| binding | no | `0` | Currently selected index. |
+| `items` | NavItem[] | yes | — | `{ icon, label, route?, activeIcon? }` entries. `activeIcon` replaces `icon` while that destination is the selected one. |
 | `onChange` | Action | no | — | Fired when selection changes. |
 
 ```json
@@ -1373,8 +1557,8 @@ Horizontal tab selector. Each tab's text field is `label`.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `selectedIndex` | number \| binding | yes | — | Currently selected index. |
-| `tabs` | Tab[] | yes | — | `{ label, icon? }` entries. |
+| `selectedIndex` | number \| binding | no | `0` | Currently selected index. |
+| `tabs` | Tab[] | yes | — | `{ label, icon?, iconMargin?, height? }` entries. `iconMargin` insets the icon from the label; a tab naming neither a label nor an icon renders empty rather than being refused. |
 | `onChange` | Action | no | — | Fired when selection changes. |
 
 ```json
@@ -1420,7 +1604,7 @@ Side navigation drawer. Each item's text field is `label`.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `items` | DrawerItem[] | yes | — | `{ icon, label, route? }` entries. |
+| `items` | DrawerItem[] | no | — | `{ icon, label, route? }` entries. Omitted, the drawer opens empty. |
 | `header` | Widget | no | — | Drawer header widget. |
 | `onSelect` | Action | no | — | Fired when an item is selected. |
 
@@ -1445,7 +1629,7 @@ Vertical navigation rail for tablet/desktop layouts. Each item's text field is `
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
 | `selectedIndex` | number \| binding | no | — | Currently selected item. |
-| `items` | NavItem[] | yes | — | `{ icon, label, route? }` entries. |
+| `items` | NavItem[] | yes | — | `{ icon, label, route?, activeIcon? }` entries. `activeIcon` replaces `icon` while that destination is the selected one. |
 | `onChange` | Action | no | — | Fired when selection changes. |
 
 ```json
@@ -1469,9 +1653,9 @@ Floating action button (FAB).
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `icon` | string | no | — | Icon name. |
+| `icon` | `IconRef` | no | — | Icon shown. |
 | `label` | string | no | — | Extended FAB label. |
-| `onTap` | Action | yes | — | Tap handler. |
+| `onTap` | Action | no | — | Tap handler. A FAB without one renders inert; `click` / `onPressed` are accepted spellings. |
 
 ```json
 {
@@ -1488,7 +1672,7 @@ Button that reveals a popup menu of options.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `icon` | string | no | `"more_vert"` | Trigger icon. |
+| `icon` | `IconRef` | no | `"more_vert"` | Trigger icon. |
 | `items` | MenuItem[] | yes | — | `{ value, label, icon?, enabled? }` entries. |
 | `onSelect` | Action | no | — | Fired when an item is selected. |
 
@@ -1505,6 +1689,73 @@ Button that reveals a popup menu of options.
     "binding": "selectedAction", "value": "{{event.value}}"
   }
 }
+```
+
+### 2.8.9 `menu` *(since v1.4)*
+
+Standing list of navigation destinations, optionally nested. Unlike `popupMenuButton` (a trigger opening a transient list) this is part of the layout — a sidebar or inline section list. `navigationRail` covers the icon-rail form with a flat item set; this covers nesting, collapsing, and the sidebar admin screens are built from.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `items` | object[] | yes | — | `{ key, label, icon?, route?, params?, children?, enabled? }`. An item with `children` is a group, not a destination. |
+| `selectedKey` | string \| binding | no | — | Two-way bound active key. |
+| `openKeys` | string[] | no | — | Two-way bound expanded groups. |
+| `mode` | string | no | `"vertical"` | `vertical`, `horizontal`, `inline`. `inline` expands groups in place. |
+| `collapsed` | boolean \| binding | no | — | Collapse to icons. Labels move into tooltips rather than disappearing. |
+
+### 2.8.10 `contextMenu` *(since v1.4)*
+
+Menu raised by secondary activation on its `child` — right-click, long press, or the platform's context key.
+
+Cannot be composed: the raising gesture is platform-specific (and on touch competes with scroll and selection), and the menu must appear **at the pointer** rather than against the child's box. `gestureDetector` + `popupMenuButton` gets neither.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `child` | Widget | yes | — | Widget the gesture applies to. |
+| `items` | object[] | yes | — | `{ key, label, icon?, enabled?, divider?, children? }`. |
+| `enabled` | boolean | no | `true` | False lets the gesture fall through to the platform. |
+
+### 2.8.11 `breadcrumb` *(since v1.4)*
+
+Trail of ancestor locations ending at the current one. Composing it loses the landmark role assistive technology uses to skip to it, and every author re-decides whether the last item is a link (it is not).
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `items` | object[] | yes | — | `{ label, route?, params?, icon? }`, ancestor-first. The final entry is the current location and MUST NOT be a link. |
+| `separator` | string | no | `"/"` | Decorative — hidden from assistive technology. |
+| `maxItems` | number | no | — | Collapse the middle behind an overflow control, keeping first and last. |
+
+### 2.8.12 `pagination` *(since v1.4)*
+
+Page selector. `binding` holds the current page (1-based). The composed version is where off-by-one bugs live — bounds, the ellipsis window, disabling prev/next at the ends. Stating it once also fixes what a screen reader hears: "page 3 of 12", not "3".
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `total` | number | yes | — | Total **item** count; pages derive from `pageSize`. |
+| `pageSize` | number | no | `20` | Items per page. |
+| `siblingCount` | number | no | `1` | Links either side of current before eliding. |
+| `showSizeChanger` | boolean | no | `false` | Offer a page-size selector. |
+| `pageSizeOptions` | number[] | no | — | Choices for that selector. |
+| `showTotal` | boolean | no | `false` | Render a total-count summary. |
+
+### 2.8.13 `link` *(since v1.4)*
+
+Text that navigates. `route` goes inward; `url` leaves the app through `navigation.openUrl` ([`04_Actions.md`](04_Actions.md) §4.3.3). Exactly one of the two is set. Alias: `navLink` (the same widget with `activeWhen` in use).
+
+The `inkWell` + `text` + action composition most documents use today loses the link role (assistive technology announces "button"), the visited/hover affordances, and — for `url` — the external-destination cue a user needs before leaving.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `label` | string | yes | — | Link text. Use `child` for richer content. |
+| `route` / `url` | string | no | — | Mutually exclusive destination. |
+| `params` | object | no | — | Route parameters; ignored with `url`. |
+| `target` | string | no | `"new"` | `new`, `same`. Hint for `url` only. |
+| `activeWhen` | string \| binding | no | — | Marks this as the current location; sets the active style and `aria-current`. |
+| `underline` | string | no | `"hover"` | `always`, `hover`, `never`. |
+| `icon` | `IconRef` | no | — | Leading icon. |
+
+```json
+{ "type": "link", "label": "Terms", "url": "https://example.com/terms" }
 ```
 
 ---
@@ -1525,6 +1776,12 @@ Scrollable viewport. Two layout modes — pick one per instance: linear mode (`c
 | `slivers` | array\<Sliver\> | no | — | Sliver entries (sliverAppBar / sliverPersistentHeader / sliverList / sliverGrid / sliverFixedExtentList). Mutually exclusive with `child` and `children`. |
 
 `Sliver` is one of five discriminated shapes — see `Sliver` in `configs/widget/Sliver.yaml`. Sliver mode unlocks collapsing app bars, sticky section headers, parallax mastheads, and mixing list/grid sections in one viewport.
+
+A collapsing `sliverAppBar` shows two surfaces in turn: the hero (`background` /
+`flexibleSpace`) while expanded, and the bar itself once the hero has faded out.
+`backgroundColor` and `foregroundColor` name the second one — a `title` colour
+picked to read against the hero is not the colour that reads against the bar,
+and without these the author cannot say so.
 
 ```json
 {
@@ -1555,7 +1812,7 @@ Lightweight scrollable wrapper for a single child.
 |----------|------|----------|---------|-------------|
 | `direction` | string | no | `"vertical"` | Scroll direction. |
 | `padding` | EdgeInsets | no | — | Inner padding. |
-| `child` | Widget | yes | — | Scrolled content. |
+| `child` | Widget | no | — | Scrolled content. Omitted, nothing is wrapped. |
 
 ```json
 {
@@ -1582,7 +1839,7 @@ Wraps a scrollable child with a visible scroll bar.
 | `trackVisibility` | boolean | no | — | Whether the scroll track is always visible. |
 | `thickness` | number | no | — | Scroll bar thickness. |
 | `radius` | number | no | — | Scroll bar corner radius. |
-| `child` | Widget | yes | — | Scrollable child. |
+| `child` | Widget | no | — | Scrollable child. Omitted, nothing is wrapped. |
 
 ### 2.9.4 `pageView`
 
@@ -1701,6 +1958,22 @@ Drop area that accepts dragged data.
 
 ## 2.11 Dialog Widgets
 
+**These are surfaces an action raises, not widgets a page lays out.**
+`alertDialog`, `simpleDialog`, `customDialog`, `snackBar` and `bottomSheet` are
+passed to the `dialog` action ([`04_Actions.md`](04_Actions.md) §4.6), which
+puts them above the current route. None of them takes an `open` property, and
+placing one in a page's `content` tree is not how they are shown.
+
+The distinction is worth stating because the alternative reads as reasonable:
+a `Modal` with an `open` flag sitting in the tree is a common authoring model
+elsewhere. It does not fit here — these surfaces are positioned against the
+screen and live on the navigator, so a position in the layout tree would
+suggest a placement that has no effect, and an author would reasonably expect
+the surrounding layout to matter.
+
+`popover` (§2.11.6) is the exception that shows the rule: it *is* placed in
+the tree, because it anchors to a specific widget and needs to know which one.
+
 ### 2.11.1 `alertDialog`
 
 Modal alert with title, content, and action buttons.
@@ -1709,7 +1982,7 @@ Modal alert with title, content, and action buttons.
 |----------|------|----------|---------|-------------|
 | `title` | string | no | — | Dialog title. |
 | `content` | string \| Widget | no | — | Dialog body. |
-| `actions` | DialogAction[] | no | — | `{ label, variant?, primary?, onTap }` entries. |
+| `actions` | object[] | no | — | `{ label, variant?, primary?, onTap }` entries. `DialogAction` is not a declared type — the shape is stated here and in the registry. |
 | `dismissible` | boolean | no | `true` | Whether tapping outside dismisses. |
 
 ```json
@@ -1740,7 +2013,7 @@ Dialog presenting a list of options.
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
 | `title` | string | no | — | Dialog title. |
-| `options` | Option[] | yes | — | `{ value, label, icon? }` entries. |
+| `options` | Option[] | no | — | `{ value, label, icon? }` entries. Omitted, the dialog shows its title alone. |
 | `onSelect` | Action | no | — | Fired when an option is chosen. |
 
 ### 2.11.3 `customDialog`
@@ -1786,6 +2059,22 @@ Modal bottom sheet with swipeable handle.
 | `enableDrag` | boolean | no | `true` | Allow drag to dismiss. |
 | `backgroundColor` | string | no | — | Sheet background. |
 | `shape` | object | no | — | `{ type: "rounded", radius: { top: 16 } }`. |
+
+### 2.11.6 `popover` *(since v1.4)*
+
+Transient surface anchored to a trigger. Alias: `hoverCard` (the same widget with `trigger: "hover"`).
+
+Distinct from `tooltip` (text only, nothing focusable) and from `customDialog` (modal, centred, takes the whole screen's attention). A popover keeps the page usable behind it and is positioned against its anchor — which is the part composition cannot supply: flipping to the other side when it would overflow, and returning focus to the trigger on dismiss.
+
+| Property | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `content` | Widget | yes | — | Surface contents. May contain focusable widgets. |
+| `child` | Widget | yes | — | Anchor. |
+| `open` | boolean \| binding | no | — | Two-way open state. |
+| `trigger` | string | no | `"tap"` | `tap`, `hover`, `focus`, `manual`. |
+| `placement` | string | no | `"auto"` | `top`, `bottom`, `start`, `end`, `auto`. Any value flips when it would overflow. |
+| `openDelay` / `closeDelay` | number | no | `0` | Milliseconds. Chiefly for `hover`. |
+| `dismissOnOutside` | boolean | no | `true` | Close on outside interaction. |
 
 ---
 
@@ -1887,7 +2176,7 @@ Embedded Lottie/JSON animation playback.
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `src` | string | yes | — | Animation source (`bundle://`, `client://`, URL). |
+| `src` | `AssetRef` | yes | — | Animation source. Any `AssetRef` form. |
 | `width` / `height` | number | no | — | Dimensions. |
 | `autoPlay` | boolean | no | `true` | Play on mount. |
 | `loop` | boolean | no | `true` | Loop playback. |
@@ -2026,11 +2315,11 @@ Embeds a definition sourced from anywhere — including another MCP origin — a
 
 ### 2.13.2 `lazy`
 
-Defers construction of a child until it is first rendered.
-
-| Property | Type | Required | Default | Description |
-|----------|------|----------|---------|-------------|
-| `child` | Widget | yes | — | Deferred child. |
+Defers rendering of a subtree until it is needed. Documented in full at
+[`10_Advanced_Widgets.md`](10_Advanced_Widgets.md) §10.22 — it sits there
+because its trigger and error handling are the same shape as the heavy
+widgets around it, but it is a Utility widget and is registered as one
+(§17.2.1).
 
 ### 2.13.3 `fittedBox`
 
@@ -2106,7 +2395,7 @@ Responsive widget that inspects the current layout context and picks a child bas
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `condition` | binding | no | — | Boolean expression; selects `then` when truthy. |
+| `condition` | object \| binding | no | — | Form-factor condition object, or a binding to one; selects `then` when it matches. |
 | `then` | Widget | no | — | Rendered when `condition` is truthy. |
 | `else` | Widget | no | — | Rendered when `condition` is falsy. Legacy alias: `orElse`. |
 | `breakpoints` | object | no | — | Map of breakpoint name → Widget (e.g., `{ "sm": ..., "md": ... }`). |
@@ -2137,7 +2426,7 @@ Retry-oriented variant of `errorBoundary`. The `handlers` map may route specific
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `child` | Widget | yes | — | Protected subtree. |
+| `child` | Widget | no | — | Protected subtree. Omitted, nothing is wrapped. |
 | `fallback` | Widget | no | — | Default UI shown when `child` throws. |
 | `handlers` | object | no | — | Map of error-type → fallback Widget. |
 | `onError` | Action | no | — | Fired on capture with `{{event.error}}` / `{{event.stack}}`. |
@@ -2152,7 +2441,7 @@ Swaps between an online widget and an offline fallback based on connectivity tra
 | `online` | Widget | no | — | Rendered while connectivity is available. |
 | `offline` | Widget | no | — | Rendered while offline. |
 | `message` | string | no | — | Message shown inside the offline state. |
-| `icon` | string | no | — | Icon rendered in the default offline state. |
+| `icon` | `IconRef` | no | — | Icon rendered in the default offline state. |
 | `showRetry` | boolean | no | `true` | Whether to show a retry affordance. |
 | `onRetry` | Action | no | — | Fired when the user taps retry. |
 | `isOnline` | boolean \| binding | no | — | Explicit connectivity override. |
@@ -2163,11 +2452,11 @@ Presents a prompt for one or more client capabilities (e.g., clipboard, filesyst
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `permissions` | string[] | yes | — | Permission identifiers (e.g., `["client.clipboard"]`). |
+| `permissions` | string[] | no | — | Permission identifiers (e.g., `["client.clipboard"]`). Omitted, nothing is requested. |
 | `style` | string | no | `"inline"` | `inline`, `dialog`, `banner`. |
 | `title` | string | no | — | Prompt title. |
 | `description` | string | no | — | Prompt body. |
-| `icon` | string | no | — | Icon shown alongside the prompt. |
+| `icon` | `IconRef` | no | — | Icon shown alongside the prompt. |
 | `allowPartial` | boolean | no | `false` | Allow the user to grant a subset. |
 | `onAllow` | Action | no | — | Fired when the user grants (all / partial per `allowPartial`). |
 | `onDeny` | Action | no | — | Fired when the user denies. |
@@ -2178,7 +2467,7 @@ Renders a compact dashboard tile — the widget equivalent of the `ApplicationDe
 
 | Property | Type | Required | Default | Description |
 |----------|------|----------|---------|-------------|
-| `content` | Widget | yes | — | Dashboard tile content tree. |
+| `content` | Widget | no | — | Dashboard tile content tree. Omitted, the dashboard renders empty. |
 | `refreshInterval` | number | no | — | Auto-refresh period in milliseconds. Omit for static tiles. |
 | `onTap` | Action | no | — | Fired when the tile is tapped (commonly wired to `openApp` — see [`04_Actions.md`](04_Actions.md) §4.3). |
 
@@ -2189,3 +2478,38 @@ Renders a compact dashboard tile — the widget equivalent of the `ApplicationDe
 - **Template widgets** (`use`, `template`) — see [`09_Templates.md`](09_Templates.md).
 - **`accessibleWrapper`** — see [`13_Accessibility.md`](13_Accessibility.md).
 - **Advanced widgets** (`chart`, `table`, `dataTable`, `map`, `mediaPlayer`, `calendar`, `timeline`, `gauge`, `heatmap`, `tree`, `graph`, `networkGraph`, `codeEditor`, `terminal`, `fileExplorer`, `markdown`, `webView`, `signature`, `canvas`) — see [`10_Advanced_Widgets.md`](10_Advanced_Widgets.md). Core-only runtimes MAY skip these.
+
+## 2.15 Widgets that require a bounded parent
+
+Some widgets measure themselves against the space the parent gives them rather
+than against their own content. Placed under an ancestor that shrink-wraps —
+a scrolling page, a `linear` sized by its children — they have nothing to
+measure against, and the failure is a **layout exception that stops the subtree
+from drawing**, not a smaller widget.
+
+Nothing in a property table reveals this, which is why it is collected here.
+
+| Widget | Needs | Typical symptom when unbounded |
+|---|---|---|
+| `tabBarView` | Height | *Horizontal viewport was given unbounded height* |
+| `pageView` | Height (or width, when horizontal) | Same shape |
+| `list` / `grid` | Height, unless `shrinkWrap` is set | Viewport exception, or an unbounded-height assert |
+| `scrollView` nested in the same axis | Height | Inner viewport gets no constraint |
+| `expanded` / `flexible` | A bounded `linear` parent (§2.4.8) | *RenderFlex children have non-zero flex but incoming height constraints are unbounded* |
+| `splitter` | Size along `orientation` | Panes collapse or assert |
+| `kanban` | Height — set `height`, or bound the parent | *BoxConstraints forces an infinite height* |
+
+The fix is always the same: **the author decides the size.** Wrap the region in
+a `sizedBox` (or set `box.height`), or set `shrinkWrap` where the widget offers
+it. A runtime cannot invent the number — a generated value would be a layout
+that looks deliberate and is not.
+
+A widget joins this table the moment it starts scrolling its own content: a
+board that scrolls each column, a pane that scrolls its rows, has by
+construction no height of its own to report. `kanban` gained per-column
+scrolling and with it this constraint, which is why the row exists.
+
+`expanded` is the one that surprises: it is the tool for dividing space, so
+reaching for it inside a shrink-wrapping parent is the natural move, and it
+fails *because* the parent has no space to divide. Bound the parent first, then
+divide.

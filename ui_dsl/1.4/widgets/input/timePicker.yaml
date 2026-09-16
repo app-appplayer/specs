@@ -4,8 +4,29 @@ profile: Core
 description: |
   Standalone time picker surface. Shared rows per §2.6.0; `value` is a time string.
 properties:
+  initialTime:
+    type: "string"
+    description: "Time the picker opens on when the bound value is empty (`HH:mm`)."
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
   use24HourFormat:
     type: "boolean"
-    default: false
-    description: "24-hour clock."
+    default: true
+    description: |
+      24-hour clock. The default follows what this picker has drawn since it
+      shipped; `timeField` defaults the other way — see its note.
+  change:
+    type: Action
+    description: "Legacy alias of `onChange`."
+  icon:
+    type: IconRef
+    description: "Icon shown. Any `IconRef` form."
+  timeFormat:
+    type: "string"
+    description: "Display pattern for the time portion. Display only."
+  variant:
+    type: "string"
+    enum: [elevated, filled, outlined, text, icon]
+    description: "`elevated`, `filled`, `outlined`, `text`, `icon`."
 # examples migrated verbatim from prose JSON fences.

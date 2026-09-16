@@ -12,10 +12,10 @@ definition:
   {
     "type": "object",
     "properties": {
-      "backgroundColor": { "type": "string" },
+      "backgroundColor": { "$ref": "#/$defs/Color" },
       "backgroundImage": { "$ref": "#/$defs/BackgroundImage" },
       "indicatorColor": {
-        "type": "string",
+        "$ref": "#/$defs/Color",
         "description": "Selection indicator pill color (rail / drawer / tabs)."
       },
       "indicatorShape": {
@@ -23,7 +23,7 @@ definition:
         "description": "Selection indicator corner radius. Defaults to a fully-rounded pill."
       },
       "dividerColor": {
-        "type": "string",
+        "$ref": "#/$defs/Color",
         "description": "Drawer-only — color of dividers between item groups."
       },
       "dividerThickness": { "$ref": "#/$defs/Dimension" },
@@ -38,18 +38,18 @@ definition:
       "iconStyle": {
         "type": "object",
         "properties": {
-          "color": { "type": "string" },
+          "color": { "$ref": "#/$defs/Color" },
           "size": { "$ref": "#/$defs/Dimension" }
         },
         "additionalProperties": false,
         "description": "Default icon color and size."
       },
       "selectedColor": {
-        "type": "string",
+        "$ref": "#/$defs/Color",
         "description": "Foreground color (icon + label) for the selected item."
       },
       "unselectedColor": {
-        "type": "string",
+        "$ref": "#/$defs/Color",
         "description": "Foreground color for non-selected items."
       },
       "elevation": { "$ref": "#/$defs/Dimension" }

@@ -5,12 +5,13 @@ description: |
   Container that manages validation state for its child inputs.
 properties:
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     required: true
     description: "Form field widgets."
   showErrorsOn:
     type: "string"
-    default: "\"submit\""
+    enum: [submit, change, blur]
+    default: "submit"
     description: "`submit`, `change`, `blur`."
   onSubmit:
     type: "Action"
@@ -30,6 +31,6 @@ examples:
           { "type": "textInput", "label": "Password",
             "value": "{{form.password}}", "obscureText": true },
           { "type": "button", "label": "Submit",
-            "onTap": { "type": "form", "action": "submit" } }
+            "onTap": { "type": "submit" } }
         ]
       }

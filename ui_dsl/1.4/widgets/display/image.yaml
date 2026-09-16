@@ -2,12 +2,25 @@ type: image
 category: display
 profile: Core
 description: |
-  Displays an image from a URL, bundle, or client resource.
+  Displays an image from any asset source the runtime resolves — a
+  network URL, the active bundle, inline bytes, a host resource, or a
+  resource served by an origin. See `AssetRef`; a runtime declares which
+  of those it resolves (`06_Runtime_Contract.md` §6.12) and routes the
+  rest to `fallback` / `fallbackUrl` / `fallbackBehavior`.
 properties:
-  src:
+  errorWidget:
     type: "string"
+    description: "Text shown on the error tile when nothing resolves."
+  fallbackBehavior:
+    type: "string"
+    description: "What to draw when nothing resolves: `error` (default) or `hide`."
+  fallbackUrl:
+    type: AssetRef
+    description: "Second source tried when the first cannot be resolved (§6.12.4)."
+  src:
+    type: AssetRef
     required: true
-    description: "Image URL, `bundle://...`, or `client://...`."
+    description: "Image source. Any `AssetRef` form."
     aliases:
       - source
       - backgroundImage
@@ -19,12 +32,22 @@ properties:
     description: "Height in logical pixels."
   fit:
     type: "string"
-    default: "\"contain\""
+    enum: [cover, contain, fill, none, scaleDown, fitHeight, fitWidth]
+    default: "contain"
     description: "`cover`, `contain`, `fill`, `none`, `scaleDown`, `fitHeight`, `fitWidth`."
   alignment:
     type: Alignment
-    default: "\"center\""
+    default: "center"
     description: "Alignment within bounds."
+  fallback:
+    type: Widget
+    description: "Widget drawn when the source cannot be resolved (§6.12.4)."
+  loading:
+    type: Widget
+    description: "Widget drawn while the source is being read."
+  placeholder:
+    type: "string"
+    description: "Placeholder text."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

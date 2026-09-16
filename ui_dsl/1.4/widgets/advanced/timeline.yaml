@@ -1,12 +1,21 @@
 type: timeline
 category: advanced
-profile: Core
+profile: Advanced
 since: v1.0
 description: |
   Chronological timeline of events.
 properties:
+  nodeSize:
+    type: Dimension
+    description: "Diameter of the node marker on the line."
+  lineWidth:
+    type: Dimension
+    description: "Thickness of the connecting line."
+  spacing:
+    type: Dimension
+    description: "Gap between adjacent items."
   items:
-    type: "`TimelineItem[]`"
+    type: "array<TimelineItem>"
     required: true
     description: "Timeline entries"
   items[].title:
@@ -34,6 +43,12 @@ properties:
     enum: ["vertical", "horizontal"]
     default: "vertical"
     description: "Layout axis."
+  itemTemplate:
+    type: Widget
+    description: "Template built once per entry, with `{{item}}` and `{{index}}` in scope."
+  lineColor:
+    type: Color
+    description: "Line / bar color."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

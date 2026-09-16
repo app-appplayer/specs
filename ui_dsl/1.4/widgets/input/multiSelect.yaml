@@ -1,0 +1,55 @@
+type: multiSelect
+category: input
+profile: Core
+since: v1.4
+description: |
+  Dropdown selection of more than one value. Shared rows per §2.6.0;
+  `binding` holds an **array** of selected values.
+
+  Distinct from `checkboxGroup`, which lays every option out at once: this
+  keeps the closed/summary form of `select` and is what a long option list
+  needs. Distinct from `select`, which is single-value — the two are kept
+  apart rather than folded into a `multiple` flag because the bound value
+  changes shape (scalar vs array), and a flag that silently changes the
+  type of what lands in state is the kind of thing an author discovers at
+  runtime.
+properties:
+  label:
+    type: "string"
+    description: "Field label shown beside or above the control."
+  options:
+    type: "array<Option>"
+    required: true
+    description: "`{ value, label, icon? }` entries."
+    aliases:
+      - items
+  placeholder:
+    type: "string"
+    description: "Shown when nothing is selected."
+  maxSelections:
+    type: "number"
+    description: "Upper bound on selected values. Reaching it disables unselected rows rather than silently dropping a pick."
+  showChips:
+    type: "boolean"
+    default: true
+    description: "Render selections as removable chips in the closed field."
+  selectAll:
+    type: "boolean"
+    default: false
+    description: "Offer a select-all / clear-all control."
+  searchable:
+    type: "boolean"
+    default: false
+    description: "Filter options by typing. Filtering never adds values outside `options` — see `combobox` for free entry."
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "multiSelect",
+        "binding": "form.tags",
+        "options": [
+          { "value": "sports", "label": "Sports" },
+          { "value": "music", "label": "Music" }
+        ],
+        "maxSelections": 3
+      }

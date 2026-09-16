@@ -1,0 +1,56 @@
+type: voiceInput
+category: input
+profile: Client
+since: v1.4
+description: |
+  Speech captured from the microphone, transcribed into `binding`.
+
+  **Client Profile, not Core** — and the line is worth stating because
+  `fileInput` sits on the other side of it. Picking a file is one act of
+  choosing, and the choosing is the consent. A microphone is a continuous
+  capture of the room, including whoever else is in it, so it belongs behind
+  the permission system (§8.4) with a grant the user can see and revoke.
+
+  There is no composition that reaches it: microphone access is a host
+  capability, so without this widget a document cannot express the intent at
+  all.
+properties:
+  binding:
+    type: string
+    description: "State path receiving the transcript."
+  language:
+    type: string
+    description: "BCP 47 tag. Omitted uses the host locale."
+  continuous:
+    type: boolean
+    default: false
+    description: "Keep listening after a pause instead of stopping at the first result."
+  interimResults:
+    type: boolean
+    default: false
+    description: "Write partial transcripts as they arrive. The binding then changes many times per utterance — bind a separate path if the final text is what the document acts on."
+  maxDuration:
+    type: number
+    description: "Seconds before capture stops on its own. A microphone with no ceiling is a microphone left on."
+  showWaveform:
+    type: boolean
+    default: true
+    description: "Render live input level. This is the user's only continuous evidence that capture is running, so a runtime SHOULD keep some indicator even when this is false."
+events:
+  onStart:
+    description: Fired once capture begins — after the grant, not before.
+  onResult:
+    description: Fired per transcript segment. Carries the text and whether it is final.
+  onEnd:
+    description: Fired when capture stops, however it stopped.
+  onError:
+    description: "Fired on denial, no device, or transcription failure. A denied grant MUST arrive here rather than as silence."
+examples:
+  - name: basic
+    dsl: |
+      {
+        "type": "voiceInput",
+        "binding": "form.note",
+        "language": "ko-KR",
+        "maxDuration": 60
+      }

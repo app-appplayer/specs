@@ -4,6 +4,39 @@ profile: Core
 description: |
   Wrapper that reveals a tooltip on hover or long-press.
 properties:
+  preferBelow:
+    type: "boolean"
+    description: "Prefer to place the tooltip under the anchor."
+  richMessage:
+    type: array<object>
+    description: "Message as styled spans, when plain text is not enough."
+  showDuration:
+    type: "number"
+    description: "How long the tooltip stays up, in milliseconds."
+  textStyle:
+    type: TextStyle
+    description: "Text style of the tooltip message."
+  triggerMode:
+    type: "string"
+    description: "What raises it: `tap`, `longPress`, `manual`."
+  verticalOffset:
+    type: Dimension
+    description: "Distance between the anchor and the tooltip."
+  enableFeedback:
+    type: "boolean"
+    description: "Play the platform tap sound / haptic on activation."
+  excludeFromSemantics:
+    type: "boolean"
+    description: "Keep the surface out of the accessibility tree."
+  height:
+    type: Dimension
+    description: "Fixed height."
+  margin:
+    type: EdgeInsets
+    description: "Space outside the surface."
+  padding:
+    type: EdgeInsets
+    description: "Space inside the surface, around its content."
   message:
     type: "string"
     required: true
@@ -12,6 +45,15 @@ properties:
     type: "Widget"
     required: true
     description: "Wrapped widget."
+  decoration:
+    type: BoxDecoration
+    description: "Animated decoration (color/gradient/border/shadow/image)."
+  textAlign:
+    type: "string"
+    description: "Alignment for the composed paragraph."
+  waitDuration:
+    type: "number"
+    description: "Measured from real documents (2026-08-04): milliseconds before the tooltip appears."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

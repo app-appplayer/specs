@@ -1,12 +1,32 @@
 type: dataTable
 category: advanced
-profile: Core
+profile: Advanced
+aliases: [dataGrid]
 since: v1.0
 description: |
   Material-style sortable, selectable data table bound to a row array.
 properties:
+  editable:
+    type: boolean
+    default: false
+    description: "Allow in-place cell editing. Edits report through `onCellEdit`; the widget does not mutate `data` on its own."
+  filterable:
+    type: boolean
+    default: false
+    description: "Offer per-column filter controls."
+  resizableColumns:
+    type: boolean
+    default: false
+    description: "Allow dragging column edges to resize."
+  virtualScroll:
+    type: boolean
+    default: false
+    description: "Render only visible rows. Requires a fixed `rowHeight` — a virtualised list cannot measure rows it has not built."
+  rowHeight:
+    type: number
+    description: "Fixed row height in logical pixels. Required when `virtualScroll` is true."
   columns:
-    type: "`Column[]`"
+    type: "array<Column>"
     required: true
     description: "Column definitions"
   columns[].key:
@@ -31,7 +51,7 @@ properties:
     default: "start"
     description: "Horizontal text alignment."
   rows:
-    type: "binding"
+    type: "array<object> | binding"
     required: true
     description: "Array of row objects"
   selectable:
@@ -39,17 +59,31 @@ properties:
     default: false
     description: "Whether rows are selectable"
   sortColumn:
-    type: "binding"
+    type: "string"
     default: null
-    description: "Current sort column key"
+    description: |
+      Current sort column key. Declared `binding` before, which accepted
+      `"{{sortColumn}}"` and rejected the key itself — a table sorted by a
+      fixed column could not say so.
   sortAscending:
-    type: "binding"
+    type: "boolean"
     default: true
-    description: "Current sort direction"
+    description: |
+      Current sort direction. `true` is ascending. Declared `binding` before,
+      so writing the direction as the boolean the runtime reads was rejected
+      at load.
   onSort:
     type: "Action"
     default: null
     description: "Fired on header tap of a sortable column"
+  onCellEdit:
+    type: Action
+    default: null
+    description: |
+      Fired when an edited cell is committed. `event.row` is the row object,
+      `event.column` its column key, `event.value` the new value and
+      `event.previous` the old one. The widget does not mutate `rows` — the
+      document decides what an edit means.
   onRowTap:
     type: "Action"
     default: null

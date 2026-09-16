@@ -1,6 +1,7 @@
 type: scrollView
 category: scroll
 profile: Core
+aliases: [scrollArea]
 description: |
   Scrollable viewport. Two layout modes — pick one per instance:
 
@@ -14,10 +15,13 @@ description: |
   The three input slots (`child`, `children`, `slivers`) are
   mutually exclusive.
 properties:
+  primary:
+    type: "boolean"
+    description: "Whether this is the primary scroll view of the page."
   direction:
     type: string
     enum: [vertical, horizontal]
-    default: "\"vertical\""
+    default: "vertical"
     description: Scroll axis.
   padding:
     type: EdgeInsets
@@ -25,13 +29,13 @@ properties:
   scrollPhysics:
     type: string
     enum: [bouncing, clamping, neverScrollable]
-    default: "\"clamping\""
+    default: "clamping"
     description: Edge / overscroll behaviour.
   child:
     type: Widget
     description: Single scrolled child. Mutually exclusive with `children` and `slivers`.
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: Multiple widgets wrapped in an implicit linear column along `direction`. Mutually exclusive with `child` and `slivers`.
   slivers:
     type: array<Sliver>
@@ -39,6 +43,12 @@ properties:
       Sliver entries (sliverAppBar / sliverPersistentHeader /
       sliverList / sliverGrid / sliverFixedExtentList). Mutually
       exclusive with `child` and `children`.
+  reverse:
+    type: "boolean"
+    description: "When true, run the transition in reverse direction (for back navigation)."
+  scrollDirection:
+    type: "string"
+    description: "Scroll axis."
 examples:
   - name: linear_mode
     dsl: |

@@ -7,11 +7,20 @@ description: |
     scroll view. Expands to `expandedHeight` then shrinks to a
     fixed bar as the user scrolls. `flexibleSpace` paints the hero
     area; `pinned`/`floating` control whether the bar sticks.
+    `backgroundColor` is the colour of the **bar itself**, which is
+    what the reader sees once the hero has faded out — without it a
+    `title` colour chosen against the hero becomes unreadable at the
+    moment the bar collapses, and the author has no way to say
+    otherwise. `foregroundColor` sets the title and icon colour for
+    the same reason.
   - **sliverPersistentHeader** — section header that stays visible
     while its section's items scroll. `minExtent`/`maxExtent` set
     the size envelope; the runtime morphs the header within it.
   - **sliverList** — vertical list with variable-height items.
-    Same `items` + `itemTemplate` contract as the `list` widget.
+    Same `items` + `itemTemplate` contract as the `list` widget: an inline
+    array or a binding, either one. It accepted only the binding string for a
+    revision, so the ordinary inline form — legal in `list` and `grid` — was
+    refused at load in slivers alone.
   - **sliverGrid** — 2D grid with the same `items` / `columns`
     contract as `grid`.
   - **sliverFixedExtentList** — list whose items all share the
@@ -36,7 +45,9 @@ definition:
           "floating": { "type": "boolean", "default": false },
           "snap": { "type": "boolean", "default": false },
           "stretch": { "type": "boolean", "default": false },
-          "elevation": { "$ref": "#/$defs/Dimension" }
+          "elevation": { "$ref": "#/$defs/Dimension" },
+          "backgroundColor": { "$ref": "#/$defs/Color" },
+          "foregroundColor": { "$ref": "#/$defs/Color" }
         },
         "required": ["type"],
         "additionalProperties": false
@@ -58,7 +69,12 @@ definition:
         "type": "object",
         "properties": {
           "type": { "const": "sliverList" },
-          "items": { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" },
+          "items": {
+            "anyOf": [
+              { "type": "array" },
+              { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" }
+            ]
+          },
           "itemTemplate": { "$ref": "#/$defs/Widget" },
           "children": {
             "type": "array",
@@ -72,7 +88,12 @@ definition:
         "type": "object",
         "properties": {
           "type": { "const": "sliverGrid" },
-          "items": { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" },
+          "items": {
+            "anyOf": [
+              { "type": "array" },
+              { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" }
+            ]
+          },
           "itemTemplate": { "$ref": "#/$defs/Widget" },
           "children": {
             "type": "array",
@@ -91,7 +112,12 @@ definition:
         "properties": {
           "type": { "const": "sliverFixedExtentList" },
           "itemExtent": { "$ref": "#/$defs/Dimension" },
-          "items": { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" },
+          "items": {
+            "anyOf": [
+              { "type": "array" },
+              { "type": "string", "pattern": "^\\{\\{.*\\}\\}$" }
+            ]
+          },
           "itemTemplate": { "$ref": "#/$defs/Widget" },
           "children": {
             "type": "array",

@@ -1,0 +1,28 @@
+name: TableRow
+description: |
+  One row of a `table`. `cells` carries the widgets laid out across the row's
+  columns — `table` is a layout table, not a data-bound one (§10.3), so a row
+  names its widgets rather than its values.
+
+  Nothing here is required and nothing is bounded, deliberately. `cells: []`
+  carried a `minItems: 1` for one revision — left behind when the narrowing
+  this file describes was reverted — and it did exactly what the paragraph
+  below says not to do: refused the document at load.
+
+  Nothing here is required, deliberately. A row with no `cells` — `{}`, or the
+  column-keyed shape that belongs to `dataTable` (`{ "name": "Flutter" }`) —
+  cannot be laid out, and the temptation is to refuse it in the schema. That
+  refusal happens at load, so it does not deprecate the old document, it stops
+  the whole document opening (§1.7.5). The runtime drops the rows it cannot
+  lay out and draws the rest; the shape stays accepted.
+definition:
+  {
+    "type": "object",
+    "properties": {
+      "cells": {
+        "type": "array",
+        "items": { "$ref": "#/$defs/Widget" }
+      }
+    },
+    "additionalProperties": true
+  }

@@ -26,19 +26,19 @@ properties:
       `0.30` (dramatic).
   startAlignment:
     type: Alignment
-    default: "\"topStart\""
+    default: "topStart"
     description: Pan start position within the rendered bounds.
   endAlignment:
     type: Alignment
-    default: "\"bottomEnd\""
+    default: "bottomEnd"
     description: Pan end position within the rendered bounds.
   loop:
     type: boolean
-    default: "true"
+    default: true
     description: When true the animation reverses and replays continuously; when false it stops at the end position.
   curve:
     type: AnimationCurve
-    default: "\"linear\""
+    default: "linear"
     description: Easing curve over the zoom/pan progression.
   width:
     type: Dimension
@@ -49,7 +49,7 @@ properties:
   fit:
     type: string
     enum: [cover, contain, fill, fitWidth, fitHeight]
-    default: "\"cover\""
+    default: "cover"
     description: How the image scales to its render bounds before the Ken Burns animation overlays.
 examples:
   - name: chapter_opener

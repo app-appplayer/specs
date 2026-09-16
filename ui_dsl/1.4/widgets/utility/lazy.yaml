@@ -1,11 +1,67 @@
 type: lazy
 category: utility
 profile: Core
+since: v1.0
 description: |
-  Defers construction of a child until it is first rendered.
+  Defer rendering of an expensive subtree until it enters the viewport (or until explicitly loaded).
 properties:
+  delay:
+    type: "number"
+    description: "Milliseconds to wait before building, when `trigger` is `delay`."
+  placeholder:
+    type: "Widget"
+    default: null
+    description: "Rendered while `content` is not yet materialized"
+  content:
+    type: "Widget | object"
+    description: "Inline widget, or `{ source: \"ui://...\" }` to fetch a remote page fragment. Required when `children` is omitted."
+    aliases: [child]
   child:
     type: "Widget"
-    required: true
-    description: "Deferred child."
+    description: "A single deferred widget. Alternative to `content` for the simple case."
+  children:
+    type: "array<Widget>"
+    description: "Multiple deferred widgets; runtime wraps them in a linear column."
+  trigger:
+    type: "string"
+    enum: ["visible", "immediate", "manual"]
+    default: "visible"
+    description: "`visible` renders when the widget becomes visible to the user (typically scrolled into view); `immediate` renders on mount; `manual` renders when a `load()` signal is received."
+  onLoad:
+    type: "Action"
+    default: null
+    description: "Fired after `content` is materialized"
+  onError:
+    type: "Action"
+    default: null
+    description: "Fired if `content` fetch fails; `event.error`"
 # examples migrated verbatim from prose JSON fences.
+examples:
+  - name: prose_example_0
+    dsl: |
+      {
+        "type": "lazy",
+        "placeholder": {
+          "type": "box",
+          "height": 200,
+          "child": { "type": "progressBar" }
+        },
+        "content": {
+          "source": "ui://pages/heavy-component"
+        }
+      }
+  - name: prose_example_1
+    dsl: |
+      {
+        "type": "lazy",
+        "placeholder": {
+          "type": "box",
+          "height": 120,
+          "child": { "type": "text", "text": "Loading chart…" }
+        },
+        "content": {
+          "type": "chart",
+          "chartType": "line",
+          "data": "{{salesData}}"
+        }
+      }

@@ -7,14 +7,43 @@ aliases:
 description: |
   Scrollable linear collection rendered from an array binding.
 properties:
+  itemBuilder:
+    type: Widget
+    description: "Template built once per item, with `{{item}}` and `{{index}}` in scope."
+  itemCount:
+    type: "number"
+    description: "How many items to build when the list is generated rather than listed."
+  scrollCacheExtent:
+    type: Dimension
+    description: "Pixels kept built beyond the viewport on each side."
+  padding:
+    type: EdgeInsets
+    description: "Space inside the surface, around its content."
+  physics:
+    type: "string"
+    description: "Scroll response: `bouncing`, `clamping`, `never`, `always`."
+  shrinkWrap:
+    type: "boolean"
+    description: "Size to the content instead of filling the viewport."
+  virtual:
+    type: boolean
+    default: false
+    description: "Render only visible items. Requires `itemHeight` — a virtualised list cannot measure items it has not built."
+  itemHeight:
+    type: number
+    description: "Fixed item height in logical pixels. Required when `virtual` is true."
+  overscan:
+    type: number
+    default: 3
+    description: "Items rendered beyond the viewport on each side, trading memory for scroll smoothness."
   items:
-    type: "binding"
+    type: "array | binding"
     description: "Array source. Required when `children` is omitted (dynamic list)."
   itemTemplate:
     type: "Widget"
     description: "Template rendered per bound item. Required with `items`. Iteration variables `item`, `index`, `isFirst`, `isLast`, `isEven`, `isOdd` are in scope."
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: "Static list of widgets. Mutually exclusive with `items` + `itemTemplate`."
   spacing:
     type: "number"
@@ -22,7 +51,7 @@ properties:
     description: "Gap between items."
   orientation:
     type: "string"
-    default: "\"vertical\""
+    default: "vertical"
     description: "`vertical` or `horizontal`."
   emptyMessage:
     type: "string"
@@ -30,6 +59,15 @@ properties:
   itemExtent:
     type: "number"
     description: "Fixed item size for performance."
+  reverse:
+    type: "boolean"
+    description: "When true, run the transition in reverse direction (for back navigation)."
+  scrollDirection:
+    type: "string"
+    description: "Scroll axis."
+  template:
+    type: ["object", "string"]
+    description: "Template name to instantiate."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

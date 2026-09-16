@@ -160,6 +160,40 @@ bundle_A.script (within bundle_A context):
 
 = 4 composition modes free — the host decides whether to expose externally (a wiring concept).
 
+## ethos Governance — scope · provenance · charter Inheritance
+
+The contract that extends the scopeId model above into **governance** of ethos (philosophy). The absence of this contract is the origin of the "philosophy globally active" drift; writing it down aligns the implementation (isomorphic to the `keys(prefix:)` contract gap). (§5's "single source — shared by all instances" is the host home default; governance divides per scope as below.)
+
+### scope: an active ethos is scope-bound
+
+- Governance decisions (the process gate `checkProhibitions`, generation intervention `intervene(postGeneration)`) are made against **that scope's active ethos**. Not one global active. (Both judge **by the active ethos**, not by an agent's forked copy. An agent's owned philosophy ref is only an opt-in flag for generation intervention.)
+- `EthosStorePort.activateEthos` / `getActiveEthosId` = the active pointer of that store instance, i.e. of that scope (`<ns>:__active__`). A per-workspace (per-project) store therefore means a per-workspace active.
+- ⚠️ Implementation alignment: if the standard tools (`bk.philosophy.*`) are bound to a global KernelApp they bypass the per-scope store and share one global active → no per-scope governance. A host MUST route the governance paths (gate, generation intervention) through **the active scope's system, i.e. that scope's active ethos**.
+
+### provenance: source grade of an ethos + its lifecycle
+
+An ethos payload may carry an optional provenance:
+
+```
+payload.provenance = { kind: 'anchor'|'derived'|'workaround', serves?: <parent ethos id>, validWhile?: <condition> }
+```
+
+- `kind` defaults to `anchor` (unspecified = a principle; existing data is unconstrained). `derived` / `workaround` (a derived judgement, a temporary detour) **require `serves`** — the higher principle they serve.
+- Lifecycle (mirroring fact candidate→confirm): `put` = candidate (`derived` / `workaround` forced inactive), `activate` = confirm (promotion to a principle). This blocks a derivation or a detour from **quietly hardening into a principle**.
+- Enforcement point = the kernel's `bk.philosophy.put` / `activate`. Data model = `Ethos` in `mcp_bundle` (payload preserved as-is).
+
+### charter Inheritance — a recursive org unit (top-down)
+
+- **A workspace is a scale-invariant organizational unit** (team · department · company · country; nestable). Each level holds its own **charter** = that scope's active anchor ethos (reusing `valuePriorities` · `prohibitions`, plus mission / northStar).
+- Governance resolves as a **top-down chain**: member or child scope → own scope's active → parent scope's active → … A child inherits the parent charter; only an explicit override is its own.
+- An override is that member's or scope's `derived` / `workaround` ethos (provenance `serves` = the parent charter). **An exception someone answers for — not a copy of the charter.**
+- A charter change is live. Non-overriding children realign automatically, because this is inheritance and not a copy.
+- ⚠️ Implement one level first (org→member) and keep resolution **chain-shaped**; nesting then costs zero additional contract. Nesting itself lands on demand.
+- **Implemented (2026-07-01, ops host)**: charter and knowledge inheritance resolve along the workspace's **own ancestor chain** (`WorkspaceRegistry.ancestors` = the parentId line, **that line only** — siblings and other branches excluded). Charter prohibitions accumulate (company ∘ department ∘ self); mission / northStar / values take the nearest (self-first). `workspace_get_charter` (effective value + `inheritedFrom`) · the `philosophy_check` gate (prohibitions across the whole chain, forbiddenPatterns as the decision seam) · `knowledge_file_list` / `read` (self + ancestors, self shadows, `inheritedFrom`). This replaces the old per-project single active. ⚠️ Open: unifying the charter active and the `bk.philosophy` active into one (kernel).
+- **The head of a unit (team lead, department head) = `Workspace.leadMemberId`** (a member id within it, 2026-06-30). Each organizational unit may hold its own *head* alongside its charter — the apex of the org hierarchy and the default target for approval and escalation. The runtime model for role division = [`12-flowbrain-runtime.md`](12-flowbrain-runtime.md) §5.
+
+> The ethos governance model of "a workspace is a recursive organizational unit" **is canonical in this platform spec**; it needs no separate promotion.
+
 ## Compatibility
 
 - `KnowledgeSystem` API = the spec of `flowbrain_core` (a separate position)

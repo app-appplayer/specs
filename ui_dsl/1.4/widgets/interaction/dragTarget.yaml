@@ -9,11 +9,12 @@ properties:
     description: "Expression controlling acceptance."
   builder:
     type: "Widget"
+    required: true
     description: "Widget rendered as the drop surface. Required when `child`/`children` are omitted."
     aliases:
       - child
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     description: "Multiple widgets; runtime wraps them in a linear column. Mutually exclusive with `builder`/`child`."
   onDrop:
     type: "Action"

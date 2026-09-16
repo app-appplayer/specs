@@ -4,15 +4,39 @@ profile: Core
 description: |
   Icon-only button for compact actions.
 properties:
-  icon:
+  fontFamily:
     type: "string"
+    description: "Font family the icon glyph is taken from, for icon sets outside the default."
+  disabledColor:
+    type: Color
+    description: "Colour used while the control is disabled."
+  enableFeedback:
+    type: "boolean"
+    description: "Play the platform tap sound / haptic on activation."
+  highlightColor:
+    type: Color
+    description: "Overlay while the surface is held down."
+  iconSize:
+    type: Dimension
+    description: "Rendered size of the icon."
+  padding:
+    type: EdgeInsets
+    description: "Space inside the surface, around its content."
+  splashColor:
+    type: Color
+    description: "Colour of the ripple that expands from the touch point."
+  splashRadius:
+    type: Dimension
+    description: "Radius the ripple expands to."
+  icon:
+    type: IconRef
     required: true
-    description: "Icon name."
+    description: "Icon shown. Any `IconRef` form."
   size:
     type: "number"
     description: "Icon size; uses theme default if omitted."
   color:
-    type: "string"
+    type: Color
     description: "Icon color."
   enabled:
     type: "boolean"
@@ -21,6 +45,9 @@ properties:
   onTap:
     type: "Action"
     description: "Tap handler."
+  alignment:
+    type: Alignment
+    description: "Where the icon sits inside the button bounds."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0

@@ -2,7 +2,7 @@ type: alertDialog
 category: dialog
 profile: Core
 since: v1.0
-aliases: [alert]
+aliases: [alert, confirmDialog]
 description: |
   Modal alert with an optional title, an optional body (string or widget),
   and a list of labeled action buttons. Dispatched via the `dialog` action
@@ -11,6 +11,24 @@ description: |
   (not the root navigator), so tapping an action pops only the dialog.
 
 properties:
+  insetPadding:
+    type: EdgeInsets
+    description: "Space between the dialog and the screen edges."
+  scrollable:
+    type: "boolean"
+    description: "Let the body scroll when it does not fit."
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
+  shadowColor:
+    type: Color
+    description: "Colour of the drop shadow cast by the surface."
+  shape:
+    type: "object"
+    description: "Outline of the surface, as a shape descriptor."
+  surfaceTintColor:
+    type: Color
+    description: "Elevation tint applied over the surface colour (M3)."
   title:
     type: string
     description: Dialog title shown at the top.
@@ -35,6 +53,15 @@ properties:
           BEFORE executing `onTap`, so handlers that trigger state changes or
           navigation do not race with the dialog dismissal.
 
+  alignment:
+    type: Alignment
+    description: "Where the dialog sits in the screen."
+  backgroundColor:
+    type: Color
+    description: "Legacy alias of `color`."
+  elevation:
+    type: Dimension
+    description: "Shadow depth of the dialog surface."
 children:
   kind: none
 

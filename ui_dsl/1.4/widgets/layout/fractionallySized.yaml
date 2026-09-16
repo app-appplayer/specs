@@ -14,4 +14,7 @@ properties:
     type: "Widget"
     required: true
     description: "Child widget."
+  alignment:
+    type: Alignment
+    description: "Where the sized child sits inside the available space."
 # examples migrated verbatim from prose JSON fences.

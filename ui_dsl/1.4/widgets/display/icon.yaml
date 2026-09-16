@@ -2,29 +2,31 @@ type: icon
 category: display
 profile: Core
 description: |
-  Displays an icon. The `icon` property accepts five source forms — pick
+  Displays an icon. The `icon` property accepts three source forms — pick
   the lightest option that fits the asset:
 
   1. **Named (built-in)** — `"home"`, `"folder_open"`, … from the runtime's
      Material Icons resolver table. Zero-cost.
   2. **Codepoint** — `{codepoint, fontFamily?, fontPackage?}` for Material
      Icons codepoints not in the name table.
-  3. **URL** — `https://…` or `http://…` (raster or SVG). Fetched and cached
-     at first render.
-  4. **Bundle SVG asset** — `assets/icons/<name>.svg` resolved from the bundle
-     asset map. Used for app-specific icon sets shipped with the bundle.
-  5. **Local SVG inline** — `data:image/svg+xml;…` data URI for one-off icons
-     embedded directly in the DSL.
+  3. **Any `AssetRef`** — a network URL, `bundle://` asset, `assets/` path,
+     `data:image/svg+xml;…` inline SVG, `client://` host resource, or an
+     `{uri, origin?}` object read from an origin. Which of these a given
+     runtime resolves is declared, not assumed (`06_Runtime_Contract.md`
+     §6.12).
+
+  A bare string that matches no known scheme and is not an `assets/` path
+  is read as a **name**, so the named form stays the zero-ceremony default.
 
   The optional `shader` field paints the icon with a gradient/shader fill
   (rather than a solid `color`). When both are set the shader wins.
 properties:
   icon:
-    type: "string | object"
+    type: IconRef
     required: true
     description: |
-      Name, URL, bundle path, data URI, or codepoint object — see the
-      five forms documented in the widget summary.
+      Icon name, codepoint object, or any `AssetRef` — the same three
+      forms every icon slot accepts.
   size:
     type: ["string", "number"]
     description: |

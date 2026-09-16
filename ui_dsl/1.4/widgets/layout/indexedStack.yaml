@@ -4,18 +4,27 @@ profile: Core
 description: |
   Displays a single child selected by index. All children retain state.
 properties:
+  sizing:
+    type: "string"
+    description: "How the stack sizes itself against its children: `loose`, `expand`, `passthrough`."
+  clipBehavior:
+    type: "string"
+    description: "How content crossing the bounds is clipped."
   index:
     type: "number | binding"
     default: 0
     description: "Index of the child to display."
   alignment:
     type: Alignment
-    default: "\"topStart\""
+    default: "topStart"
     description: Alignment of the displayed child.
   children:
-    type: "Widget[]"
+    type: "array<Widget>"
     required: true
     description: "Candidate children."
+  textDirection:
+    type: "string"
+    description: "Resolution direction for `start`/`end` alignment."
 # examples migrated verbatim from prose JSON fences.
 examples:
   - name: prose_example_0
