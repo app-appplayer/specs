@@ -288,6 +288,8 @@ Bindings in the embedded subtree MUST re-evaluate when that scope's state change
 
 A runtime dispatches on the reference's scheme prefix (or, for the object form, reads `uri` through `resources/read` on the resolved origin — §6.12.3). The schemes named in `AssetRef` are the ones this document defines; a host MAY resolve others.
 
+`file:` *(since v1.4.4)* is the local-path form of §6.12.7 placement 1 — what a host hands the runtime after resolving `bundle://` itself. A runtime on a platform with a filesystem MUST resolve it; a runtime without one (the browser) treats it as unresolvable (§6.12.4). An author does not write `file:` in a document — it is not portable — but a runtime meeting it MUST NOT treat it as an unknown scheme when it can read the file, or a host that chose placement 1 has no form it can hand over.
+
 **An unknown scheme is not an invalid document.** A runtime that meets a scheme it does not resolve MUST treat it as an *unresolvable asset* (§6.12.4), not as a schema violation. Rejecting the document would make every runtime's gaps into authoring errors, and an author cannot know in advance which runtime will render their page.
 
 ### 6.12.2 A binding is resolved first

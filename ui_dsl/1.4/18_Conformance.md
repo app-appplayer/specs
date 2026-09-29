@@ -183,6 +183,7 @@ Collected from [`06_Runtime_Contract.md`](06_Runtime_Contract.md) §6.12. Applie
 
 - `data:` — inline bytes, base64 and url-encoded.
 - `assets/` — local asset paths declared by the consumer app.
+- `file:` — a local path, on platforms with a filesystem *(since v1.4.4)*; it is what a host produces under §6.12.7 placement 1, so a runtime that cannot draw it leaves such a host no form to hand over. A browser runtime omits it from its published set.
 - A **binding** in any `AssetRef` position, resolved before scheme dispatch (§6.12.2).
 - One resolution path shared by all `AssetRef` slots — two widgets given the same reference MUST resolve it identically (§6.12).
 - Unresolvable assets take the slot's declared fallback and never render an implementation detail on screen (§6.12.4).
@@ -485,7 +486,7 @@ A runtime claiming the Payment Profile MUST:
 4. **Carry an amount only where the item takes one** — send `amount` for customer-priced items only, refuse an out-of-range value rather than clamping it, and never present the document's number as the price of an item priced elsewhere (§4.24.3).
 5. **Present the provider choice** — where the receiving party offers several, the host renders the choice. A runtime MUST NOT let the document name the provider, and an abandoned choice is `PAYMENT_CANCELLED`.
 6. **Mint and match the return** — a custom-scheme return address carrying a fresh unguessable request token per dispatch, and discard returns that match no outstanding request.
-7. **Map the outcome to the §4.17 envelope** — `success` to `onSuccess` with `data.status`; cancel, unreadable return and host failure to `onError` with `PAYMENT_CANCELLED`, `PAYMENT_UNKNOWN` and `PAYMENT_UNAVAILABLE` respectively. Routing cancel or unknown to `onSuccess` is non-conformant.
+7. **Map the outcome to the §4.17 envelope** — `success` to `onSuccess` with `data.status`; cancel, unreadable return and host failure to `onError` with `PAYMENT_CANCELLED`, `PAYMENT_UNKNOWN` and `PAYMENT_UNAVAILABLE` respectively. A completed payment whose purchase did not reach the acting party is `PAYMENT_DELIVERY_FAILED`, never `PAYMENT_UNKNOWN`. Routing cancel or unknown to `onSuccess` is non-conformant.
 8. **Refuse visibly** — an unwired payment port MUST produce `onError` with `PAYMENT_UNAVAILABLE`. A no-op is non-conformant.
 9. **Refuse at `untrusted`** — MUST NOT dispatch `payment` from a document at trust level `untrusted`.
 10. **Claim no more than it does** — a runtime that presents the payment surface but cannot receive the return MUST NOT claim this Profile. Half of this feature is a payment the application never learns the outcome of.

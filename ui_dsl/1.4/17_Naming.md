@@ -309,6 +309,7 @@ table naming `spaceBetween` as canonical.)*
 | `avatar` | `label` | `text` |
 | `avatar`, `card`, `box` | `color` | `backgroundColor` |
 | Template invocation (`use`) | `itemTemplate` | `template` |
+| `TextStyle` (theme typography role, widget `style`) | `lineHeight` | `height` (value is always a multiplier of `fontSize`; `lineHeight` below 16 is a multiplier, 16 and above px — §5.4.2) |
 
 ### 17.3.3 Callback Aliases
 

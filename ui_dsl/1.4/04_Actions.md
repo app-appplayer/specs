@@ -945,8 +945,9 @@ This is **not** the same as rendering a provider's payment page in a `webView`: 
 | the person dismissed it | `error.code = "PAYMENT_CANCELLED"` |
 | the return carried no readable outcome, or no return arrived | `error.code = "PAYMENT_UNKNOWN"` |
 | no payment port, or the host refused to open the surface | `error.code = "PAYMENT_UNAVAILABLE"` |
+| the flow completed but what it bought did not reach the party that must act on it — a served device that never received the authority (platform spec 21 §6.1 step 7) *(since v1.4.4)* | `error.code = "PAYMENT_DELIVERY_FAILED"` |
 
-`{{event.status}}` reads the success branch; `{{event.code}}` and `{{event.message}}` read the error branch (§4.18). A runtime MUST NOT route `PAYMENT_CANCELLED` or `PAYMENT_UNKNOWN` to `onSuccess`. Cancelling is a normal outcome, not a failure to hide, and an unknown outcome is the one case where guessing is most expensive.
+`{{event.status}}` reads the success branch; `{{event.code}}` and `{{event.message}}` read the error branch (§4.18). A runtime MUST NOT route `PAYMENT_CANCELLED` or `PAYMENT_UNKNOWN` to `onSuccess`. A runtime MUST NOT report `PAYMENT_DELIVERY_FAILED` as `PAYMENT_UNKNOWN`: the money moved, and the person must not be sent to pay again. Cancelling is a normal outcome, not a failure to hide, and an unknown outcome is the one case where guessing is most expensive.
 
 ### 4.24.2 Who is being paid
 

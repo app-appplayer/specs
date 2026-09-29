@@ -1,5 +1,29 @@
 # MCP UI DSL — Changelog
 
+## [Unreleased]
+
+### `lineHeight` is the one name for line height; `height` is its legacy alias
+
+`TextStyle` — the shape shared by `theme.typography.<role>` and a widget's
+`style` — carried line height as `height` (a multiplier) while §5.4.2,
+§18.2.7 and the prose everywhere named it `lineHeight`. Two names for one
+concept, one in the machine-readable half and one in the normative half.
+
+- `configs/_primitive/TextStyle.yaml` declares `lineHeight` (§5.4.2: below 16 a
+  multiplier of `fontSize`, 16 and above logical px) and marks `height`
+  `deprecated`: a multiplier, accepted on input, never emitted; with both set,
+  `lineHeight` wins (§18.2.10). The object stays open, so no document that
+  validated before stops validating.
+- §17.3.2 registers `height` → `lineHeight` for `TextStyle`.
+- Schemas regenerated.
+
+### Editorial
+
+- 05_Theme: the second §5.17 / §5.18 (Migration, Conformance summary) are
+  §5.19 / §5.20.
+- 05b: the interchange text named the theme, the export and the runtime as
+  1.3; they are 1.4.
+
 ## [1.4.3]
 
 ### `location` — asking where the device is, and the rules that keep it an ask

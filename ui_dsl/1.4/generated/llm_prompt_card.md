@@ -53,7 +53,7 @@ Format per widget:
 - properties: `click?: Action`, `tooltip?: string`, `cellGap?: Dimension`, `colorScheme?: string`, `columns?: number`, `maxValue?: number`, `minValue?: number`, `showLabels?: boolean`, `data: array | binding`, `columnLabels?: array<string>`, `rowLabels?: array<string>`, `cellSize?: number`, `colorRange?: { low, high }`, `colorRange.low?: Color`, `colorRange.high?: Color`, `showValues?: boolean`, `onCellTap?: Action`
 
 ### `kanban` *(since v1.4)*
-- properties: `click?: Action`, `tooltip?: string`, `columns: array<object> | binding`, `itemTemplate: Widget`, `itemKey?: string`, `draggable?: boolean`, `columnWidth?: Dimension`, `optimistic?: boolean`
+- properties: `click?: Action`, `tooltip?: string`, `columns: array<object> | binding`, `itemTemplate: Widget`, `itemKey?: string`, `draggable?: boolean`, `columnWidth?: Dimension`, `height?: Dimension`, `optimistic?: boolean`
 - events: `onCardMove`, `onCardClick`
 
 ### `lightbox` *(since v1.3)*

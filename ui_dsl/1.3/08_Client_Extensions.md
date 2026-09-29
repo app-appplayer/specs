@@ -340,6 +340,21 @@ Resolution follows the order in [`03_Data_Binding.md`](03_Data_Binding.md); `cli
 
 Channels are long-lived bidirectional streams declared at the page or application level, controlled by lifecycle actions, and bound via `channels.*`.
 
+> **Streaming vs the MCP transport (2026-07-19).** These §8.6 channels are
+> **client-local** — `client.websocket` opens a raw socket to an *external*
+> endpoint, `client.poll`/`watchDirectory`/`systemMonitor` run in-process. They
+> do **not** ride the MCP server transport and are unaffected by MCP protocol
+> revisions.
+>
+> To stream data **from a server tool/resource** over MCP, use the two standard
+> primitives, not a non-standard flag: **enable** with a tool call
+> (`tools/call` — a "streaming" tool the client invokes), and **deliver** via a
+> reactive resource — `subscriptions/listen` (MCP 2026-07-28) or
+> `resources/subscribe` → `notifications/resources/updated` (≤2025-11-25). The
+> former makemind `CallToolResult.isStreaming` hint is **deprecated** (honored
+> nowhere; retained for backward compatibility until the next major, removed
+> thereafter). See the `mcp_server` package design notes on stateless coexistence, §11.
+
 ### 8.6.1 Channel Declaration
 
 ```json
@@ -409,13 +424,15 @@ The channel declares its source and its per-push handler; buttons only start /
 stop it:
 
 ```json
-"channels": {
-  "advertisements": {
-    "type": "client.mcpStream",
-    "params": { "uri": "ble://scan", "params": { "minRssi": -70 } },
-    "onMessage": {
-      "type": "state", "action": "append",
-      "binding": "advertisements", "value": "{{data}}"
+{
+  "channels": {
+    "advertisements": {
+      "type": "client.mcpStream",
+      "params": { "uri": "ble://scan", "params": { "minRssi": -70 } },
+      "onMessage": {
+        "type": "state", "action": "append",
+        "binding": "advertisements", "value": "{{data}}"
+      }
     }
   }
 }

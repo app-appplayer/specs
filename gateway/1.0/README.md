@@ -8,7 +8,7 @@ local mcp_server ── gateway(provider) ──▶ relay(hub) ◀── gateway
                                             pipe
 ```
 
-- The **channel** (platform spec 15) carries the frames and owns authentication, session lifetime, and close semantics. It never opens a frame.
+- The **channel** (platform spec 15) carries the frames and owns authentication, session lifetime, and close semantics. It never opens a frame. An account peer session (platform spec 22) is the same channel; its frames may move to a direct peer-to-peer pipe negotiated inside the relayed session, which changes the path and nothing in this spec.
 - The **gateway** (this spec) owns the frames: request/response mediation, aggregation, namespacing, notifications, and the reverse direction.
 - Reference implementation: `mcp_gateway` (pub) — library semantics; `recipes/gateway_node` — the hub binding.
 
@@ -38,7 +38,7 @@ A frame is one JSON object. Keys are single-purpose and flat:
 `initialize` · `ping` · `tools/list` · `tools/call` · `resources/list` · `resources/templates/list` · `resources/read` · `resources/subscribe` · `resources/unsubscribe` · `prompts/list` · `prompts/get`.
 
 - **List verbs** are answered by the GATEWAY (aggregation across providers, policy-filtered per consumer). They support spec pagination: `params.cursor` in, `result.nextCursor` out (opaque cursor).
-- **`initialize`** is answered by the gateway facade: it negotiates `protocolVersion` across the revisions it supports (echo the client's when supported, else answer with the latest supported) and declares capabilities `{tools:{listChanged}, resources:{subscribe, listChanged}, prompts:{listChanged}}`.
+- **`initialize`** is answered by the gateway facade: it negotiates `protocolVersion` across the revisions it supports (`2024-11-05` / `2025-03-26` / `2025-06-18` / `2025-11-25`; echo the client's when supported, else answer with the latest supported) and declares capabilities `{tools:{listChanged}, resources:{subscribe, listChanged}, prompts:{listChanged}}`. Unmodeled MCP fields on aggregated tool/resource/prompt items (e.g. `icons`, `outputSchema`, `title`, `annotations`, provider `_meta`) pass through verbatim; gateway provenance merges into `_meta.gateway` without clobbering a provider `_meta`.
 - **Item verbs** (`tools/call`, `resources/read|subscribe|unsubscribe`, `prompts/get`) are routed to one provider (§3) and forwarded with ORIGINAL names/URIs.
 - Methods outside this catalog MUST be rejected with `-32601` unless the request carries an explicit target hint (§3.4), in which case the gateway forwards them verbatim (future-proof pass-through).
 
@@ -102,6 +102,38 @@ A frame is one JSON object. Keys are single-purpose and flat:
 
 A binding (e.g. the hub wire) states its profile. The marketplace hub binding targets **full** — UI serving requires `resources/read`.
 
-## 8. Versioning
+## 8. Stateless-core coexistence (2026-07-28) — additive, opt-in
 
-This document is versioned as `mcp_gateway/spec/1.0`. Frame keys and verb semantics are frozen within a major version; new verbs and event types are additive within 1.x. The `initialize` negotiation carries the MCP protocol revision (2024-11-05 / 2025-03-26 / 2025-06-18 at time of writing) — MCP revision and gateway spec version are independent axes.
+> **Status: opt-in / dormant.** A conformant gateway MAY additionally serve the 2026-07-28
+> stateless-core revision. In the reference implementation this is gated behind a build flag
+> (`GatewayConfig.enableStateless`, default off): when off, `2026-07-28` is never advertised and none
+> of this section is observable. Nothing here changes the handshake behaviour of §2 for
+> ≤2025-11-25 consumers, which remain fully supported side-by-side.
+
+The 2026-07-28 revision removes the `initialize`/`initialized` handshake and protocol-level sessions.
+When a gateway opts in:
+
+- **`server/discover`** (`req`) replaces `initialize` as the capability facade. Its result is
+  `{supportedVersions, capabilities, instructions?}`, where `capabilities` is the same mediated set
+  as §2.1 plus an aggregated `extensions` map (below), and `supportedVersions` includes `2026-07-28`.
+- **Per-request client envelope**: client identity and capabilities ride the request `params._meta`
+  under reserved reverse-DNS keys — `io.modelcontextprotocol/protocolVersion` (REQUIRED),
+  `io.modelcontextprotocol/clientInfo` (display/logging only), `io.modelcontextprotocol/clientCapabilities`
+  (REQUIRED). The gateway MUST source these FRESH per request and MUST NOT infer capabilities from a
+  prior request. Any logical session it keeps is internal bookkeeping only and is never surfaced as a
+  session id.
+- **Path selection / ambiguity guard**: a request takes the stateless path only when the gateway is
+  opted in AND it carries `MCP-Protocol-Version: 2026-07-28` AND no MCP session id. A request bearing
+  both a session id and the 2026-07-28 header is treated as a handshake request (session wins).
+- **Extension relay**: providers MAY declare `capabilities.extensions` (reverse-DNS keyed) at
+  registration; the gateway unions them (last registrant wins on collision) into the `server/discover`
+  capabilities (omitted when empty). Consumer-declared extensions in `_meta.clientCapabilities.extensions`
+  traverse to providers untouched. The gateway relays extension negotiation; it does not interpret it.
+
+Deferred (NOT part of this revision as published): stateless body-free routing headers
+(`Mcp-Method`/`Mcp-Name`), trace-context propagation, discover `ttl`/`cacheScope`, the
+`InputRequiredResult` multi-round-trip, the Tasks extension, and deprecation annotations.
+
+## 9. Versioning
+
+This document is versioned as `mcp_gateway/spec/1.0`. Frame keys and verb semantics are frozen within a major version; new verbs and event types are additive within 1.x. The `initialize` negotiation carries the MCP protocol revision (`2024-11-05` / `2025-03-26` / `2025-06-18` / `2025-11-25`); the 2026-07-28 stateless-core facade (§8) is additive and opt-in — MCP revision and gateway spec version are independent axes.

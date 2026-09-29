@@ -2378,7 +2378,7 @@ reports an edit, and whether a move is legal is the server's answer.
 | `viewMode` | `string` | no | day | Axis granularity. |
 | `range` | `object` | no | — | `{ start, end }` window shown. Omitted fits all tasks. |
 | `editable` | `boolean` | no | false | Allow dragging bars to move them and dragging edges to reschedule. |
-| `showProgress` | `boolean` | no | true | Render each task's `progress` as a fill. |
+| `showProgress` | `boolean` | no | true | Render each task's `progress` as a fill: the completed fraction in the bar's colour, the remainder in a lighter tint of it. |
 | `showDependencies` | `boolean` | no | true | Draw dependency arrows. |
 | `todayMarker` | `boolean` | no | true | Mark the current instant on the axis. |
 | `rowHeight` | `number` | no | — | Task row height in logical pixels. |
@@ -3066,6 +3066,7 @@ server-rejected move is not silently already applied on screen.
 | `itemKey` | `string` | no | id | Field identifying a card. Stable identity is what makes a move addressable. |
 | `draggable` | `boolean` | no | true | Whether cards can be moved at all. False renders a read-only board. |
 | `columnWidth` | `Dimension` | no | — | Fixed column width. Omitted distributes available width. |
+| `height` | `Dimension` | no | — | Fixed board height. Omitted, the board fills its parent, which must then be bounded (§2.15) — the columns scroll, so the board has no height of its own to report. |
 | `optimistic` | `boolean` | no | false | Move the card on screen before `onCardMove` resolves. False keeps the board as the truth the server confirmed — the safer default when a move can be rejected. |
 
 ### Events

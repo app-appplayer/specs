@@ -729,9 +729,14 @@
             "wordSpacing": {
               "$ref": "#/$defs/Dimension"
             },
+            "lineHeight": {
+              "$ref": "#/$defs/Dimension",
+              "description": "Line height (05_Theme §5.4.2): below 16 a multiplier of `fontSize`, 16 and above absolute logical px. The canonical name."
+            },
             "height": {
               "$ref": "#/$defs/Dimension",
-              "description": "Line-height multiplier — `height * fontSize` is the per-line vertical advance."
+              "deprecated": true,
+              "description": "Legacy name for line height, always a multiplier (§17.3.2). Accepted on input and never emitted; when `lineHeight` is also set, `lineHeight` wins (§18.2.10)."
             },
             "decoration": {
               "oneOf": [
@@ -11575,12 +11580,12 @@
           ]
         },
         "showProgress": {
-          "description": "Render each task's `progress` as a fill.",
+          "description": "Render each task's `progress` as a fill: the completed fraction in the bar's colour, the remainder in a lighter tint of it.",
           "anyOf": [
             {
               "type": "boolean",
               "default": true,
-              "description": "Render each task's `progress` as a fill."
+              "description": "Render each task's `progress` as a fill: the completed fraction in the bar's colour, the remainder in a lighter tint of it."
             },
             {
               "type": "string",
@@ -14617,6 +14622,19 @@
             {
               "$ref": "#/$defs/Dimension",
               "description": "Fixed column width. Omitted distributes available width."
+            },
+            {
+              "$ref": "#/$defs/Binding",
+              "description": "Binding expression resolving to this value."
+            }
+          ]
+        },
+        "height": {
+          "description": "Fixed board height. Omitted, the board fills its parent, which must then be bounded (§2.15) — the columns scroll, so the board has no height of its own to report.",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Dimension",
+              "description": "Fixed board height. Omitted, the board fills its parent, which must then be bounded (§2.15) — the columns scroll, so the board has no height of its own to report."
             },
             {
               "$ref": "#/$defs/Binding",

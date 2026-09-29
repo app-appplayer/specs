@@ -61,9 +61,14 @@ definition:
       "backgroundColor": { "type": "string" },
       "letterSpacing": { "$ref": "#/$defs/Dimension" },
       "wordSpacing": { "$ref": "#/$defs/Dimension" },
+      "lineHeight": {
+        "$ref": "#/$defs/Dimension",
+        "description": "Line height (05_Theme §5.4.2): below 16 a multiplier of `fontSize`, 16 and above absolute logical px. The canonical name."
+      },
       "height": {
         "$ref": "#/$defs/Dimension",
-        "description": "Line-height multiplier — `height * fontSize` is the per-line vertical advance."
+        "deprecated": true,
+        "description": "Legacy name for line height, always a multiplier (§17.3.2). Accepted on input and never emitted; when `lineHeight` is also set, `lineHeight` wins (§18.2.10)."
       },
       "decoration": {
         "oneOf": [

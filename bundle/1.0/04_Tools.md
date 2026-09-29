@@ -147,9 +147,24 @@ appear in the host's tool registry.
 | `url` | string? | Required for `transport: http`. |
 | `command` | string? | Required for `transport: stdio` — executable path. |
 | `args` | string[]? | Optional argv. |
+| `tool` | string? | Name of the tool on the remote server. Absent = the entry's own `name`. |
 
 The MCP wire protocol (initialize / tools/list / tools/call) is
 unchanged by this spec — the bundle only declares the connection.
+
+The host calls the remote tool named `target.tool`, or the entry's own
+`name` when `target.tool` is absent, and returns the remote
+`CallToolResult` as the tool's value. `transport: stdio` starts a local
+process, so a host that cannot or will not run one (a phone, a browser)
+refuses the call with that reason rather than skipping the tool.
+
+The connection is the host's, not the bundle's. The host opens it
+through its outbound MCP client host — the same registry its other
+programmatic connections live in — reuses it for every call to that
+server, and closes it when the bundle is closed. A host that opened a
+private connection per call would hold a second connection registry,
+and a server that serves one peer at a time would reset the host's
+other link to it.
 
 ## 4.6 `kind: cloud` — HTTPS Endpoint
 
@@ -164,6 +179,11 @@ unchanged by this spec — the bundle only declares the connection.
 | `target` field | Type | Description |
 |----------------|------|-------------|
 | `url` | string | HTTPS endpoint. The host POSTs the tool's input as JSON and consumes the response. |
+
+The tool's value is the response body parsed as JSON; an empty body is
+`{}`. A non-2xx status, or a body that is not JSON, fails the call with
+that reason — a failure reported as an empty result is indistinguishable
+from a tool that had nothing to say.
 
 Authentication, retry, and request shaping are host-defined. A future
 spec patch may standardize an `auth` sub-object.
@@ -219,7 +239,11 @@ Inputs:
 Outputs:
 
 - Any JSON-serializable value. Conventionally `{ok: true|false,
-  ...payload}`.
+  ...payload}`. `undefined` is `null`. The host MUST hand the caller the
+  value itself — an object as an object, a string as a string — on every
+  JS engine it runs; a host that returned an engine's textual rendering
+  of an object instead of the object breaks every binding that reads a
+  field. A value JSON cannot represent is an error.
 - The host's MCP layer wraps the return value as the standard MCP
   `CallToolResult` (`{ body, isError }`).
 - When the caller is `mcp_ui_runtime`, the [§3.10 auto-merge in
@@ -248,6 +272,14 @@ It is structured by **atom** (coarse capability category) and
 host.<atom>.<verb>(args) -> Promise<value>
 ```
 
+Arguments cross as JSON. `undefined` crosses as `null`, and an object
+property holding `undefined` is omitted. An argument — or any part of one —
+that JSON cannot carry (a function, a symbol, a bigint, `NaN`, `±Infinity`,
+a structure that contains itself) is never replaced by `null`: the host
+refuses the call without running the verb, and the Promise rejects naming
+where it sat. An atom may name the error itself — `kb` answers
+`KB_INVALID_KEY` for the key and `KB_INVALID_VALUE` for anything else.
+
 ### 4.8.1 Atom Roster
 
 The reference Studio host advertises:
@@ -259,14 +291,70 @@ The reference Studio host advertises:
 | `workspace` | `save`, `undo`, `redo`, `revert`, `history` | Workspace-level controls. |
 | `ui` | `notify(text, severity)`, `dialog(spec)`, `prompt(question)` | Host UI interactions. |
 | `agent` | `dispatch(target, message)`, `set_model(...)` | Multi-agent routing. |
-| `bundle` | `info()`, `activate(id)` | Bundle metadata + activation. |
-| `kb` | `query`, `put`, `get`, `list`, `delete` | Knowledge / domain KV. |
+| `bundle` | `current()` → `{id, name, version, shortId?, directory?}` | The bundle this tool runs inside. `id` · `name` · `version` are the manifest's; the rest are host extras. |
+| `kb` | `get(key)` → value \| `null` · `put(key, value, {force?})` → `{ok: true}` \| `{ok: false, conflict: {value}}` · `list(prefix?)` → `[{key, value}]` · `delete(key, {force?})` → `{removed: bool}` \| `{ok: false, conflict: {value}}` · `conflicts()` → `[{key, mine, theirs}]` · `query(text, {topK?})` → hits | Durable key/value state **isolated per app** (see Isolation below), plus knowledge query where the host has a knowledge engine; a host without one refuses `query` by name. |
 | `bus` | `emit(topic, data)`, `subscribe(topic, fn)` | Domain event bus. |
 
 The atom catalog is **host-defined**, not spec-defined. This spec
 fixes the bridge shape (`host.<atom>.<verb>(args) -> Promise<value>`)
 and the gating mechanism (`requires.builtinAtoms`); the host
 advertises which atoms it implements.
+
+**Two atoms are fixed across hosts: `bundle` and `kb`.** A bundle runs on
+more than one host — the marketplace cloud runner, AppPlayer, Studio —
+and the person picks which. A host that offers either atom MUST offer the
+verbs and return shapes in the table above; a bundle whose state or
+identity read back in a different shape on another host would change
+what the app does with that choice. `kb` state is the bundle's own app
+data: it lives in the account-storage `app/<appId>` scope
+([`20-account-storage.md`](../../platform/1.0/20-account-storage.md) §2)
+where the host is signed in to one, and on the device where it is not.
+
+`kb` rules every host follows:
+
+- **Keys.** A key is a non-empty string. It MUST NOT start with `/`,
+  contain `\` or NUL, or contain an empty, `.` or `..` segment when split
+  on `/`. A host refuses such a key with an error and stores nothing. `/`
+  is otherwise free for a bundle's own hierarchy. A host keeping state in
+  account storage stores each key in the layout of
+  [`20-account-storage.md`](../../platform/1.0/20-account-storage.md) §2.1.2,
+  and refuses with `KB_INVALID_KEY` a key whose stored form is longer than
+  the account holds — on every host, whether or not it is reachable.
+- **Isolation.** The host keeps a bundle's keys under its `appId`
+  ([`20-account-storage.md`](../../platform/1.0/20-account-storage.md)
+  §2.1.2): `listing:<listingId>` when the bundle was installed from a
+  marketplace listing, `bundle:<manifest.id>` otherwise. The host chooses
+  it; the bundle never sees it and cannot address another app's keys.
+- **`list(prefix?)`.** `prefix` is a string prefix, not a path segment.
+  Entries come back in ascending key order, with the keys the bundle
+  wrote.
+- **Values.** Anything JSON can carry. A value it cannot is an error.
+- **`query`.** A host without a knowledge engine refuses by name; it
+  does not answer an empty result.
+- **Lifetime.** State survives restarts. Uninstalling a bundle on a
+  device clears that device's copy and does not delete the account's —
+  the same app data belongs to the person's other devices and products.
+- **Conflicts.** Each key is its own record. The host remembers the
+  version it last read for each key and writes on that version. That
+  memory lasts for the bundle's session on that host; a host whose calls
+  share no session keeps it for one tool call. A key not read in that span
+  is written without a check. When the stored value changed since, `put`
+  and `delete` do not write and answer `{ok: false, conflict: {value}}`
+  with the current value — the
+  bundle knows what the value means, merges, and writes again.
+  `put(key, value, {force: true})` overwrites deliberately. Writes made
+  while offline that meet a conflict on reconnect are listed by
+  `conflicts()` as `[{key, mine, theirs}]`; a host never picks one side
+  on its own. A host with no other writer (no account storage) never
+  produces a conflict, and answers the same shapes.
+- **No store.** A host with neither account storage for the caller nor a
+  device copy — an anonymous visitor on a cloud runner — refuses every
+  verb with `KB_UNAVAILABLE` and the reason. It never writes to a shared
+  bucket.
+- **Errors.** `KB_INVALID_KEY`, `KB_INVALID_VALUE`, `KB_QUOTA_EXCEEDED`,
+  `KB_VALUE_TOO_LARGE`, `KB_QUERY_UNAVAILABLE`, `KB_UNAVAILABLE`. Size and
+  quota limits are the host's; exceeding them is `KB_VALUE_TOO_LARGE` or
+  `KB_QUOTA_EXCEEDED`. A conflict is a result, not an error.
 
 ### 4.8.2 Permission Gate
 

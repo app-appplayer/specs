@@ -1,6 +1,6 @@
 # 05b. DTCG JSON Interchange
 
-The mcp_ui 1.3 theme exports and imports the [W3C Design Tokens Community Group draft][dtcg] JSON format, providing two-way compatibility with [Tokens Studio][ts], [Style Dictionary][sd], [Claude Design][cd], and Figma plugins.
+The mcp_ui 1.4 theme exports and imports the [W3C Design Tokens Community Group draft][dtcg] JSON format, providing two-way compatibility with [Tokens Studio][ts], [Style Dictionary][sd], [Claude Design][cd], and Figma plugins.
 
 [dtcg]: https://tr.designtokens.org/format/
 [ts]: https://tokens.studio/
@@ -50,11 +50,11 @@ This spec uses 9 of the 13 standard DTCG draft types: `color`, `dimension`, `dur
 
 ## B.3 Export schema
 
-The standard structure when mcp_ui 1.3 emits DTCG JSON:
+The standard structure when mcp_ui 1.4 emits DTCG JSON:
 
 ```json
 {
-  "$description": "MCP UI 1.3 theme export",
+  "$description": "MCP UI 1.4 theme export",
   "color": {
     "primary":            { "$type": "color", "$value": "#3F51B5" },
     "onPrimary":          { "$type": "color", "$value": "#FFFFFF" },
@@ -205,7 +205,7 @@ An application may write its `theme` field directly in the DTCG form above. The 
 
 ### B.4.2 Tokens Studio / Figma export
 
-Export from Figma via the Tokens Studio plugin and paste the result into the application's `theme` field. The mcp_ui 1.3 runtime imports it directly.
+Export from Figma via the Tokens Studio plugin and paste the result into the application's `theme` field. The mcp_ui 1.4 runtime imports it directly.
 
 ### B.4.3 Style Dictionary build
 

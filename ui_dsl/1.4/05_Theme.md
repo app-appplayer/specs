@@ -768,7 +768,7 @@ Detailed spec and mapping live in [`05b_DTCG_Interchange.md`](05b_DTCG_Interchan
 
 ---
 
-## 5.17 Migration from earlier drafts
+## 5.19 Migration from earlier drafts
 
 Earlier draft naming (`theme.colorScheme.light.primary`, `theme.spacing.small`, `theme.typography.headline1`, etc.) is **removed in 1.3**. Applications switch to the new names:
 
@@ -789,7 +789,7 @@ Migration is a one-time switch at 1.3 publish. No legacy reader is provided.
 
 ---
 
-## 5.18 Conformance summary
+## 5.20 Conformance summary
 
 Normative requirements live in [`18_Conformance.md`](18_Conformance.md) §18.2.7. Summary:
 
