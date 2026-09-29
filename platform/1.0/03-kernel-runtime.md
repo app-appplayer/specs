@@ -82,7 +82,7 @@ SystemPromptComposer.compose({
 
 = the agent automatically holds its own 4 axis assets. The host only wires.
 
-### standardTools — bk.<facade>.<verb> 45 Tools
+### standardTools — bk.<facade>.<verb> 48 Tools
 
 `standardTools(KernelApp app)` returns a standard wrapper per facade:
 
@@ -93,7 +93,7 @@ SystemPromptComposer.compose({
 | profile (4) | `bk.profile.register` · `unregister` · `list` · `get` |
 | philosophy (6) | `bk.philosophy.put` · `list` · `get` · `activate` · `get_active_id` · `check` (prohibition check) |
 | ops (10) | `bk.workflow.run` · `list` · `get_run` · `bk.pipeline.run` · `get_run` · `bk.runbook.run` · `list` · `bk.behavior.run` · `resume` (+statePatch) · `list` (behavior definition engine) |
-| agent (11) | `bk.agent.list` · `get` · `ask` · `create` · `delete` · `history` · `assign_skill` · `assign_profile` · `assign_philosophy` · `assign_facts` · `materialize` |
+| agent (14) | `bk.agent.list` · `get` · `ask` · `create` · `delete` · `update` (in-place mutation — changing role/model/prompt needs no delete→recreate, the individual is preserved) · `history` · `assign_skill` · `assign_profile` · `assign_philosophy` · `assign_facts` · `materialize` · `route` · `review` (spec 12 §5) |
 | knowledge (2) | `bk.knowledge.query` · `test` |
 
 - typedef `InProcessToolHandler = Future<Object?> Function(Map<String, dynamic>)`
@@ -107,7 +107,7 @@ A core framework contract — see `06-tool-registry.md`. Summary:
 
 | path | use |
 |---|---|
-| `KernelEndpoint.addStandardTools(app)` | host home context — host uses the standard 45 within the same process (placeholder schema) |
+| `KernelEndpoint.addStandardTools(app)` | host home context — host uses the standard 48 within the same process (placeholder schema) |
 | `BundleSessionBridge.registerTool` | domain wrapping of knowledge tools — `bk.` enforced · alias auto-published |
 | `HostToolRegistry.registerExposed` | general tools (host + domain logic) — `<bundleId>.<rawName>` prefix automatic |
 

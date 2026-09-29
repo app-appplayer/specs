@@ -32,8 +32,10 @@ The composition model of every package, tool, bundle, and UI in the MakeMind fra
 | [`1.0/17-device-discovery.md`](1.0/17-device-discovery.md) | nearby device discovery (announce-scan → probe-confirm · mDNS `_mcp._tcp` · manifest `trust` signature · onboarding axis) |
 | [`1.0/18-ble-scan-observe.md`](1.0/18-ble-scan-observe.md) | BLE advertisement observation (one radio, N isolated subscriptions · `client.mcpStream` binding) |
 | [`1.0/19-scan-entry-identity.md`](1.0/19-scan-entry-identity.md) | scan entry & identity (how a scanned medium opens an app on the page it named, and who the opener is) |
-| [`1.0/20-account-storage.md`](1.0/20-account-storage.md) | account storage (opaque keyed documents per account · scope boundaries · client-side merge · quota) |
+| [`1.0/20-account-storage.md`](1.0/20-account-storage.md) | account storage (opaque keyed documents per workspace · the workspace as boundary and billing unit · scope boundaries · client-side merge · receiving other devices' changes · quota · subscription grades · registered devices) |
 | [`1.0/21-payment-action.md`](1.0/21-payment-action.md) | payment action (an app declares only who and what · the host holds no credential and no card passes through it) |
+| [`1.0/22-appplayer-peer-link.md`](1.0/22-appplayer-peer-link.md) | AppPlayer peer link, draft (a device attached to any AppPlayer of a workspace is usable from its other AppPlayers anywhere · the market only introduces, shares addresses and coordinates — data goes directly between AppPlayers as plain MCP, never relayed · one connection-channel contract with QUIC and WebRTC implementations · device cameras) |
+| [`1.0/23-connection-reexposure.md`](1.0/23-connection-reexposure.md) | connection re-exposure, draft (one set of rules for offering a held connection or installed bundle, shared by the workspace door and the market door · the unit is the app · declared surface only · a device card bound to the device with candidates chosen at open · one connection shared by many without growing device load) |
 
 Numbers absent from this table are specs whose subject is outside the published surface.
 

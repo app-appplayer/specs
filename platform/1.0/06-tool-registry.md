@@ -21,7 +21,7 @@ Knowledge tools have two bundles using the same tool name (`bk.fact.write`, etc.
 
 = **own tools are called simply by their own name · external calls are isolated with bundleId made explicit**.
 
-**General tools** (host + domain logic) = no same name across bundles → the two-naming model is unnecessary. `HostToolRegistry` auto-prefixes a single `<bundleId>.<rawName>` name.
+**General tools** (host + domain logic) = one registered name, `<bundleId>.<rawName>` (`HostToolRegistry` prefixes it automatically). **Inside** the bundle it is called by the declared `rawName`, and the host resolves it in the bundle's own namespace (04 "Name isolation" · 2026-09-29). A bundle document never carries the bundle id — the bundle does not know the id it runs under. Authoring tools (Studio) do not write id-prefixed names when they build a bundle either.
 
 ## Code-Level Guarding — Preventing Misuse
 
@@ -347,6 +347,19 @@ Two grounds for a bundle keeping working even when it moves hosts:
 2. **`requires` declaration + host verification.** The bundle declares the builtin tools · atoms it needs in the manifest `requires` (`mcp_bundle` `RequiresSection` — `builtinTools: List<String>` · `builtinAtoms: List<String>`). On activation the host **collates the bundle's `requires.builtinTools` against its own set of embedded tools** — works if satisfied, rejects if lacking (or shows the unmet tools).
 
 → **parity guarantee formula**: a bundle works in AppPlayer ⟺ `host.embeddedTools ⊇ bundle.requires.builtinTools`. To put a bundle made in Studio (superset) onto AppPlayer, AppPlayer embeds capabilities so as to satisfy that `requires` (exactly that set via partial assembly, or all). Source being package or bespoke is irrelevant — only the name set must be satisfied.
+
+### ④ The kind of app — `manifest.type` (2026-09-29 · corrected 2026-09-30)
+
+Where an app runs is decided by `manifest.type` alone. Format definition = bundle spec 02_Manifest §2.2.1.
+
+| `type` | app | runs on |
+|---|---|---|
+| `application` (default) | AppPlayer app | every AppPlayer tier + Studio · Workbench |
+| `extension` | Studio app | Studio · Workbench only |
+| `server` | served app — not an install target | by connection (`connectServer`) only |
+
+- **Decided when it is built.** Choosing AppPlayer app or Studio app in the App Builder builds the bundle with that `type`, and its screens and composition follow the choice. When a bundle is built outside Studio (Claude Code and the like), the same choice is written into `type`. Nothing checks it separately.
+- **Where it is used, only `type` is read.** AppPlayer does not install or activate an `extension`; the marketplace classifies and shows by `type` and blocks purchase before it happens on a host the app does not run on.
 
 ### Author · host responsibilities
 

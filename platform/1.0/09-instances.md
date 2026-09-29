@@ -22,9 +22,10 @@ Location = `tools/appplayer_vibe_studio/debug/vibe_studio/` (active)
 | Variant | Composition |
 |---|---|
 | **Standard** | UI player chrome + external MCP server connect or local bundle · transport client only · Pattern 1 or Pattern 2 |
-| **Pro** | UI player chrome + launcher + library + (optional) server endpoint · multi-bundle · free combination of Pattern 1+3+4 |
-| **X** | standalone shell (1 bundle embed) · client only · Pattern 2 |
-| **Custom** | whitelabel · user environment · free composition |
+| **Pro** | UI player chrome + launcher + library + (optional) server endpoint · multi-bundle · free combination of Pattern 1+3+4 · account peer (22) |
+| **X** | standalone shell (1 bundle embed) · client only · Pattern 2 · not a peer |
+| **Custom** | whitelabel · user environment · free composition · not a peer (no market sign-in, 22 §1) |
+| **Cloud (web)** | browser player · bundles from account storage · remote servers · account peer (22) |
 
 Implementation = `appplayer_core` (Core) · `appplayer` (Standard) · `appplayer_pro` (Pro).
 

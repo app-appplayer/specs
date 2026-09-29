@@ -154,6 +154,7 @@ For a multi-endpoint host (vibe_studio's multi-domain pool · user-arbitrary mul
 ### Name Isolation
 
 - general tool = `<bundleId>.<rawName>` (HostToolRegistry automatic)
+- **Resolution inside the bundle (2026-09-29).** A bundle calls its own tools by the **name it declared (`rawName`)** — the screen's `tool` action, `host.mcp.callTool` in js, and wiring alike. **A bundle document (manifest · screens · js) never carries the bundle id**: the id is attached by the host at install (`bundleIdOverride`), and the bundle does not know the id it runs under. The host resolves a name coming from inside that bundle as `<bundleId>.<name>`. `<bundleId>.<name>` is a name **inside** a host that holds several bundles, used only from outside the bundle (the host · another bundle · an agent). A host that runs a single bundle (the server-app runtime) accepts declared names only. The same principle as the knowledge tools' scopeId.
 - knowledge tool = `bk.<bundleId>.<rest>` (bridge auto-aliases)
 - host's own tool = host namespace (e.g. `host.menu.refresh`)
 

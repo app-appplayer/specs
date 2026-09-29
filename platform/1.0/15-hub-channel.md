@@ -98,17 +98,17 @@ endpoint ── gateway ── relay(hub) ── gateway ── endpoint
 
 ## 9. A hub is the **market door** (and where the account door begins)
 
-What a hub opens is the **direction in which you publish to others** — which is exactly why listings, access lists, tenancy and wallets attach here. Devices signed in to the **same account** lending one another a connection is a **different door**, and it is not layered on top of a hub's nodes and sessions: dragging publisher concepts into a place that has exactly one owner drags in everything that place will never use.
+What a hub opens is the **direction in which you publish to others** — which is exactly why listings, access lists, tenancy and wallets attach here. Devices of the **same account** lending one another a connection (`22-appplayer-peer-link.md`) is a **different door**, and it is not layered on top of a hub's nodes and sessions: dragging publisher concepts into a place that has exactly one owner drags in everything that place will never use.
 
 | | Hub (the market door) | Account peer (the account door) |
 |---|---|---|
 | To whom | Someone else | My own devices |
-| Introduction | Node registration · session grant | A directory and an offer, held by the account service |
-| Data | Through the relay | **Device to device**; where that is blocked, a **shared TURN** — not a hub session. The relay is borrowed as a temporary detour only until TURN is standing |
-| Frames | Gateway dispatch (§8) | **Plain MCP** |
-| Rule for what you expose | One re-exposure rule governs **both** |
+| Introduction | Node registration · session grant | The account service's directory and an offer (22 §4) |
+| Data | Through the relay | **Device to device** only — where a direct path cannot be made, nothing relays it and the reason is shown (22 §5.1). The account channel carries signals only (22 §4.1) |
+| Frames | Gateway dispatch (§8) | **Plain MCP** (22 §5) |
+| Rule for what you expose | `23-connection-reexposure.md` — **shared by both** |
 
-What the account door borrows from this document is **the relay, and only that** — a last resort on networks where a direct path is blocked. Even then §0 holds: a direct path only moves the mediator further out of the data path.
+The account peer **borrows nothing from this document** (2026-09-16). With peer nodes and sessions removed, the door for borrowing the relay closed as well. A pair whose direct path is blocked **does not connect, and says why** (22 §5.1, 2026-09-17) — the account channel (22 §4.1) carries only the directory, addresses and connection signals, never app data. The §0 statement "the market steps out of the data path" is therefore stronger: data on the account door **never passes through the market.**
 
 ---
 

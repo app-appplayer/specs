@@ -41,7 +41,7 @@ Manifest categories (aligned with the actual `McpBundle` schema sections):
 
 ### 1. tools.tools[]
 
-Domain-owned logic tools. Name = unique within the bundle (the same name MAY exist in another bundle — the host adds a `<bundleId>.<rawName>` prefix).
+Domain-owned logic tools. Name = unique within the bundle (the same name MAY exist in another bundle — the host adds a `<bundleId>.<rawName>` prefix). The bundle's own screens and js call a tool by the name it declared, and the host resolves that name in the bundle's own namespace (04 "Name isolation"). A bundle document never carries the bundle id.
 
 ```json
 {
