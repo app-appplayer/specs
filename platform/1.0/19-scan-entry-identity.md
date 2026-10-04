@@ -171,6 +171,24 @@ What authorizes the node's own operations is **not this standard's concern**. An
 
 An entry code still dereferences against a resolver, so a fully disconnected site needs a resolver reachable **on its own network**. Nothing in §4 requires the resolver to be on the internet; the roles (§2.1) are about responsibility, not topology.
 
+#### 4.1.1a Announced media — the machine says which medium names it
+
+The medium is usually a sticker on the machine. A person standing in front of it with the entry host already open should not have to aim a camera at the sticker to reach the machine the phone can already see. A node MAY therefore **announce the entry links that name it**, in its manifest (17 §6 carries the manifest):
+
+| Field | Type | Meaning |
+|---|---|---|
+| `manifest.media` | string[]? | Entry links (§3.1) whose resolved target is this node — the same links its stickers or cards carry |
+
+The announcement is **a claim, never a proof** — the node is not the resolver. A host that lists announced media (a "nearby" surface):
+
+1. MUST resolve each link with the resolver exactly as a scanned one (§4.3), and render the issuer before anything else, as for a scan.
+2. MUST list an entry only when the resolved target is `localServer` **and its `ref` names the announcing node** (same manifest id, and same transport when the ref carries one). A node that announces another node's link, or a link that resolves anywhere else, is not listed — otherwise a cheap board could stand under a trusted issuer's name by quoting its link.
+3. MUST open a listed entry through the same entry pipeline as a scan of that link — the gate, the identity policy and the visit are the scan's, not a shortcut's.
+4. SHOULD search only while the surface is on screen, and ask for radio permissions at the person's first use of it, saying why — a host that scans on its own at launch costs battery and permission prompts nobody asked for.
+5. SHOULD keep the node it found for the open that follows, so the visit does not search for it again.
+
+A node that announces nothing is simply not listed; its medium still opens by scanning.
+
 #### 4.1.2 Vocabularies and localization
 
 - `notice.kind` is a closed set: `custodyChanged` · `targetMoved` · `degraded` · `advisory`. A resolver that needs another kind uses `advisory` and carries the specificity in the message; hosts MUST render an unrecognized kind as `advisory` rather than dropping it.

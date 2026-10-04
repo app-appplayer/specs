@@ -82,6 +82,10 @@ The manifest object served at `bundle://manifest.json`, which Stage 2 reads, may
 - The `signerCert` schema is the same shape as a root CA entry (the fingerprint is derived automatically as SHA-256 over the raw public key, hex).
 - `role` selects the root pool to verify against: **`partner`** (the hardware manufacturer chain) or **`marketplace`**. Any other value is treated as untrusted, and MUST be dropped where signatures are enforced.
 
+### 6.1a Optional manifest field `media` — the entry links that name this device
+
+A device MAY announce the entry links its own stickers or cards carry, as `manifest.media` (an array of strings). Discovery only **carries** the value; how it is checked and shown is 19 §4.1.1a (resolved with the resolver, listed only when the resolved target is this device). When the manifest is signed (`trust`), `media` is inside the signed manifest.
+
 ### 6.2 What is signed (canonical bytes)
 
 The canonical JSON of the manifest object **with the `trust` field removed** — object keys sorted ascending recursively, no superfluous whitespace, UTF-8 encoded. Array order is preserved. The signature algorithm MUST be **Ed25519**.
