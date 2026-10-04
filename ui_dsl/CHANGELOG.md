@@ -2,6 +2,47 @@
 
 ## [Unreleased]
 
+### §18.9 test-ID prefixes for Composition and Location
+
+§18.1 lists eight Profiles; the §18.9 prefix table named six. `COMP-*`
+(Composition) and `LOC-*` (Location) are added with the scope §18.7 and §18.12
+give them.
+
+### One name for scroll response: `physics`
+
+Six scrollables (`list`, `grid`, `singleChildScrollView`, `tabBar`,
+`tabBarView`, `stepper`) named the property `physics` with the values
+`bouncing` · `clamping` · `never` · `always`; `scrollView` and `pageView` named
+it `scrollPhysics` with `neverScrollable`. One concept, two names and two value
+sets. `scrollView` and `pageView` now declare `physics` with the same four
+values (the schema's set widens: `never` and `always` are new there).
+`scrollPhysics` is registered as their legacy property alias (§17.3.2) and
+`neverScrollable` / `alwaysScrollable` as legacy values (§17.3.1a), so every
+document that loaded before still loads. `tabBarView`'s runtime reading of
+`bounce` / `clamp` is registered as a legacy value alias. Schemas regenerated.
+
+### Schemas accept a responsive object wherever §14.2.2 does
+
+§14.2.2 accepts a responsive object on any numeric, string, enum or token
+shorthand property. The widget registry declared the object form on
+`grid.columns` alone, so the generated schemas refused it everywhere else — a
+root document using one did not load, while the same value in a page loaded
+later (and not validated) was drawn at its default. The generator now gives
+every number, integer, string, enum, colour and edge-insets widget property a
+responsive-object branch whose values are checked against the property's own
+schema, and `configs/_primitive/Dimension.yaml` carries the same branch. Keys
+are the §14.1.1 form factors plus `default`. No prose change; schemas
+regenerated.
+
+### `list` and `grid` tables name `shrinkWrap` and `physics`
+
+§2.15 tells authors to set `shrinkWrap` on a `list` or `grid` whose parent does
+not bound the scroll axis, but the §2.7.1 and §2.7.2 property tables did not
+list it, nor `physics`. Both were already in the widget registry
+(`widgets/list/list.yaml`, `grid.yaml`), the generated schema and the generated
+reference; the tables now carry them with the registry's description. No shape
+changes.
+
 ### `lineHeight` is the one name for line height; `height` is its legacy alias
 
 `TextStyle` — the shape shared by `theme.typography.<role>` and a widget's

@@ -50,12 +50,19 @@ considered the same product across versions; installing a higher
 application | library | skill | profile | extension | server | unknown
 ```
 
-- `application` — full UI-bearing product (default).
+`type` is the kind of app the bundle is, chosen when it is made (App
+Builder offers the choice; any authoring tool that writes a manifest sets
+it). Hosts and the marketplace sort and run bundles by it.
+
+- `application` — an AppPlayer app (default). Runs in every AppPlayer tier
+  and in Studio / Workbench.
 - `library` — reusable assets / templates intended to be referenced by
   other bundles via `dependencies[]`.
 - `skill` / `profile` — single-domain bundles that carry only that
   section.
-- `extension` — augments an existing host or another bundle.
+- `extension` — a Studio app. Runs in Studio and Workbench only; it may use
+  the tools those hosts provide (`studio.*`). Extending another bundle is not
+  what this type means — that is `library` and `dependencies[]`.
 - `server` — served as a live MCP server rather than installed (MCP
   Serving: the server serves UI + manifest + tools + knowledge).
   Not an install target — consumers reach it via `connectServer`;
@@ -63,9 +70,9 @@ application | library | skill | profile | extension | server | unknown
   runtime, never by a host.
 - `unknown` — round-trip slot for forward-compat values.
 
-The host MAY use `type` for filtering / categorisation but SHOULD NOT
-gate behavior on it — capability is determined by what sections the
-bundle actually carries, not by the type label.
+Hosts and the marketplace decide by `type`: an AppPlayer lists and runs
+`application` bundles, Studio and Workbench also run `extension` bundles,
+and the marketplace files a bundle under its `type`.
 
 ## 2.3 Capabilities
 
@@ -143,6 +150,8 @@ A bundle declares the host capabilities it **needs** through the
 as a separate top-level section on `McpBundle.requires`).
 
 Reference: `models/requires_section.dart`.
+
+From a Studio app (`type: extension`):
 
 ```json
 "requires": {

@@ -269,6 +269,8 @@ Enumerated property **values** may also carry legacy spellings. Like widget and 
 |----------|-----------|---------------|
 | `linear.distribution` | `spaceBetween`, `spaceAround`, `spaceEvenly` | `space-between`, `space-around`, `space-evenly` |
 | `qrCode.errorCorrection` | `low`, `medium`, `quartile`, `high` | `L`, `M`, `Q`, `H` |
+| `physics` (every scrollable) | `never`, `always` | `neverScrollable`, `alwaysScrollable` |
+| `tabBarView.physics` | `bouncing`, `clamping` | `bounce`, `clamp` |
 
 **Legacy values are not listed in the property's `enum`.** The canonical
 surface carries the canonical spelling and nothing else, exactly as it does for
@@ -304,6 +306,7 @@ table naming `spaceBetween` as canonical.)*
 | `button` | `variant` | `style` |
 | `image` | `src` | `backgroundImage`, `source` |
 | `grid` | `columns` | `crossAxisCount` |
+| `scrollView`, `pageView` | `physics` | `scrollPhysics` |
 | `select`, `radioGroup`, `checkboxGroup` | `options` | `items` |
 | `slider` | `value` | `values` (when single-value) |
 | `avatar` | `label` | `text` |

@@ -1343,6 +1343,8 @@ Scrollable linear collection rendered from an array binding.
 | `orientation` | string | no | `"vertical"` | `vertical` or `horizontal`. |
 | `emptyMessage` | string | no | — | Displayed when the list is empty. |
 | `itemExtent` | number | no | — | Fixed item size for performance. |
+| `shrinkWrap` | boolean | no | `false` | Size to the content instead of filling the viewport. Set it where the parent does not bound the scroll axis (§2.15). |
+| `physics` | string | no | — | Scroll response: `bouncing`, `clamping`, `never`, `always`. |
 
 ```json
 {
@@ -1369,6 +1371,8 @@ Scrollable two-dimensional collection.
 | `rowGap` | number | no | `0` | Gap between rows. |
 | `columnGap` | number | no | `0` | Gap between columns. |
 | `itemAspectRatio` | number | no | — | Fixed aspect ratio for each item. |
+| `shrinkWrap` | boolean | no | `false` | Size to the content instead of filling the viewport. Set it where the parent does not bound the scroll axis (§2.15). |
+| `physics` | string | no | — | Scroll response: `bouncing`, `clamping`, `never`, `always`. |
 
 ```json
 {
@@ -1770,7 +1774,7 @@ Scrollable viewport. Two layout modes — pick one per instance: linear mode (`c
 |----------|------|----------|---------|-------------|
 | `direction` | string | no | `"vertical"` | `vertical` or `horizontal`. |
 | `padding` | EdgeInsets | no | — | Inner padding around the scrollable content. |
-| `scrollPhysics` | string | no | `"clamping"` | `bouncing`, `clamping`, `neverScrollable`. |
+| `physics` | string | no | `"clamping"` | Scroll response: `bouncing`, `clamping`, `never`, `always`. Legacy name `scrollPhysics` (§17.3.2). |
 | `child` | Widget | no | — | Single scrolled child. Mutually exclusive with `children` and `slivers`. |
 | `children` | Widget[] | no | — | Multiple widgets wrapped in an implicit linear column along `direction`. |
 | `slivers` | array\<Sliver\> | no | — | Sliver entries (sliverAppBar / sliverPersistentHeader / sliverList / sliverGrid / sliverFixedExtentList). Mutually exclusive with `child` and `children`. |
@@ -1851,7 +1855,7 @@ Full-viewport paged scroll view. Snaps one page per swipe; ideal for book pages,
 | `children` | Widget[] | yes | — | One child per page. |
 | `initialPage` | number | no | `0` | Page rendered first. |
 | `loop` | boolean | no | `false` | Wrap around — last → first. |
-| `scrollPhysics` | string | no | `"clamping"` | `bouncing`, `clamping`, `neverScrollable`. |
+| `physics` | string | no | `"clamping"` | Scroll response: `bouncing`, `clamping`, `never`, `always`. Legacy name `scrollPhysics` (§17.3.2). |
 | `allowImplicitScrolling` | boolean | no | `false` | Pre-render adjacent pages off-screen for instant subsequent swipes. |
 | `onPageChanged` | Action | no | — | Fires after the active page settles. `event.page` carries the new index. |
 

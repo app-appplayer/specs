@@ -70,7 +70,7 @@ Two `kind` discriminators:
 ```json
 {
   "kind": "button",
-  "tool": "studio_builder.export",
+  "tool": "export",
   "icon": "upload",
   "tooltip": "Export .mcpb",
   "args": { "format": "mcpb" }
@@ -98,14 +98,14 @@ the group's `stateKey` is emphasised.
     {
       "icon": "preview",
       "tooltip": "UI",
-      "tool": "studio_builder.gotoPage",
+      "tool": "gotoPage",
       "args": { "pageId": "ui" },
       "value": "/ui"
     },
     {
       "icon": "build",
       "tooltip": "Tools",
-      "tool": "studio_builder.gotoPage",
+      "tool": "gotoPage",
       "args": { "pageId": "tools" },
       "value": "/tools"
     }
@@ -181,14 +181,14 @@ the buttons.
 
 ```json
 "lifecycle": [
-  { "slot": "project.new",   "tool": "studio_builder.newProject" },
-  { "slot": "project.open",  "tool": "studio_builder.openProject" },
-  { "slot": "project.save",  "tool": "studio_builder.saveProject" },
-  { "slot": "project.close", "tool": "studio_builder.closeProject" },
-  { "slot": "edit.undo",     "tool": "studio_builder.undo" },
-  { "slot": "edit.redo",     "tool": "studio_builder.redo" },
-  { "slot": "history.show",  "tool": "studio_builder.showHistory" },
-  { "slot": "edit.revert",   "tool": "studio_builder.revert" }
+  { "slot": "project.new",   "tool": "newProject" },
+  { "slot": "project.open",  "tool": "openProject" },
+  { "slot": "project.save",  "tool": "saveProject" },
+  { "slot": "project.close", "tool": "closeProject" },
+  { "slot": "edit.undo",     "tool": "undo" },
+  { "slot": "edit.redo",     "tool": "redo" },
+  { "slot": "history.show",  "tool": "showHistory" },
+  { "slot": "edit.revert",   "tool": "revert" }
 ]
 ```
 
@@ -225,7 +225,7 @@ Rows in the settings dialog's domain panel.
   {
     "label":   "Reset preferences",
     "icon":    "refresh",
-    "tool":    "studio_builder.resetPrefs",
+    "tool":    "resetPrefs",
     "args":    { "scope": "all" },
     "tooltip": "Reset to defaults"
   }
@@ -298,7 +298,7 @@ Chips surfaced when the user types `/` in the chat composer.
     },
     {
       "command": "/build",
-      "tool": "studio_builder.exportPackage"
+      "tool": "exportPackage"
     }
   ]
 }

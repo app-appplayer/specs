@@ -4122,7 +4122,7 @@ always one full page. Each child is rendered as a separate page.
 | `children` | `array<Widget>` | yes | — | One child per page. |
 | `initialPage` | `number` | no | 0 | Index of the page rendered first. |
 | `loop` | `boolean` | no | false | When true the list wraps around — last → first. |
-| `scrollPhysics` | `string` | no | clamping | Edge / overscroll behaviour. `bouncing` mirrors iOS rubber-band; `clamping` is the Android-style hard stop; `neverScrollable` disables user dragging (use programmatic page change only).  |
+| `physics` *(aliases: `scrollPhysics`)* | `string` | no | clamping | Scroll response, the same values as every other scrollable: `bouncing` (iOS rubber-band), `clamping` (Android hard stop), `never` (no user dragging — programmatic movement only), `always` (scrollable even when the content fits).  |
 | `allowImplicitScrolling` | `boolean` | no | false | Pre-render the adjacent pages off-screen so subsequent swipes are instant (assistive-technology friendly). Costs memory.  |
 | `onPageChanged` | `Action` | no | — | Fires after the active page settles. `event.page` carries the new index. |
 | `onChange` | `Action` | no | — | Fired when the visible page changes. `{{event.value}}` carries its index. |
@@ -4914,7 +4914,7 @@ mutually exclusive.
 | `primary` | `boolean` | no | — | Whether this is the primary scroll view of the page. |
 | `direction` | `string` | no | vertical | Scroll axis. |
 | `padding` | `EdgeInsets` | no | — | Inner padding around the scrollable content. |
-| `scrollPhysics` | `string` | no | clamping | Edge / overscroll behaviour. |
+| `physics` *(aliases: `scrollPhysics`)* | `string` | no | clamping | Scroll response, the same values as every other scrollable: `bouncing` (iOS rubber-band), `clamping` (Android hard stop), `never` (no user dragging — programmatic movement only), `always` (scrollable even when the content fits).  |
 | `child` | `Widget` | no | — | Single scrolled child. Mutually exclusive with `children` and `slivers`. |
 | `children` | `array<Widget>` | no | — | Multiple widgets wrapped in an implicit linear column along `direction`. Mutually exclusive with `child` and `slivers`. |
 | `slivers` | `array<Sliver>` | no | — | Sliver entries (sliverAppBar / sliverPersistentHeader / sliverList / sliverGrid / sliverFixedExtentList). Mutually exclusive with `child` and `children`.  |

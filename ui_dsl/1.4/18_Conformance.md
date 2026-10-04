@@ -427,7 +427,9 @@ Each Profile has an associated test suite. Test IDs are prefixed:
 | `BND-*` | Bundle | Metadata parsing, `bundle://` resolution, `ui://app/info`, adapters, dashboard. |
 | `ADV-*` | Advanced | Each advanced widget; canvas at v1.3+. |
 | `TPL-*` | Template | Static invocation (v1.1) and stateful / lifecycle / remote libraries (v1.3). |
+| `COMP-*` | Composition | `DefinitionSource` resolution, the `view` widget, origin-scoped dispatch, per-origin isolation, fail-closed without a resolver. |
 | `PAY-*` | Payment | The `payment` action, envelope mapping, return-link matching, and refusal when unclaimed. |
+| `LOC-*` | Location | The `location` action, declared and host-reduced precision, act-only dispatch, and refusal when unclaimed. |
 
 A runtime passes a Profile suite when every MUST-level test returns green and SHOULD-level tests either pass or are documented as deliberate deviations. A runtime claiming multiple Profiles MUST pass every suite it claims.
 

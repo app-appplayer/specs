@@ -6,6 +6,10 @@ description: |
   logical pixels. `value` may itself be a binding: a bar whose width
   comes from data writes `{"value": "{{item.ratio}}", "unit": "percent"}`,
   and that is the whole point of the object form.
+
+  A responsive object (§14.2.2) — one value per form factor, keyed by
+  `compact` / `medium` / `expanded` / `large` / `extraLarge` / `embedded`
+  / `default` — stands in for any of those forms.
 definition:
   {
     "oneOf": [
@@ -24,6 +28,33 @@ definition:
         "required": ["value"],
         "additionalProperties": false
       },
-      { "$ref": "#/$defs/Binding" }
+      { "$ref": "#/$defs/Binding" },
+      {
+        "type": "object",
+        "propertyNames": {
+          "enum": ["compact", "medium", "expanded", "large", "extraLarge", "embedded", "default"]
+        },
+        "minProperties": 1,
+        "additionalProperties": {
+          "oneOf": [
+            { "type": "number" },
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "oneOf": [
+                    { "type": "number" },
+                    { "$ref": "#/$defs/Binding" }
+                  ]
+                },
+                "unit": { "type": "string" }
+              },
+              "required": ["value"],
+              "additionalProperties": false
+            },
+            { "$ref": "#/$defs/Binding" }
+          ]
+        }
+      }
     ]
   }

@@ -8,15 +8,13 @@ MCP UI DSL is a JSON-based domain-specific language for declarative, server-driv
 
 ## Quick Start
 
-For 1.3:
-
 - New to MCP UI DSL? → [`1.4/00_Overview.md`](1.4/00_Overview.md)
 - Implementing a renderer? → [`1.4/01_Core_Concepts.md`](1.4/01_Core_Concepts.md) then [`1.4/18_Conformance.md`](1.4/18_Conformance.md)
 - Authoring a UI? → [`1.4/02_Widgets.md`](1.4/02_Widgets.md) and [`1.4/04_Actions.md`](1.4/04_Actions.md)
 - Looking for a specific name or alias? → [`1.4/17_Naming.md`](1.4/17_Naming.md)
 - Tracking what changed across versions? → [`CHANGELOG.md`](CHANGELOG.md)
 
-## Document Map (1.3)
+## Document Map (1.4)
 
 ### Foundation
 - [`1.4/00_Overview.md`](1.4/00_Overview.md) — Motivation, scope, terminology, document map

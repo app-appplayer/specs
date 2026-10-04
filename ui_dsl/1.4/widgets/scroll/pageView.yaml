@@ -33,14 +33,18 @@ properties:
     type: boolean
     default: false
     description: When true the list wraps around — last → first.
-  scrollPhysics:
+  physics:
     type: string
-    enum: [bouncing, clamping, neverScrollable]
+    enum: [bouncing, clamping, never, always]
+    legacyValues: [neverScrollable, alwaysScrollable]
     default: "clamping"
+    aliases:
+      - scrollPhysics
     description: |
-      Edge / overscroll behaviour. `bouncing` mirrors iOS rubber-band;
-      `clamping` is the Android-style hard stop; `neverScrollable`
-      disables user dragging (use programmatic page change only).
+      Scroll response, the same values as every other scrollable: `bouncing`
+      (iOS rubber-band), `clamping` (Android hard stop), `never` (no user
+      dragging — programmatic movement only), `always` (scrollable even when
+      the content fits).
   allowImplicitScrolling:
     type: boolean
     default: false

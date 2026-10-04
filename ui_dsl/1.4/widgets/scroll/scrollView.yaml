@@ -26,11 +26,18 @@ properties:
   padding:
     type: EdgeInsets
     description: Inner padding around the scrollable content.
-  scrollPhysics:
+  physics:
     type: string
-    enum: [bouncing, clamping, neverScrollable]
+    enum: [bouncing, clamping, never, always]
+    legacyValues: [neverScrollable, alwaysScrollable]
     default: "clamping"
-    description: Edge / overscroll behaviour.
+    aliases:
+      - scrollPhysics
+    description: |
+      Scroll response, the same values as every other scrollable: `bouncing`
+      (iOS rubber-band), `clamping` (Android hard stop), `never` (no user
+      dragging — programmatic movement only), `always` (scrollable even when
+      the content fits).
   child:
     type: Widget
     description: Single scrolled child. Mutually exclusive with `children` and `slivers`.

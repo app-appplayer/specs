@@ -487,14 +487,14 @@ Format per widget:
 ## Scroll
 
 ### `pageView`
-- properties: `click?: Action`, `tooltip?: string`, `padEnds?: boolean`, `pageSnapping?: boolean`, `clipBehavior?: string`, `direction?: string`, `children: array<Widget>`, `initialPage?: number`, `loop?: boolean`, `scrollPhysics?: string`, `allowImplicitScrolling?: boolean`, `onPageChanged?: Action`, `onChange?: Action`, `reverse?: boolean`, `scrollDirection?: string`
+- properties: `click?: Action`, `tooltip?: string`, `padEnds?: boolean`, `pageSnapping?: boolean`, `clipBehavior?: string`, `direction?: string`, `children: array<Widget>`, `initialPage?: number`, `loop?: boolean`, `physics?: string`, `allowImplicitScrolling?: boolean`, `onPageChanged?: Action`, `onChange?: Action`, `reverse?: boolean`, `scrollDirection?: string`
 
 ### `scrollBar`
 - properties: `click?: Action`, `tooltip?: string`, `thumbVisibility?: boolean`, `trackVisibility?: boolean`, `thickness?: number`, `radius?: number`, `child?: Widget`, `children?: array<Widget>`
 
 ### `scrollView`
 - aliases: `scrollArea`
-- properties: `click?: Action`, `tooltip?: string`, `primary?: boolean`, `direction?: string`, `padding?: EdgeInsets`, `scrollPhysics?: string`, `child?: Widget`, `children?: array<Widget>`, `slivers?: array<Sliver>`, `reverse?: boolean`, `scrollDirection?: string`
+- properties: `click?: Action`, `tooltip?: string`, `primary?: boolean`, `direction?: string`, `padding?: EdgeInsets`, `physics?: string`, `child?: Widget`, `children?: array<Widget>`, `slivers?: array<Sliver>`, `reverse?: boolean`, `scrollDirection?: string`
 
 ### `singleChildScrollView`
 - properties: `click?: Action`, `tooltip?: string`, `clipBehavior?: string`, `physics?: string`, `primary?: boolean`, `direction?: string`, `padding?: EdgeInsets`, `child?: Widget`, `children?: array<Widget>`, `reverse?: boolean`, `scrollDirection?: string`

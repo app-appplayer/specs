@@ -2,10 +2,16 @@
 
 The `tools` section is the bundle's declaration of **host-callable
 units of behavior**. Every UI button, every chat command, every
-wiring slot ultimately resolves to a tool name. The host MCP server
-registers each declared tool under `<bundleNamespace>.<name>` and
-makes it callable from external MCP clients, the same host's other
-bundles, the chat LLM, and the bundle's own UI / wiring.
+wiring slot ultimately resolves to a tool name.
+
+A tool's `name` is its name **inside the bundle** — the bundle id is never
+written into it. The host registers each declared tool as
+`<bundleId>.<name>`, so two bundles may declare the same `name` without
+colliding. The bundle's own screens, JS and wiring call the tool by its
+`name`, and the host resolves that in the bundle's own namespace first.
+External MCP clients, other bundles and the chat LLM reach it by the full
+`<bundleId>.<name>`. (Platform: [`04-ui-host.md`](../../platform/1.0/04-ui-host.md) «name
+isolation», [`06-tool-registry.md`](../../platform/1.0/06-tool-registry.md).)
 
 Reference, in the `mcp_bundle` package: `lib/src/models/tools_section.dart`.
 
@@ -34,7 +40,7 @@ bundled JS source files referenced by `kind: js` tools — see §4.7.
 ```json
 {
   "id": "newProject",
-  "name": "studio_builder.newProject",
+  "name": "newProject",
   "description": "Create a new package project.",
   "kind": "js",
   "target": { "entry": "tools/newProject.js", "fn": "newProject" },
@@ -62,7 +68,7 @@ bundled JS source files referenced by `kind: js` tools — see §4.7.
 | Field | Type | Required | Description |
 |-------|------|:--------:|-------------|
 | `id` | string? | no | Optional cross-reference id. Distinct from `name` — `name` is the dispatch handle, `id` is a stable handle for cross-section reference. |
-| `name` | string | **MUST** | Non-empty. The handle the host uses to invoke this tool. Conventionally namespaced (`<bundle>.<verb>`). |
+| `name` | string | **MUST** | Non-empty. The tool's name inside the bundle, without the bundle id; the host registers it as `<bundleId>.<name>`. |
 | `description` | string? | no | Human-readable description. |
 | `kind` | enum [`ToolKind`](#43-toolkind) | no (default `host`) | Dispatch discriminator. |
 | `target` | object | no (default `{}`) | Kind-discriminated dispatch payload — see §4.4 — §4.7. |
@@ -371,9 +377,11 @@ inspect before activation.
 ## 4.9 `host.mcp.callTool` — The Single Funnel
 
 ```js
-const r1 = await host.mcp.callTool('studio_builder.gotoPage',
-                                   { pageId: 'tools' });
+// This bundle's own tool — by its name.
+const r1 = await host.mcp.callTool('gotoPage', { pageId: 'tools' });
+// A host builtin tool.
 const r2 = await host.mcp.callTool('studio.project.info', {});
+// Another bundle's tool — by its full name.
 const r3 = await host.mcp.callTool('app_builder.exportProject', {});
 ```
 
@@ -395,9 +403,10 @@ Tool **declarations** live in `tools[]`. Tool **invocation bindings**
 
 A wiring slot's `tool` field MAY name:
 
-- a tool declared in this bundle's `tools[]`, or
+- a tool declared in this bundle's `tools[]`, by its `name`, or
 - a host builtin tool name, or
-- a tool declared in another active bundle.
+- a tool declared in another active bundle, by its full
+  `<bundleId>.<name>`.
 
 The host resolves the name through its MCP tool registry at call
 time. A wiring slot referencing an unresolved tool MUST fail at

@@ -588,9 +588,56 @@
         },
         {
           "$ref": "#/$defs/Binding"
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "compact",
+              "medium",
+              "expanded",
+              "large",
+              "extraLarge",
+              "embedded",
+              "default"
+            ]
+          },
+          "minProperties": 1,
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "oneOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "$ref": "#/$defs/Binding"
+                      }
+                    ]
+                  },
+                  "unit": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "$ref": "#/$defs/Binding"
+              }
+            ]
+          }
         }
       ],
-      "description": "Numeric size — accepts a plain `number` (logical pixels) OR the\nlegacy MCP UI DSL v1.0 `{value, unit}` object form. The `unit`\nfield is informational; the runtime treats every dimension as\nlogical pixels. `value` may itself be a binding: a bar whose width\ncomes from data writes `{\"value\": \"{{item.ratio}}\", \"unit\": \"percent\"}`,\nand that is the whole point of the object form."
+      "description": "Numeric size — accepts a plain `number` (logical pixels) OR the\nlegacy MCP UI DSL v1.0 `{value, unit}` object form. The `unit`\nfield is informational; the runtime treats every dimension as\nlogical pixels. `value` may itself be a binding: a bar whose width\ncomes from data writes `{\"value\": \"{{item.ratio}}\", \"unit\": \"percent\"}`,\nand that is the whole point of the object form.\n\nA responsive object (§14.2.2) — one value per form factor, keyed by\n`compact` / `medium` / `expanded` / `large` / `extraLarge` / `embedded`\n/ `default` — stands in for any of those forms."
     },
     "EdgeInsets": {
       "anyOf": [
