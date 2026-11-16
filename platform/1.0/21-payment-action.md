@@ -198,6 +198,24 @@ A document served by an unattended device does not write `seller`. Who receives 
 - The identity gate answers three ways — **allow** (payee resolved) · **lookup only** (identity is valid but there is no payment context: unverified, unmapped) · **deny** (revoked · suspended · signature mismatch · invalid challenge). **Lookup-only is not a fault but an incomplete setup** — and must read that way.
 - If step 7 fails, the customer paid and received nothing. **The host reports a failure at this step distinctly from a payment failure** — the party who must undo it is different.
 
+### 6.1.1 The ticket — only the phone holding the bought right uses it
+
+At step 7 the host hands over, **together with** the approval token, the public key (Ed25519) of the ticket that payment created. The device binds that key, and from then on accepts what this right does only when signed by that key. The ticket's private key never leaves the phone's secure storage.
+
+| Tool | What it does |
+|---|---|
+| `ticket.challenge` | Issues a single-use `nonce`. Refused when no ticket is bound |
+| `ticket.act {action, nonce, sig}` | `sig` = the ticket key's signature over `deviceId \n nonce \n action`. If it holds, the device does `action`. The `nonce` is consumed at once, whether or not the signature holds |
+
+- **A document does not sign.** Anyone can serve a device page, so the ground for using a right comes only from a ticket the host holds.
+- The device defines the actions (`actions` in `state://ticket`). When a `final` action succeeds, the right ends and the key is unbound.
+
+**`identify` — telling the device this connection is the holder.** The `ticket.act` action `identify` does not move the device. If the signature holds, the device remembers **this connection** as that ticket's holder, and forgets it when the connection closes. Page elements only the right's holder may use (extending · ticket actions) are offered only to a connection whose holder is confirmed. The page is drawn from what the device verified by signature, not from what the host says.
+
+- A host holding a live ticket for this device sends `identify` **once when it opens the visit** (a ticket not ended and already delivered — a payment still waiting for delivery has no key at the device yet).
+- A phone that is not the holder is not offered an extension. Only the ticket's holder can pay to extend it; if someone else pays, the money moves and the device refuses the token (`PAYMENT_DELIVERY_FAILED`) — the page closes that path.
+- If `identify` is refused (no ticket bound · signature mismatch), the device treats the connection as a guest. A new use is sold to anyone.
+
 #### A device does not declare a price
 
 What the identity gate returns is **the receiving party**, and step 5 is **opening that payee's payment surface**. Item and price live there, in the item document the payee registered, and the device only points with an `itemId`.
