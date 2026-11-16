@@ -215,6 +215,7 @@ At step 7 the host hands over, **together with** the approval token, the public 
 - A host holding a live ticket for this device sends `identify` **once when it opens the visit** (a ticket not ended and already delivered — a payment still waiting for delivery has no key at the device yet).
 - A phone that is not the holder is not offered an extension. Only the ticket's holder can pay to extend it; if someone else pays, the money moves and the device refuses the token (`PAYMENT_DELIVERY_FAILED`) — the page closes that path.
 - If `identify` is refused (no ticket bound · signature mismatch), the device treats the connection as a guest. A new use is sold to anyone.
+- **When a token carrying a `holderKey` is accepted on this connection** (newly bound, or extended with the same key), that connection is the holder too — whoever chose the key holds it, the same ground as a verified signature. So a person who has just paid during the visit keeps the extension without an `identify`.
 
 #### A device does not declare a price
 
